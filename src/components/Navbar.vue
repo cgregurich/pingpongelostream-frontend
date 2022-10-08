@@ -5,6 +5,7 @@ const navItems = ref([
   { text: 'Leaderboard', routeName: 'Leaderboard' },
   { text: 'About', routeName: 'About' },
   { text: 'Profie', routeName: 'Profile' },
+  { text: 'Example', routeName: 'Example' },
   ]);
 const bg = ref('bg-emerald-600');
 const fg = ref('text-white');
