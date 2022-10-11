@@ -2,13 +2,26 @@
 import { ref, computed } from 'vue';
 import FormInput from '@/components/FormInput.vue';
 import FormButton from '@/components/FormButton.vue';
+import { useAuthStore } from '../stores/modules/auth';
 
-const username = ref('');
+const email = ref('');
 const password = ref('');
 
 const canSubmit = computed(() => {
-  return username.value.trim().length !== 0 && password.value.trim().length !== 0;
+  return email.value.trim().length !== 0 && password.value.trim().length !== 0;
 });
+
+const submit = () => {
+	if (canSubmit) {
+		store.login(email.value, password.value);
+	}
+};
+const reset = () => {
+	email.value = '';
+	password.value = '';
+};
+
+const store = useAuthStore();
 
 </script>
 
@@ -18,10 +31,12 @@ const canSubmit = computed(() => {
 
 			<p class="header text-4xl font-semibold m-8">Login</p>
 
-      <FormInput labelText="Username" v-model:enteredText="username" icon="fa-user"/>
-      <FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
+			<form @submit.prevent="submit" @reset.prevent="reset">
+				<FormInput labelText="Email" v-model:enteredText="email" icon="fa-user"/>
+				<FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
 
-      <FormButton text="Log In" :disabled="!canSubmit"/>
+				<FormButton text="Log In" :disabled="!canSubmit"/>
+			</form>
 
 			<div class="line w-4/5 mt-40 bg-opacity-10 bg-black h-[1px] mb-4"></div>
 
