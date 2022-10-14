@@ -260,7 +260,7 @@
 
 			<!-- Page Content -->
 			<main>
-				<slot :user="user" />
+				<slot />
 			</main>
 		</div>
 	</div>
