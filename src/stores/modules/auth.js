@@ -17,12 +17,35 @@ export const useAuthStore = defineStore('user', {
         }
     },
     actions: {
-        async login(username, password) {
+        async register(email, password, password_confirmation) {
+            await apiCall(
+                () => axios.post(
+                    API_URL + REGISTER,
+                    {
+                        'email': email,
+                        'password': password,
+                        'password_confirmation': password_confirmation,
+                        'device_name': window.navigator.userAgent
+                    }
+                ),
+                (data) => {
+                    this.token = data.token;
+                    console.log('inside store', data);
+                },
+                undefined,
+                () => { this.getUser(); },
+                undefined,
+                (err) => {
+                    console.log(err);
+                }
+            );
+        },
+        async login(email, password) {
             await apiCall(
                 () => axios.post(
                     API_URL + LOGIN,
                     {
-                        'email': username,
+                        'email': email,
                         'password': password,
                         'device_name': window.navigator.userAgent
                     }
