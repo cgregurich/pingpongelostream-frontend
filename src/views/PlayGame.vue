@@ -161,38 +161,37 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 
 
 <template>
-  <div class="controls flex justify-center items-center">
-    <font-awesome-icon 
-      @click="undoLastPoint"
-      class="text-4xl mr-4"
-      :class="canUndo ? 'text-black' : 'text-gray-300'"
-      icon="arrow-rotate-left"
-    />
-    <PrimaryButton :disabled="gameState === GameStates.InProgress" class="text-xl" @click="controlButtonClicked" :text='gameControlText' />
-  </div>
-
-
-
-  <div class="container rounded-xl flex justify-end h-[500px] border-4 bg-play-game-color-one">
-    <TeamContainer 
-      @click="() => incrementScoreClicked(1)"
-      :teamNumber="1"
-      v-model:setScore="p1SetScore"
-      v-model:gameScore="p1GameScore"
-      :disabled="!allowScoreInput"
-      :wonSets="p1WonSets"
-      :server="server"
-      :players="['Colin']"
-    />
-    <TeamContainer
-      @click="() => incrementScoreClicked(2)"
-      :teamNumber="2"
-      v-model:setScore="p2SetScore"
-      v-model:gameScore="p2GameScore"
-      :disabled="!allowScoreInput"
-      :wonSets="p2WonSets"
-      :server="server"
-      :players="['David', 'John']"
-    />
+  <div class="display flex flex-col items-center">
+    <div class="controls flex justify-center items-center my-2">
+      <font-awesome-icon
+        @click="undoLastPoint"
+        class="text-4xl mr-4"
+        :class="canUndo ? 'text-black' : 'text-gray-300'"
+        icon="arrow-rotate-left"
+      />
+      <PrimaryButton :disabled="gameState === GameStates.InProgress" class="text-xl" @click="controlButtonClicked" :text='gameControlText' />
+    </div>
+    <div class="container flex justify-center h-[500px] w-screen bg-yello-500">
+      <TeamContainer
+        @click="() => incrementScoreClicked(1)"
+        :teamNumber="1"
+        v-model:setScore="p1SetScore"
+        v-model:gameScore="p1GameScore"
+        :disabled="!allowScoreInput"
+        :wonSets="p1WonSets"
+        :server="server"
+        :players="['Colin']"
+      />
+      <TeamContainer
+        @click="() => incrementScoreClicked(2)"
+        :teamNumber="2"
+        v-model:setScore="p2SetScore"
+        v-model:gameScore="p2GameScore"
+        :disabled="!allowScoreInput"
+        :wonSets="p2WonSets"
+        :server="server"
+        :players="['Bob']"
+      />
+    </div>
   </div>
 </template>
