@@ -7,7 +7,6 @@ import Leaderboard from '@/views/Leaderboard.vue';
 import Profile from '@/views/Profile.vue';
 import Example from '@/views/Example.vue';
 import Login from '@/views/Login.vue';
-import Register from '@/views/Register.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import Games from '@/views/Games.vue';
 import Players from '@/views/Players.vue';
@@ -15,14 +14,13 @@ import Livestream from '@/views/Livestream.vue';
 import CreateGame from '@/views/CreateGame.vue';
 
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', component: Home, name: 'Home' },
   { path: '/sandbox', component: Sandbox, name: 'Sandbox'},
   { path: '/leaderboard', component: Leaderboard, name: 'Leaderboard' },
   { path: '/profile', component: Profile, name: 'Profile'},
   { path: '/play', component: PlayMatch, name: 'Play'},
   { path: '/example', component: Example, name: 'Example'},
   { path: '/login', component: Login, name: 'Login' },
-  { path: '/register', component: Register, name: 'Register' },
   { path: '/dashboard', component: Dashboard, name: 'Dashboard' },
   { path: '/games', component: Games, name: 'Games' },
   { path: '/players', component: Players, name: 'Players' },

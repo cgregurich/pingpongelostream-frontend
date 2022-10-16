@@ -1,4 +1,5 @@
 <script setup>
+import router from '@/router/index';
 import { ref, computed } from 'vue';
 import FormInput from '@/components/FormInput.vue';
 import FormButton from '@/components/FormButton.vue';
@@ -13,7 +14,12 @@ const canSubmit = computed(() => {
 
 const submit = () => {
 	if (canSubmit) {
-		store.login(email.value, password.value);
+		store.login(
+			email.value,
+			password.value
+		).then(
+			() => router.push({ name: 'Dashboard' })
+		).catch((e) => console.error(e));;
 	}
 };
 const reset = () => {
@@ -31,7 +37,7 @@ const store = useAuthStore();
 
 			<p class="header text-4xl font-semibold m-8">Login</p>
 
-			<form @submit.prevent="submit" @reset.prevent="reset">
+			<form class="w-96 flex flex-col items-center" @submit.prevent="submit" @reset.prevent="reset">
 				<FormInput labelText="Email" v-model:enteredText="email" icon="fa-user"/>
 				<FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
 
@@ -41,7 +47,7 @@ const store = useAuthStore();
 			<div class="line w-4/5 mt-40 bg-opacity-10 bg-black h-[1px] mb-4"></div>
 
 			<div class="footer">Don't have an account yet?
-				<router-link :to="{ name: 'Register' }" class="font-bold hover:underline">Create one.</router-link>
+				<router-link :to="{ name: 'Home' }" class="font-bold hover:underline">Create one.</router-link>
 			</div>
 		</div>
 	</div>

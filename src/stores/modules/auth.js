@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { apiCall } from '../utils/apiCall';
-import { API_URL, LOGIN, SELF } from '../utils/backendRouteParts';
+import { API_URL, REGISTER, LOGIN, SELF } from '../utils/backendRouteParts';
 
 export const useAuthStore = defineStore('user', {
     state: () => ({
@@ -17,11 +17,12 @@ export const useAuthStore = defineStore('user', {
         }
     },
     actions: {
-        async register(email, password, password_confirmation) {
+        async register(name, email, password, password_confirmation) {
             await apiCall(
                 () => axios.post(
                     API_URL + REGISTER,
                     {
+                        'name': name,
                         'email': email,
                         'password': password,
                         'password_confirmation': password_confirmation,
@@ -33,7 +34,7 @@ export const useAuthStore = defineStore('user', {
                     console.log('inside store', data);
                 },
                 undefined,
-                () => { this.getUser(); },
+                async () => { await this.getUser(); },
                 undefined,
                 (err) => {
                     console.log(err);
@@ -55,7 +56,7 @@ export const useAuthStore = defineStore('user', {
                     console.log('inside store', data);
                 },
                 undefined,
-                () => { this.getUser() }
+                async () => { await this.getUser() }
             );
         },
         async getUser() {
