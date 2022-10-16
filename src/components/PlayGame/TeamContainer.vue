@@ -46,7 +46,6 @@ function getClasses() {
 <div 
   class="team-container relative flex flex-col items-center justify-around w-full select-none"
   :class="getClasses()"
-  @keydown.left="test"
 >
   <!-- Serving Indicator -->
   <!-- For Left Team -->
