@@ -12,7 +12,7 @@ const canSubmit = computed(() => {
 });
 
 const submit = () => {
-	if (canSubmit) {
+	if (canSubmit.value) {
 		store.login(email.value, password.value);
 	}
 };
@@ -31,7 +31,7 @@ const store = useAuthStore();
 
 			<p class="header text-4xl font-semibold m-8">Login</p>
 
-			<form @submit.prevent="submit" @reset.prevent="reset">
+			<form @submit.prevent="submit" @reset.prevent="reset" class="flex flex-col items-center w-full">
 				<FormInput labelText="Email" v-model:enteredText="email" icon="fa-user"/>
 				<FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
 
