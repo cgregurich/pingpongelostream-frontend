@@ -8,6 +8,11 @@ import Profile from '@/views/Profile.vue';
 import Example from '@/views/Example.vue';
 import Login from '@/views/Login.vue';
 import Register from '@/views/Register.vue';
+import Dashboard from '@/views/Dashboard.vue';
+import Games from '@/views/Games.vue';
+import Players from '@/views/Players.vue';
+import Livestream from '@/views/Livestream.vue';
+import CreateGame from '@/views/CreateGame.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -18,6 +23,11 @@ const routes = [
   { path: '/example', component: Example, name: 'Example'},
   { path: '/login', component: Login, name: 'Login' },
   { path: '/register', component: Register, name: 'Register' },
+  { path: '/dashboard', component: Dashboard, name: 'Dashboard' },
+  { path: '/games', component: Games, name: 'Games' },
+  { path: '/players', component: Players, name: 'Players' },
+  { path: '/livestream', component: Livestream, name: 'Livestream' },
+  { path: '/games/create', component: CreateGame, name: 'CreateGame' }
 ];
 
 const router = createRouter({
