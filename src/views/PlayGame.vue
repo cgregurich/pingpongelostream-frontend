@@ -81,7 +81,6 @@ function pickRandomServer() {
 }
 
 function pointScored(player) {
-  console.log(canUndo.value);
   undoStack.push({ player: player, pointsTillServerSwap: pointsTillServerSwap.value, server: server.value });
   if (player === 1) { 
     p1SetScore.value++;
@@ -138,7 +137,7 @@ const gameControlText = computed(() => {
   if (gameState.value === GameStates.NotStarted) return 'Start Game';
   else if (gameState.value === GameStates.InProgress) return 'Set in progress...';
   else if (gameState.value === GameStates.SetFinished) return 'Next Set';
-  else if (gameState.value === GameStates.LastSetFinished) return 'Confirm Game Over';
+  else if (gameState.value === GameStates.LastSetFinished) return 'End Game';
   else if (gameState.value === GameStates.GameOver) return 'Game Over';
 });
 
@@ -163,9 +162,20 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 
 
 <template>
-  <div class="display flex flex-col items-center relative">
-    <div class="controls flex flex-col justify-center items-center w-[200px] h-[150px] bg-white absolute z-10 right-0 left-0 mx-auto my-auto bottom-0 top-0 rounded-2xl select-none shadow-2xl bg-opacity-50 backdrop-blur-lg">
-    <!-- <div class="controls flex justify-center items-center my-2"> -->
+  <div class="display flex flex-col items-center relative h-screen w-screen">
+    <!-- Controls - Separate -->
+    <!-- <div class="controls absolute z-20 right-0 left-0 max-auto my-auto bottom-0 top-0 flex flex-col items-center justify-center border-4 border-red-600">
+      <button :disabled="!canUndo" class="text-2xl text-black hover:text-gray-700 active:text-gray-600 disabled:hover:text-opacity-20 disabled:hover:text-black disabled:text-opacity-20   rounded-full w-[50px] h-[50px] p-0 m-0 bg-white bg-opacity-100 backdrop-blur-lg shadow-sm shadow-gray-800">
+        <font-awesome-icon
+          @click="undoLastPoint"
+          icon="arrow-rotate-left"
+        />
+      </button>
+      <div>Testing...</div>
+    </div> -->
+
+    <!-- Controls - Middle Widget -->
+    <div class="controls flex flex-col justify-center items-center px-4 py-4 w-max h-max bg-white absolute z-10 right-0 left-0 mx-auto my-auto bottom-0 top-0 rounded-2xl select-none shadow-gray-700 shadow-sm bg-opacity-30 backdrop-blur-lg">
       <button :disabled="!canUndo" class="text-4xl mb-4 text-black hover:text-gray-700 active:text-gray-600 disabled:hover:text-opacity-20 disabled:hover:text-black disabled:text-opacity-20">
         <font-awesome-icon
           @click="undoLastPoint"
@@ -176,7 +186,9 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
       <div v-show="gameState === GameStates.GameOver">Game Over</div>
       <PrimaryButton v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" class="" @click="controlButtonClicked" :text='gameControlText' />
     </div>
-    <div class="container flex justify-center h-[500px] w-screen">
+
+    <!-- Team Containers -->
+    <div class="container flex justify-center h-full w-full">
       <TeamContainer
         @click="() => incrementScoreClicked(1)"
         :teamNumber="1"
