@@ -138,7 +138,7 @@ const gameControlText = computed(() => {
   if (gameState.value === GameStates.NotStarted) return 'Start Game';
   else if (gameState.value === GameStates.InProgress) return 'Set in progress...';
   else if (gameState.value === GameStates.SetFinished) return 'Next Set';
-  else if (gameState.value === GameStates.LastSetFinished) return 'Confirm Last Set Finished';
+  else if (gameState.value === GameStates.LastSetFinished) return 'Confirm Game Over';
   else if (gameState.value === GameStates.GameOver) return 'Game Over';
 });
 
@@ -163,17 +163,18 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 
 
 <template>
-  undoStack.length: {{ undoStack.length }}
-  canUndo: {{ canUndo }}
   <div class="display flex flex-col items-center relative">
-    <div class="controls flex justify-center items-center my-2">
-      <font-awesome-icon
-        @click="undoLastPoint"
-        class="text-4xl mr-4"
-        :class="canUndo ? 'text-black' : 'text-gray-300'"
-        icon="arrow-rotate-left"
-      />
-      <PrimaryButton :disabled="gameState === GameStates.InProgress" class="text-xl" @click="controlButtonClicked" :text='gameControlText' />
+    <div class="controls flex flex-col justify-center items-center w-[200px] h-[150px] bg-white absolute z-10 right-0 left-0 mx-auto my-auto bottom-0 top-0 rounded-2xl select-none shadow-2xl bg-opacity-50 backdrop-blur-lg">
+    <!-- <div class="controls flex justify-center items-center my-2"> -->
+      <button :disabled="!canUndo" class="text-4xl mb-4 text-black hover:text-gray-700 active:text-gray-600 disabled:hover:text-opacity-20 disabled:hover:text-black disabled:text-opacity-20">
+        <font-awesome-icon
+          @click="undoLastPoint"
+          icon="arrow-rotate-left"
+        />
+      </button>
+      <div v-show="gameState === GameStates.InProgress">In progress...</div>
+      <div v-show="gameState === GameStates.GameOver">Game Over</div>
+      <PrimaryButton v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" class="" @click="controlButtonClicked" :text='gameControlText' />
     </div>
     <div class="container flex justify-center h-[500px] w-screen">
       <TeamContainer
