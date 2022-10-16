@@ -9,7 +9,7 @@ module.exports = {
     extend: {
       colors: {
         'play-game-color-one': colors.teal[400],
-        'play-game-color-two': colors.black,
+        'play-game-color-two': colors.gray[800],
         'site-background': colors.white,
         'primary': colors.black,
         'secondary': colors.green[600],
