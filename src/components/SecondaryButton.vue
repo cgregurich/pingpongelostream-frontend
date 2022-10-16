@@ -13,9 +13,8 @@ defineProps({
 
 <template>
   <button
-    class="login-btn bg-black text-white rounded-lg text-lg transition-none w-32 h-12 hover:bg-gray-800 active:bg-gray-700 
+    class="login-btn bg-white text-black border border-black rounded-lg text-md transition-none px-4 h-12 hover:bg-gray-200 active:bg-gray-700 
     disabled:bg-gray-400 disabled:text-gray-500"
-    @click="$emit('click')"
     :disabled="disabled"
   >
     {{ text }}
