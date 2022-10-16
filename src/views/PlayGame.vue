@@ -50,7 +50,7 @@ function controlButtonClicked() {
 }
 
 function undoLastPoint() {
-  if (undoStack.length === 0 || gameState.value !== GameStates.InProgress) return;
+  if (!canUndo.value) return;
   const lastPoint = undoStack.pop();
   if (lastPoint.player === 1) {
     p1SetScore.value--;
@@ -60,6 +60,7 @@ function undoLastPoint() {
   }
   pointsTillServerSwap.value = lastPoint.pointsTillServerSwap;
   server.value = lastPoint.server;
+  gameState.value = GameStates.InProgress;
 }
 
 function startNewSet() {
@@ -80,6 +81,7 @@ function pickRandomServer() {
 }
 
 function pointScored(player) {
+  console.log(canUndo.value);
   undoStack.push({ player: player, pointsTillServerSwap: pointsTillServerSwap.value, server: server.value });
   if (player === 1) { 
     p1SetScore.value++;
@@ -153,7 +155,7 @@ const pointsPerServe = computed(() => {
   else return 2;
 });
 
-const canUndo = computed(() => undoStack.length > 0 && gameState.value === GameStates.InProgress);
+const canUndo = computed(() => undoStack.length > 0 && gameState.value !== GameStates.GameOver && gameState.value !== GameStates.NotStarted);
 
 const allowScoreInput = computed(() => gameState.value === GameStates.InProgress);
 
@@ -161,7 +163,9 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 
 
 <template>
-  <div class="display flex flex-col items-center">
+  undoStack.length: {{ undoStack.length }}
+  canUndo: {{ canUndo }}
+  <div class="display flex flex-col items-center relative">
     <div class="controls flex justify-center items-center my-2">
       <font-awesome-icon
         @click="undoLastPoint"
@@ -171,7 +175,7 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
       />
       <PrimaryButton :disabled="gameState === GameStates.InProgress" class="text-xl" @click="controlButtonClicked" :text='gameControlText' />
     </div>
-    <div class="container flex justify-center h-[500px] w-screen bg-yello-500">
+    <div class="container flex justify-center h-[500px] w-screen">
       <TeamContainer
         @click="() => incrementScoreClicked(1)"
         :teamNumber="1"
