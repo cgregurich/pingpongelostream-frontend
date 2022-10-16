@@ -1,7 +1,8 @@
 <script setup>
 import FormInput from '@/components/FormInput.vue';
-import FormButton from '@/components/FormButton.vue';
+import PrimaryButton from '@/components/PrimaryButton.vue';
 import { ref, computed } from 'vue';
+
 const username = ref('');
 const password = ref('');
 const passwordConfirm = ref('');
@@ -33,7 +34,7 @@ const canSubmit = computed(() => {
       <FormInput labelText="Username" v-model:enteredText="username" icon="fa-user"/>
       <FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
       <FormInput labelText="Confirm Password" v-model:enteredText="passwordConfirm" icon="fa-lock" :isPassword="true"/>
-      <FormButton text="Register" :disabled="!canSubmit"/>
+      <PrimaryButton text="Register" :disabled="!canSubmit"/>
 
       <div class="errors">
         <div class="text-red-700 text-xl">
