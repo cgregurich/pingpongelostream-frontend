@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Sandbox from '@/views/Sandbox.vue';
 import Home from '@/views/Home.vue';
-import PlayMatch from '@/views/PlayMatch.vue';
+import PlayGame from '@/views/PlayGame.vue';
 import Leaderboard from '@/views/Leaderboard.vue';
 import Profile from '@/views/Profile.vue';
 import Example from '@/views/Example.vue';
@@ -14,7 +14,7 @@ const routes = [
   { path: '/sandbox', component: Sandbox, name: 'Sandbox'},
   { path: '/leaderboard', component: Leaderboard, name: 'Leaderboard' },
   { path: '/profile', component: Profile, name: 'Profile'},
-  { path: '/play', component: PlayMatch, name: 'Play'},
+  { path: '/play', component: PlayGame, name: 'Play'},
   { path: '/example', component: Example, name: 'Example'},
   { path: '/login', component: Login, name: 'Login' },
   { path: '/register', component: Register, name: 'Register' },
