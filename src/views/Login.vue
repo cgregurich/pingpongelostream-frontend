@@ -13,7 +13,7 @@ const canSubmit = computed(() => {
 });
 
 const submit = () => {
-	if (canSubmit) {
+	if (canSubmit.value) {
 		store.login(
 			email.value,
 			password.value

@@ -19,7 +19,7 @@ function submitClicked() {
 }
 
 const submit = () => {
-	if (canSubmit) {
+	if (canSubmit.value) {
 		store.register(
             name.value,
             email.value,
