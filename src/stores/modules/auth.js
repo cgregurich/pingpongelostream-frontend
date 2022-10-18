@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { apiCall } from '../utils/apiCall';
-import { API_URL, LOGIN, SELF } from '../utils/backendRouteParts';
+import { API_URL, REGISTER, LOGIN, SELF } from '../utils/backendRouteParts';
 
 export const useAuthStore = defineStore('user', {
     state: () => ({
@@ -17,12 +17,36 @@ export const useAuthStore = defineStore('user', {
         }
     },
     actions: {
-        async login(username, password) {
+        async register(name, email, password, password_confirmation) {
+            await apiCall(
+                () => axios.post(
+                    API_URL + REGISTER,
+                    {
+                        'name': name,
+                        'email': email,
+                        'password': password,
+                        'password_confirmation': password_confirmation,
+                        'device_name': window.navigator.userAgent
+                    }
+                ),
+                (data) => {
+                    this.token = data.token;
+                    console.log('inside store', data);
+                },
+                undefined,
+                async () => { await this.getUser(); },
+                undefined,
+                (err) => {
+                    console.log(err);
+                }
+            );
+        },
+        async login(email, password) {
             await apiCall(
                 () => axios.post(
                     API_URL + LOGIN,
                     {
-                        'email': username,
+                        'email': email,
                         'password': password,
                         'device_name': window.navigator.userAgent
                     }
@@ -32,7 +56,7 @@ export const useAuthStore = defineStore('user', {
                     console.log('inside store', data);
                 },
                 undefined,
-                () => { this.getUser() }
+                async () => { await this.getUser() }
             );
         },
         async getUser() {

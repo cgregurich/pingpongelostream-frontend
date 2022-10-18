@@ -9,14 +9,6 @@
 	const props = defineProps({
 		user: Object
 	});
-	const navItems = ref([
-		{ text: 'Play A Match', routeName: 'Play' },
-		{ text: 'Leaderboard', routeName: 'Leaderboard' },
-		{ text: 'Profile', routeName: 'Profile' },
-		{ text: 'Example', routeName: 'Example' },
-		{ text: 'Log In', routeName: 'Login' },
-		{ text: 'Register', routeName: 'Register' },
-	]);
 	const showingNavigationDropdown = ref(false);
 	const logout = () => {
 		// call sign out route.
@@ -53,7 +45,7 @@
 								<router-link
 									:to="isLoggedIn
 										? { name: 'Dashboard' }
-										: { name: 'Login' }"
+										: { name: 'Home' }"
 								>
 									<font-awesome-icon icon="fa-table-tennis-paddle-ball" class="pl-4 pr-1" />
 									<span
@@ -121,7 +113,7 @@
 									<NavLink :to="{ name: 'Login' }">
 										Login
 									</NavLink>
-									<NavLink :to="{ name: 'Register' }">
+									<NavLink class="ml-2" :to="{ name: 'Home' }">
 										Register
 									</NavLink>
 								</div>
@@ -238,7 +230,7 @@
 							</router-link>
 							<router-link
 								class="w-full text-center"
-								:to="{ name: 'Register' }"
+								:to="{ name: 'Home' }"
 							>
 								<button
 									class="px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition"
