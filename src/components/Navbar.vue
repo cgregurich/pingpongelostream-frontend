@@ -1,15 +1,4 @@
 <script setup>
-<<<<<<< HEAD
-import { ref } from 'vue';
-const navItems = ref([
-  { text: 'Play A Match', routeName: 'Play' },
-  { text: 'Leaderboard', routeName: 'Leaderboard' },
-  { text: 'Profile', routeName: 'Profile' },
-  { text: 'Example', routeName: 'Example' },
-  { text: 'Log In', routeName: 'Login' },
-  { text: 'Register', routeName: 'Register' },
-  ]);
-=======
 	import { ref, computed, watch } from 'vue';
 	import { useRoute } from 'vue-router'
 	import Dropdown from '@/components/Dropdown.vue';
@@ -40,28 +29,10 @@ const navItems = ref([
 			showingNavigationDropdown.value = false;
 		}
 	);
->>>>>>> main
 </script>
 
 
 <template>
-<<<<<<< HEAD
-<nav class="navbar flex items-center py-2 bg-site-background text-background">
-  <div class="logo flex items-center text-2xl font-bold">
-    <font-awesome-icon icon="fa-table-tennis-paddle-ball" class="pl-4 pr-1" />
-    Attic Ping Pong
-  </div>
-  <router-link
-    v-for="(navItem, index) in navItems"
-    :key="index"
-    class="mx-6 px-6 text-lg w-max border-0 border-black"
-    active-class="border-b-4 border-black"
-    :to="{ name: navItem.routeName }"
-  >
-    {{ navItem.text }}
-  </router-link>
-</nav>  
-=======
 	<div>
 		<div class="min-h-screen bg-gray-100">
 			<nav class="bg-white border-b border-gray-100">
@@ -285,5 +256,4 @@ const navItems = ref([
 			</main>
 		</div>
 	</div>
->>>>>>> main
 </template>
