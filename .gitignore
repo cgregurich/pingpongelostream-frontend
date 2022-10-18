@@ -23,5 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+<<<<<<< HEAD
 
 WILO.txt
+=======
+WILO.txt
+>>>>>>> main
