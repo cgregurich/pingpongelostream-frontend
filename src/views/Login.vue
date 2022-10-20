@@ -2,7 +2,7 @@
 import router from '@/router/index';
 import { ref, computed } from 'vue';
 import FormInput from '@/components/FormInput.vue';
-import FormButton from '@/components/FormButton.vue';
+import PrimaryButton from '@/components/PrimaryButton.vue';
 import { useAuthStore } from '../stores/modules/auth';
 
 const email = ref('');
@@ -41,7 +41,7 @@ const store = useAuthStore();
 				<FormInput labelText="Email" v-model:enteredText="email" icon="fa-user"/>
 				<FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
 
-				<FormButton text="Log In" :disabled="!canSubmit"/>
+				<PrimaryButton text="Log In" :disabled="!canSubmit"/>
 			</form>
 
 			<div class="line w-4/5 mt-40 bg-opacity-10 bg-black h-[1px] mb-4"></div>

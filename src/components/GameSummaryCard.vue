@@ -1,5 +1,5 @@
 <template>
-	<div class="match-summary-card rounded-sm flex justify-between items-center shadow-lg bg-gray-100 rounded-xl px-4 my-1 border border-gray-300 hover:bg-gray-200 transition-colors w-full min-w-[550px]">
+	<div class="game-summary-card rounded-sm flex justify-between items-center shadow-lg bg-gray-100 rounded-xl px-4 my-1 border border-gray-300 hover:bg-gray-200 transition-colors w-full min-w-[550px]">
 		<!-- Left player -->
 		<div class="player-left flex items-center ml-1">
 			<!-- Profile pic and username -->
@@ -22,7 +22,7 @@
 		</div>
 
 
-		<!-- Final match scores -->
+		<!-- Final game scores -->
 		<div class="score font-bold text-3xl flex items-center">
 			<div class="left-score" :class="playerOne.finalScore > playerTwo.finalScore ? 'text-green-500' : 'text-red-500'">{{ playerOne.finalScore }}</div>
 			<div class="dash text-2xl mx-2">-</div>
