@@ -1,18 +1,24 @@
 <script setup>
 	import { ref, computed, watch } from 'vue';
-	import { useRoute } from 'vue-router'
+	import { useRouter, useRoute } from 'vue-router'
+	import { isRoutePublic } from '../router/route-util';
 	import Dropdown from '@/components/Dropdown.vue';
 	import DropdownLink from '@/components/DropdownLink.vue';
 	import NavLink from '@/components/NavLink.vue';
 	import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
+	import { useAuthStore } from '../stores/modules/auth';
+
+	const authStore = useAuthStore();
+	const router = useRouter();
 	const route = useRoute();
 	const props = defineProps({
 		user: Object
 	});
 	const showingNavigationDropdown = ref(false);
 	const logout = () => {
-		// call sign out route.
-		console.error('not yet implemented. Log out.');
+		authStore.logout();
+		if (!isRoutePublic(route))
+			router.push({ name: 'Login' });
 	};
 	const isLoggedIn = computed(
 		() => props.user
