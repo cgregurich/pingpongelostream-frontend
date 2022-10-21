@@ -7,17 +7,31 @@ import { API_URL } from '@/stores/utils/backendRouteParts.js';
 
 const route = useRoute();
 const player = reactive({});
-const teamID = ref(null);
+const singlesTeamID = ref(null);
 const stats = reactive({});
 const games = reactive([]);
 const team = reactive({});
 
-onMounted(async () => {
+const isLoading = ref(false);
+
+// onMounted(async () => {
+  // isLoading.value = true;
+  // loadUser();
+  // await loadSinglesTeamID();
+  // loadStats();
+  // await loadGames();
+  // isLoading.value = false;
+// });
+async function loadShit() {
+  isLoading.value = true;
   loadUser();
-  await loadTeamID();
+  await loadSinglesTeamID();
   loadStats();
-  loadGames();
-});
+  await loadGames();
+  isLoading.value = false;
+}
+
+loadShit();
 
 
 
@@ -30,11 +44,11 @@ async function loadUser() {
   }
 }
 
-async function loadTeamID() {
+async function loadSinglesTeamID() {
   const playerID = route.params.id;
   const response = await axios.get(`${API_URL}/players/${playerID}/teams/singles`);
   if (response.status === 200) {
-    teamID.value = response.data.response.team_id;
+    singlesTeamID.value = response.data.response.team_id;
   }
 }
 
@@ -51,7 +65,7 @@ async function loadStats() {
 async function loadGames() {
   const playerID = route.params.id;
   const seasonID = 1;
-  const response = await axios.get(`${API_URL}/teams/${teamID.value}/games/${seasonID}`);
+  const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${seasonID}`);
   console.log(response);
   if (response.status === 200) {
     const fetchedGames = response.data.response.games;
@@ -106,10 +120,17 @@ const singlesGames = computed(() => {
 <template>
 	<body class="flex flex-col items-center bg-purple-400">
     
+    <div v-if="isLoading" class="text-3xl text-red-400">LOADING</div>
     <!-- Username and Profile Pic -->
+
+    
+    <!-- With Data -->
 		<div class="header flex items-center mt-4">
 			<img class="profile-pic rounded-full w-44 shadow-2xl" :src="player.profile_photo_path">
 			<div class="username ml-4 font-semibold text-2xl">{{ player.name }}</div>
+      <!-- Skeleton -->
+			<div v-if="isLoading" class="profile-pic rounded-full w-44 h-44 bg-gray-400 shadow-2xl"></div>
+			<div v-if="isLoading" class="username ml-4 font-semibold text-2xl">Player Name</div>
 		</div>
 
     <!-- Player Stats -->
@@ -139,6 +160,9 @@ const singlesGames = computed(() => {
 			</div>
 
       <!-- Recent Games -->
+      <!-- Game Summary Card Skeleton -->
+      <GameSummaryCard v-if="isLoading" :skeletons="true"/>
+      <!-- Actual Game Summary Cards -->
       <GameSummaryCard
         v-for="game in singlesGames.slice(0, 3)"
         :key="game.id" 
@@ -146,6 +170,7 @@ const singlesGames = computed(() => {
         :teamTwo="getOpponentTeam(game)"
         :score="getScore(game)"
         :elos="getElos(game)"
+        :skeletons="isLoading"
       />
 			<div class="flex justify-end w-full">
 				<div class="text-sm hover:underline cursor-pointer mt-1 mr-2">View Complete Game History</div>
