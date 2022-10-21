@@ -8,7 +8,8 @@ const loginNotRequired = [
   { path: '/profile', component: () => import('@/views/Profile.vue'), name: 'Profile'},
   { path: '/example', component: () => import('@/views/Example.vue'), name: 'Example'},
   { path: '/games', component: () => import('@/views/Games.vue'), name: 'Games' },
-  { path: '/players', component: () => import('@/views/Players.vue'), name: 'Players' }
+  { path: '/players', component: () => import('@/views/Players.vue'), name: 'Players' },
+  { path: '/players/:id', component: () => import('@/views/Profile.vue'), name: 'Player' }
 ];
 
 const loginRequired = [

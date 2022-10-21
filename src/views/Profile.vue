@@ -5,9 +5,11 @@ import PlayerStats from '@/components/PlayerProfile/PlayerStats.vue';
 import PlayerStatsSkeleton from '@/components/PlayerProfile/PlayerStatsSkeleton.vue';
 import RecentGames from '@/components/PlayerProfile/RecentGames.vue';
 import RecentGamesSkeleton from '@/components/PlayerProfile/RecentGamesSkeleton.vue';
+import { useAuthStore } from '@/stores/modules/auth.js';
+
+const authStore = useAuthStore();
 
 const seasonID = 1;
-
 
 </script>
 
@@ -17,7 +19,7 @@ const seasonID = 1;
     <!-- Player Header (name & photo) -->
     <Suspense>
       <template #default>
-        <PlayerHeader :playerID="parseInt($route.params.id)" />
+        <PlayerHeader :playerID="parseInt($route.params.id) || authStore.user.id" />
       </template>
       <template #fallback>
         <PlayerHeaderSkeleton />
@@ -28,7 +30,7 @@ const seasonID = 1;
     <Suspense>
       <template #default>
         <PlayerStats
-          :playerID="parseInt($route.params.id)"
+          :playerID="parseInt($route.params.id) || authStore.user.id"
           :seasonID="seasonID"
         />
       </template>
@@ -40,7 +42,7 @@ const seasonID = 1;
     <!-- Recent Games -->
     <Suspense>
       <template #default>
-        <RecentGames :playerID="parseInt($route.params.id)" :seasonID="seasonID"/>
+        <RecentGames :playerID="parseInt($route.params.id) || authStore.user.id" :seasonID="seasonID"/>
       </template>
       <template #fallback>
         <RecentGamesSkeleton />
