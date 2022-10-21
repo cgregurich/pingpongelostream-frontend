@@ -4,12 +4,12 @@
   <!-- Left Team -->
   <div class="team-left flex items-center ml-1">
     <!-- Profile Pic and Username -->
-    <div v-for="(player, index) in teamOne" :key="index" class="name-pic-container flex flex-col items-center my-2">
+    <div v-for="(player, index) in teamOne" :key="index" class="name-pic-container flex flex-col items-center my-2 border-0 border-red-400 bg-red-000 w-[150px]">
       <img class="w-12 rounded-full" :src="player.profilePhotoPath">
       <div class="username font-semibold text-black">{{ player.name }}</div>
     </div>
     <!-- Elo Diff and Resulting Elo -->
-    <div class="elo-container flex items-center">
+    <div class="elo-container flex items-center border-0 border-blue-400 bg-blue-000">
       <div v-if="elos.teamOne.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
         +{{ elos.teamOne.eloDiff }}
       </div>
@@ -33,7 +33,7 @@
 
   <div class="team-right flex items-center mr-1">
     <!-- Elo Diff and Resulting Elo -->
-    <div class="elo-container flex items-center">
+    <div class="elo-container flex items-center border-0 border-blue-400 bg-blue-000 min-w-[150px]">
       <div v-if="elos.teamTwo.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
         +{{ elos.teamTwo.eloDiff }}
       </div>
@@ -45,7 +45,7 @@
       </div>
     </div>
     <!-- Profile Pic and Username -->
-    <div v-for="(player, index) in teamTwo" :key="index" class="name-pic-container flex flex-col items-center my-2">
+    <div v-for="(player, index) in teamTwo" :key="index" class="name-pic-container flex flex-col items-center my-2 border-0 border-red-400 bg-red-000 w-[150px]">
       <img class="w-12 min-w-12 rounded-full" :src="player.profilePhotoPath">
       <div class="username font-semibold text-black">{{ player.name }}</div>
     </div>
