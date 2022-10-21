@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onBeforeUpdate} from 'vue';
 import GameSummaryCard from '@/components/GameSummaryCard.vue';
 import axios from 'axios';
 import { API_URL } from '@/stores/utils/backendRouteParts.js';
@@ -89,6 +89,8 @@ async function loadData() {
   await loadGames();
 }
 
+
+onBeforeUpdate(async () => await loadData());
 await loadData();
 
 </script>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onBeforeUpdate } from 'vue';
 import axios from 'axios';
 import { API_URL } from '@/stores/utils/backendRouteParts.js';
 
@@ -16,7 +16,9 @@ async function loadUser() {
   }
 }
 
+onBeforeUpdate(async () => await loadUser());
 await loadUser();
+
 </script>
 
 <template>
