@@ -19,7 +19,6 @@ router.beforeEach((to, from, next) => {
         authStore.logout(); // if cant get user, token must be bad, logout.
         // dont need to change pages tho
       });
-    next(); // log em out but go anyway
   }
   else if (!tokenNotRequired) { // must do auth check
     if (token !== undefined && token !== null) {
