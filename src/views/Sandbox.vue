@@ -10,10 +10,8 @@
 
 
 // const player = ref(await asynFunc());
-import ArticlePost from '@/components/ArticlePost.vue';
 </script>
 
 <template>
 
-<ArticlePost />
 </template>
