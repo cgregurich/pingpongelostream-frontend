@@ -1,12 +1,14 @@
+<script setup>
+defineProps({
+  teamOne: Array,
+  teamTwo: Array,
+  score: Object,
+  elos: Object,
+});
+</script>
+
 <template>
-
-<!-- When loading -->
-<div v-if="skeletons" class="text-3xl text-red-400">
-  <div class="bg-gray-400 rounded-sm shadow-lg border border-gray-300 w-[400px] h-[100px]"></div>
-</div>
-
-<!-- When loaded -->
-<div v-if="!skeletons" class="game-summary-card rounded-sm flex justify-between items-center shadow-lg shadow-gray-300 bg-gray-100 rounded-xl px-4 my-1 border border-gray-300 hover:bg-gray-200 transition-colors w-full min-w-[400px]">
+<div class="game-summary-card rounded-sm flex justify-between items-center shadow-lg shadow-gray-300 bg-gray-100 rounded-xl px-4 my-1 border border-gray-300 hover:bg-gray-200 transition-colors w-full min-w-[400px]">
 
 
   <!-- Left Team -->
@@ -62,13 +64,3 @@
 
 </template>
 
-
-<script setup>
-defineProps({
-  teamOne: Array,
-  teamTwo: Array,
-  score: Object,
-  elos: Object,
-  skeletons: Boolean,
-});
-</script>
