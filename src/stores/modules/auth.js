@@ -6,7 +6,7 @@ import { API_URL, REGISTER, LOGIN, SELF } from '../utils/backendRouteParts';
 export const useAuthStore = defineStore('user', {
     state: () => ({
         user: null,
-        token: null
+        token: window.localStorage.getItem('auth-token') || null,
     }),
     getters: {
         bearerToken(state) {
@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('user', {
     },
     actions: {
         async register(name, email, password, password_confirmation) {
-            await apiCall(
+            return await apiCall(
                 () => axios.post(
                     API_URL + REGISTER,
                     {
@@ -32,6 +32,7 @@ export const useAuthStore = defineStore('user', {
                 (data) => {
                     this.token = data.token;
                     console.log('inside store', data);
+                    window.localStorage.setItem('auth-token', this.token);
                 },
                 undefined,
                 async () => { await this.getUser(); },
@@ -42,7 +43,7 @@ export const useAuthStore = defineStore('user', {
             );
         },
         async login(email, password) {
-            await apiCall(
+            return await apiCall(
                 () => axios.post(
                     API_URL + LOGIN,
                     {
@@ -54,6 +55,7 @@ export const useAuthStore = defineStore('user', {
                 (data) => {
                     this.token = data.token;
                     console.log('inside store', data);
+                    window.localStorage.setItem('auth-token', this.token);
                 },
                 undefined,
                 async () => { await this.getUser() }
@@ -61,7 +63,7 @@ export const useAuthStore = defineStore('user', {
         },
         async getUser() {
             console.log(this.bearerToken);
-            await apiCall(
+            return await apiCall(
                 () => axios.get(
                     API_URL + SELF,
                     this.baseHeader
@@ -71,6 +73,12 @@ export const useAuthStore = defineStore('user', {
                     console.log('inside store', this.user);
                 }
             );
+        },
+        async logout() {
+            console.log('logging out');
+            this.token = null;
+            this.user = null;
+            window.localStorage.clear();
         }
     }
 });
