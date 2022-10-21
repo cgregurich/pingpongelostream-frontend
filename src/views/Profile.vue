@@ -1,69 +1,10 @@
 <script setup>
 import GameSummaryCard from '@/components/GameSummaryCard.vue';
-import GameSummaryCard2 from '@/components/GameSummaryCard2.vue';
 import { ref, reactive, onMounted, computed, toRaw } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { API_URL } from '@/stores/utils/backendRouteParts.js';
 
-
-const matchData1 = {
-  p1: {
-    username: 'david.j123',
-    eloDiff: 64,
-    elo: '2500',
-    avatarUrl: 'https://xsgames.co/randomusers/assets/avatars/male/27.jpg',
-    finalScore: 11,
-  },
-  p2: {
-    username: 'pianoman90',
-    eloDiff: -29,
-    elo: '1243',
-    avatarUrl: 'https://xsgames.co/randomusers/assets/avatars/male/11.jpg',
-    finalScore: 10
-  }
-};
-
-const matchData2 = {
-  p1: {
-    username: 'david.j123',
-    eloDiff: -143,
-    elo: '2436',
-    avatarUrl: 'https://xsgames.co/randomusers/assets/avatars/male/27.jpg',
-    finalScore: 1,
-  },
-  p2: {
-    username: 'bshizzlexx',
-    eloDiff: 198,
-    elo: '1775',
-    avatarUrl: 'https://xsgames.co/randomusers/assets/avatars/male/0.jpg',
-    finalScore: 11
-  }
-};
-
-const matchData3 = {
-  p1: {
-    username: 'david.j123',
-    eloDiff: 89,
-    elo: '2579',
-    avatarUrl: 'https://xsgames.co/randomusers/assets/avatars/male/27.jpg',
-    finalScore: 11,
-  },
-  p2: {
-    username: 'fir3start3r',
-    eloDiff: -76,
-    elo: '2105',
-    avatarUrl: 'https://xsgames.co/randomusers/assets/avatars/male/54.jpg',
-    finalScore: 6
-  }
-};
-const match1 = ref(matchData1);
-const match2 = ref(matchData2);
-const match3 = ref(matchData3);
-
-/**************************************
-  Hard-coded data for matches above
-**************************************/
 const route = useRoute();
 const player = reactive({});
 const teamID = ref(null);
@@ -120,65 +61,94 @@ async function loadGames() {
   }
 }
 
-function getOpponentTeam(index) {
-  const opponentTeam = games[index]?.opponent_team;
-  if (!opponentTeam) return;
-  const teamData = opponentTeam.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
+function getOpponentTeam(game) {
+  const teamData = game.opponent_team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
   return teamData;
 }
 
+function getScore(game) {
+  const teamOne = game.given_team.set_score;
+  const teamTwo = game.opponent_team.set_score;
+  return { teamOne, teamTwo };
+}
+
+function getElos(game) {
+  const elos = {
+    teamOne: {
+      elo: 2500,
+      eloDiff: 439
+    },
+    teamTwo: {
+      elo: 2342,
+      eloDiff: -123
+    }
+  };
+  return elos;
+}
+
 const selfTeam = computed(() => {
-  if (!toRaw(team)) return;
-  const selfTeamData = team.members?.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
+  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
   return selfTeamData;
+});
+
+const gamesPlayed = computed(() => games.length);
+const winRate = computed(() => {
+  const gamesWon = games.filter(game => game.given_team.set_score > game.opponent_team.set_score).length;
+  return Math.round((gamesWon / gamesPlayed.value) * 100);
+});
+
+const singlesGames = computed(() => {
+  return games.filter(game => game.opponent_team.members.length === 1);
 });
 
 </script>
 
 <template>
-	<body class="flex flex-col items-center">
-    {{ team }}
+	<body class="flex flex-col items-center bg-purple-400">
+    
+    <!-- Username and Profile Pic -->
 		<div class="header flex items-center mt-4">
 			<img class="profile-pic rounded-full w-44 shadow-2xl" :src="player.profile_photo_path">
-			<div class="username ml-4 font-semibold text-2xl">{{ player.name }} teamID: {{ teamID }}</div>
+			<div class="username ml-4 font-semibold text-2xl">{{ player.name }}</div>
 		</div>
-		<div class="stats flex justify-around w-3/6 mt-8">
-			<div class="stat-container flex flex-col items-center justify-center text-center">
+
+    <!-- Player Stats -->
+		<div class="stats flex justify-around w-3/6 max-w-[600px] mt-8">
+			<div class="stat-container flex flex-col items-center justify-center text-center mx-4">
 				<div class="stat-data font-semibold text-2xl">#{{ stats.ranking }}</div>
 				<div class="stat-label">Current Ranking</div>
 			</div>
-			<div class="stat-container flex flex-col items-center justify-center text-center">
+			<div class="stat-container flex flex-col items-center justify-center text-center mx-4">
 				<div class="stat-data font-semibold text-2xl">{{ stats.elo }}</div>
 				<div class="stat-label">Current Elo</div>
 			</div>
-			<div class="stat-container flex flex-col items-center text-center">
-				<div class="stat-data font-semibold text-2xl">123</div>
-				<div class="stat-label">Matches Played</div>
+			<div class="stat-container flex flex-col items-center text-center mx-4">
+				<div class="stat-data font-semibold text-2xl">{{ gamesPlayed }}</div>
+				<div class="stat-label">Games Played</div>
 			</div>
-			<div class="stat-container flex flex-col items-center text-center">
-				<div class="stat-data font-semibold text-2xl">76%</div>
+			<div class="stat-container flex flex-col items-center text-center mx-4">
+				<div class="stat-data font-semibold text-2xl">{{ winRate }}%</div>
 				<div class="stat-label">Win Rate</div>
 			</div>
 		</div>
-		<div class="recent-matches w-3/6 flex flex-col items-center mt-6">
+
+    <!-- Recent Games -->
+		<div class="recent-games max-w-[750px] w-full flex flex-col items-center px-6 mt-6">
 			<div class="flex justify-between w-full">
-				<div class="text-lg ml-2">Recent Matches</div>
+				<div class="text-lg ml-2">Recent Games</div>
 			</div>
-      <div class="game-test">
-        
-      </div>
-      <!-- <div v-for="(game, index) in games.slice(0, 3)" :key="index">
-        my team: {{ team.members.map(m => m.name) }}<br>
-        opponent team: {{ game.opponent_team.members.map(m => m.name) }} <br>
-        score: {{ game.given_team.set_score }} - {{ game.opponent_team.set_score }} <br>
-        {{ game }}
-      </div> -->
-      <GameSummaryCard2 :teamOne="selfTeam" :teamTwo="getOpponentTeam(2)" />
-			<!-- <GameSummaryCard :playerOne="match1.p1" :playerTwo="match1.p2" />
-			<GameSummaryCard :playerOne="match2.p1" :playerTwo="match2.p2" />
-			<GameSummaryCard :playerOne="match3.p1" :playerTwo="match3.p2" /> -->
+
+      <!-- Recent Games -->
+      <GameSummaryCard
+        v-for="game in singlesGames.slice(0, 3)"
+        :key="game.id" 
+        :teamOne="selfTeam"
+        :teamTwo="getOpponentTeam(game)"
+        :score="getScore(game)"
+        :elos="getElos(game)"
+      />
 			<div class="flex justify-end w-full">
-				<div class="text-sm hover:underline cursor-pointer mt-1 mr-2">View Complete Match History</div>
+				<div class="text-sm hover:underline cursor-pointer mt-1 mr-2">View Complete Game History</div>
 			</div>
 		</div>
 	</body>

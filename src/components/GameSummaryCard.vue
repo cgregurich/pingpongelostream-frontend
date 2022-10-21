@@ -1,60 +1,65 @@
 <template>
-	<div class="game-summary-card rounded-sm flex justify-between items-center shadow-lg bg-gray-100 rounded-xl px-4 my-1 border border-gray-300 hover:bg-gray-200 transition-colors w-full min-w-[550px]">
-		<!-- Left player -->
-		<div class="player-left flex items-center ml-1">
-			<!-- Profile pic and username -->
-			<div class="name-pic-container flex flex-col items-center my-2">
-				<img :src="playerOne.avatarUrl" class="w-12 rounded-full">
-				<div class="username font-semibold text-black">{{ playerOne.username }}</div>
-			</div>
-			<!-- Elo diff and resulting elo -->
-			<div class="elo-container flex items-center">
-				<div v-if="playerOne.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
-					+{{ playerOne.eloDiff }}
-				</div>
-				<div v-if="playerOne.eloDiff < 0" class="elo-lost text-red-500 mx-3 font-semibold text-sm">
-					{{ playerOne.eloDiff }}
-				</div>
-				<div class="elo text-xl">
-					{{ playerOne.elo }}
-				</div>
-			</div>
-		</div>
+<div class="game-summary-card rounded-sm flex justify-between items-center shadow-lg shadow-gray-300 bg-gray-100 rounded-xl px-4 my-1 border border-gray-300 hover:bg-gray-200 transition-colors w-full">
 
+  <!-- Left Team -->
+  <div class="team-left flex items-center ml-1">
+    <!-- Profile Pic and Username -->
+    <div v-for="(player, index) in teamOne" :key="index" class="name-pic-container flex flex-col items-center my-2">
+      <img class="w-12 rounded-full" :src="player.profilePhotoPath">
+      <div class="username font-semibold text-black">{{ player.name }}</div>
+    </div>
+    <!-- Elo Diff and Resulting Elo -->
+    <div class="elo-container flex items-center">
+      <div v-if="elos.teamOne.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
+        +{{ elos.teamOne.eloDiff }}
+      </div>
+      <div v-if="elos.teamOne.eloDiff < 0" class="elo-lost text-red-400 mx-3 font-semibold text-sm">
+        {{ elos.teamOne.eloDiff }}
+      </div>
+      <div class="elo text-xl">
+        {{ elos.teamOne.elo }}
+      </div>
+    </div>
+  </div>
 
-		<!-- Final game scores -->
-		<div class="score font-bold text-3xl flex items-center">
-			<div class="left-score" :class="playerOne.finalScore > playerTwo.finalScore ? 'text-green-500' : 'text-red-500'">{{ playerOne.finalScore }}</div>
-			<div class="dash text-2xl mx-2">-</div>
-			<div class="right-score" :class="playerTwo.finalScore > playerOne.finalScore ? 'text-green-500' : 'text-red-500'">{{ playerTwo.finalScore }}</div>
-		</div>
+  <!-- Final Score -->
+  <div class="score font-bold text-3xl flex items-center">
+    <div class="left-score" :class="score.teamOne > score.teamTwo ? 'text-green-500' : 'text-red-500'">{{ score.teamOne }}</div>
+    <div class="dash text-2xl mx-2">-</div>
+    <div class="right-score" :class="score.teamTwo > score.teamOne ? 'text-green-500' : 'text-red-500'">{{ score.teamTwo }}</div>
+  </div>
 
-		<!-- Right player -->
-		<div class="player-right flex items-center mr-1">
-			<!-- Elo diff and resulting elo -->
-			<div class="elo-container flex items-center">
-				<div class="elo text-xl">
-					{{ playerTwo.elo }}
-				</div>
-				<div v-if="playerTwo.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
-					+{{ playerTwo.eloDiff }}
-				</div>
-				<div v-if="playerTwo.eloDiff < 0" class="elo-lost text-red-500 mx-3 font-semibold text-sm">
-					{{ playerTwo.eloDiff }}
-				</div>
-			</div>
-			<!-- Profile pic and username -->
-			<div class="name-pic-container flex flex-col items-center my-2">
-				<img :src="playerTwo.avatarUrl" class="w-12 rounded-full">
-				<div class="username font-semibold">{{ playerTwo.username }}</div>
-			</div>
-		</div>
-	</div>
+  <!-- Right Team -->
+
+  <div class="team-right flex items-center mr-1">
+    <!-- Elo Diff and Resulting Elo -->
+    <div class="elo-container flex items-center">
+      <div v-if="elos.teamTwo.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
+        +{{ elos.teamTwo.eloDiff }}
+      </div>
+      <div v-if="elos.teamTwo.eloDiff < 0" class="elo-lost text-red-400 mx-3 font-semibold text-sm">
+        {{ elos.teamTwo.eloDiff }}
+      </div>
+      <div class="elo text-xl">
+        {{ elos.teamTwo.elo }}
+      </div>
+    </div>
+    <!-- Profile Pic and Username -->
+    <div v-for="(player, index) in teamTwo" :key="index" class="name-pic-container flex flex-col items-center my-2">
+      <img class="w-12 min-w-12 rounded-full" :src="player.profilePhotoPath">
+      <div class="username font-semibold text-black">{{ player.name }}</div>
+    </div>
+  </div>
+</div>
+
 </template>
 
+
 <script setup>
-  defineProps({
-    playerOne: Object,
-    playerTwo: Object,
-  });
+defineProps({
+  teamOne: Array,
+  teamTwo: Array,
+  score: Object,
+  elos: Object,
+});
 </script>
