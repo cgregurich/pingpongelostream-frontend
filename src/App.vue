@@ -7,7 +7,7 @@ const authStore = useAuthStore();
 
 <template>
   <Navbar :user="authStore.user">
-    <router-view></router-view>
+    <router-view class="m-auto w-screen h-[calc(100vh-4rem-1px)]"></router-view>
   </Navbar>
 </template>
 
