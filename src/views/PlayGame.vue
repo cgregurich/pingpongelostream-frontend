@@ -1,7 +1,6 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
-import SecondaryButton from '@/components/SecondaryButton.vue';
 import TeamContainer from '@/components/PlayGame/TeamContainer.vue';
 
 
@@ -162,33 +161,31 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 
 
 <template>
-  <div class="display flex flex-col items-center relative h-screen w-screen">
-    <!-- Controls - Separate -->
-    <!-- <div class="controls absolute z-20 right-0 left-0 max-auto my-auto bottom-0 top-0 flex flex-col items-center justify-center border-4 border-red-600">
-      <button :disabled="!canUndo" class="text-2xl text-black hover:text-gray-700 active:text-gray-600 disabled:hover:text-opacity-20 disabled:hover:text-black disabled:text-opacity-20   rounded-full w-[50px] h-[50px] p-0 m-0 bg-white bg-opacity-100 backdrop-blur-lg shadow-sm shadow-gray-800">
-        <font-awesome-icon
-          @click="undoLastPoint"
-          icon="arrow-rotate-left"
-        />
-      </button>
-      <div>Testing...</div>
-    </div> -->
+  <div class="display flex flex-col items-center relative">
 
-    <!-- Controls - Middle Widget -->
-    <div class="controls flex flex-col justify-center items-center px-4 py-4 w-max h-max bg-white absolute z-10 right-0 left-0 mx-auto my-auto bottom-0 top-0 rounded-2xl select-none shadow-gray-700 shadow-sm bg-opacity-30 backdrop-blur-lg">
-      <button :disabled="!canUndo" class="text-4xl mb-4 text-black hover:text-gray-700 active:text-gray-600 disabled:hover:text-opacity-20 disabled:hover:text-black disabled:text-opacity-20">
+    <!-- Controls -->
+    <div class="controls absolute z-20 right-0 left-0 mx-auto my-auto bottom-0 top-0 w-min h-min flex flex-col items-center justify-center">
+
+      <!-- Undo Circle Button -->
+      <button :disabled="!canUndo"
+        class="group flex justify-center items-center text-2xl text-black hover:text-gray-700 active:text-gray-600 disabled:hover:text-opacity-20 disabled:hover:text-black disabled:text-opacity-20 rounded-full w-[50px] h-[50px] p-0 m-0 bg-white bg-opacity-100 backdrop-blur-lg shadow-sm shadow-gray-800"
+        @click="undoLastPoint"
+      >
         <font-awesome-icon
-          @click="undoLastPoint"
           icon="arrow-rotate-left"
+          class="group-disabled:h-[1em] group-disabled:w-[1em] group-active:w-[1.1em] group-active:h-[1.1em] transition-all duration-75"
         />
       </button>
-      <div v-show="gameState === GameStates.InProgress">In progress...</div>
-      <div v-show="gameState === GameStates.GameOver">Game Over</div>
-      <PrimaryButton v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" class="" @click="controlButtonClicked" :text='gameControlText' />
+
+      <!-- Game Info Box -->
+      <div class="flex justify-center items-center bg-opacity-30 mt-12 w-[150px] h-[75px] bg-white p-4 backdrop-blur-lg shadow-gray-700 shadow-sm rounded-xl" >
+        <div v-show="gameState === GameStates.InProgress || gameState === GameStates.GameOver">{{ gameControlText }}</div>
+        <PrimaryButton v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" @click="controlButtonClicked" :text="gameControlText" />  
+      </div>
     </div>
 
     <!-- Team Containers -->
-    <div class="container flex justify-center h-full w-full">
+    <div class="container flex justify-center h-full">
       <TeamContainer
         @click="() => incrementScoreClicked(1)"
         :teamNumber="1"
