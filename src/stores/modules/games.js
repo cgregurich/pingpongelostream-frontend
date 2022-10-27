@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { apiCall } from '../utils/apiCall';
-import { API_URL, GAME } from '../utils/backendRouteParts';
+import { API_URL, GAMES } from '../utils/backendRouteParts';
 import { data } from 'autoprefixer';
 
 export const useGameStore = defineStore('game', {
     state: () => ({
-        game: null,
+        gameData: null,
         token: null
     }),
     getters: {
@@ -18,11 +18,12 @@ export const useGameStore = defineStore('game', {
         async getGames() {
             await apiCall(
                 () => axios.get(
-                    API_URL + GAME
+                    API_URL + GAMES,
+                    this.baseHeader
                 ),
                 (data) => {
-                    this.getGames = data.game;
-                    console.log('inside store', this.game);
+                    this.gameData = data.gameData;
+                    console.log('inside store', this.gameData);
                 }
             )
         }

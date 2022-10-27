@@ -3,7 +3,7 @@ const API_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 const SELF = '/self';
 const LOGIN = '/login';
 const REGISTER = '/register';
-const GAME = '/game';
+const GAMES = '/games';
 
 console.log(API_URL, import.meta.env.VITE_BACKEND_BASE_URL);
 export {
@@ -11,5 +11,5 @@ export {
     SELF,
     LOGIN,
     REGISTER,
-    GAME
+    GAMES
 };

@@ -1,12 +1,29 @@
 <script setup>
-import axios from 'axios';
-import { useGameStore } from '../stores/modules/games';
+import axios from "axios";
+import { useGameStore } from "../stores/modules/games";
+import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
+import { ref, reactive, computed, onBeforeUpdate, onMounted } from 'vue'
 
-  function displayGames() {
-    store.getGames();
+const games = [];
+const teamMembers = [];
+
+
+async function displayGames() {
+  const response = await axios.get(API_URL + GAMES);
+  if(response.status === 200) {
+    const fetchedGames = response.data.response.games;
+    // console.log(fetchedGames);
+    // Object.assign(games, fetchedGames);
+    for(let i = 0; i < 10; i++) {
+      games.push(fetchedGames[i]);
+    }
+    console.log(games);
+  }
   }
 
-  const store = useGameStore();
+  onMounted(async() => {
+    await displayGames();
+  })
 </script>
 
 
@@ -29,27 +46,17 @@ import { useGameStore } from '../stores/modules/games';
         "
       >
         <p class="header text-4xl font-semibold m-4">Recent Games</p>
-      <div> Working on retrieving data from DB...
-      </div>
+        <div>Working on retrieving data from DB...</div>
 
-
-      
-
-        <!-- <div v-for="item in game1">
-          {{ item.winner }} {{item.score}} {{ item.loser }}  -  {{item.date}}
+        <div class="stat-container flex flex-col items-center text-center mx-4">
+          <div class="stat-label"></div>
+          <!-- <div class="stat-data font-semibold text-2xl"> {{ games }}</div> -->
+            <ul>
+              <li v-for="game in games" :key="game.teams">
+                {{ game.teams }}
+              </li>
+            </ul>
         </div>
-		<div v-for="item in game2">
-          {{ item.winner }} {{item.score}} {{ item.loser }}  -  {{item.date}}
-        </div>
-		<div v-for="item in game3">
-          {{ item.winner }} {{item.score}} {{ item.loser }}  -  {{item.date}}
-        </div>
-		<div v-for="item in game4">
-          {{ item.winner }} {{item.score}} {{ item.loser }}  -  {{item.date}}
-        </div>
-		<div v-for="item in game5">
-          {{ item.winner }} {{item.score}} {{ item.loser }}  -  {{item.date}}
-        </div> -->
         <div
           class="line w-4/5 lg:mt-40 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
         ></div>
