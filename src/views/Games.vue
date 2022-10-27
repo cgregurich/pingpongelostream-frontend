@@ -53,7 +53,14 @@ async function displayGames() {
           <!-- <div class="stat-data font-semibold text-2xl"> {{ games }}</div> -->
             <ul>
               <li v-for="game in games" :key="game.teams">
-                {{ game.teams }}
+                <div v-for="team in game.teams" :key="team.id">
+                  <div v-for="member in team.members" :key="member.id">
+                    {{ member.name }}
+                  </div>
+                  <br/>
+                </div>
+                <br/>
+                <br/>
               </li>
             </ul>
         </div>
