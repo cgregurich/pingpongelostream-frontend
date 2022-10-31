@@ -23,6 +23,10 @@ export default {
                 responsive: true,
                 autoplay: true,
                 controls: true,
+                preload: 'auto',
+                class: 'vjs-16-9 video-js vjs-default-skin vjs-big-play-centered',
+                width: 'auto',
+                height: 'auto',
                 sources: [
                     {
                         src: 'http://stream.atticpingpong.com:8088/dash/obs_stream.mpd',
