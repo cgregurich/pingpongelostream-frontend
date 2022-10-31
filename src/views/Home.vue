@@ -1,54 +1,6 @@
 <script setup>
-import router from '@/router/index';
-import FormInput from '@/components/FormInput.vue';
-import PrimaryButton from '@/components/PrimaryButton.vue';
 import RegisterForm from '@/components/RegisterForm.vue';
-import { ref, computed } from 'vue';
-import { useAuthStore } from '../stores/modules/auth';
-
-const name = ref('');
-const email = ref('');
-const password = ref('');
-const passwordConfirm = ref('');
-const errorMessage = ref('');
-
-function submitClicked() {
-  errorMessage.value = '';
-  if (password.value !== passwordConfirm.value) {
-    errorMessage.value = 'Passwords must match';
-  }
-}
-
-const submit = () => {
-	if (canSubmit.value) {
-		store.register(
-            name.value,
-            email.value,
-            password.value,
-            passwordConfirm.value
-        ).then(
-            () => router.push({ name: 'Dashboard' })
-        ).catch((e) => console.error(e));
-	}
-};
-const reset = () => {
-	email.value = '';
-	password.value = '';
-    passwordConfirm = '';
-};
-
-const store = useAuthStore();
-
-const canSubmit = computed(() => {
-  return email.value.trim().length !== 0 
-    && password.value.trim().length !== 0
-    && passwordConfirm.value.trim().length !== 0;
-});
-
-
 </script>
-
-
 <template>
     <!-- Background image -->
     <!--
