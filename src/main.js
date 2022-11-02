@@ -8,10 +8,10 @@ import router from '@/router';
 const pinia = createPinia();
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faLock, faTableTennisPaddleBall } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLock, faTableTennisPaddleBall, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-library.add(faUser, faLock, faTableTennisPaddleBall);
+library.add(faUser, faLock, faTableTennisPaddleBall, faEnvelope);
 
 createApp(App)
   .use(pinia)
