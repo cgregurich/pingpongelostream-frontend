@@ -1,37 +1,42 @@
 import { createRouter, createWebHistory } from 'vue-router';
-
-import Sandbox from '@/views/Sandbox.vue';
-import Home from '@/views/Home.vue';
-import PlayGame from '@/views/PlayGame.vue';
-import Leaderboard from '@/views/Leaderboard.vue';
-import Profile from '@/views/Profile.vue';
-import Example from '@/views/Example.vue';
-import Login from '@/views/Login.vue';
-import Dashboard from '@/views/Dashboard.vue';
-import Games from '@/views/Games.vue';
-import Players from '@/views/Players.vue';
-import Livestream from '@/views/Livestream.vue';
-import CreateGame from '@/views/CreateGame.vue';
-
-const routes = [
-  { path: '/', component: Home, name: 'Home' },
-  { path: '/sandbox', component: Sandbox, name: 'Sandbox'},
-  { path: '/leaderboard', component: Leaderboard, name: 'Leaderboard' },
-  { path: '/profile', component: Profile, name: 'Profile'},
-  { path: '/play', component: PlayGame, name: 'Play'},
-  { path: '/example', component: Example, name: 'Example'},
-  { path: '/login', component: Login, name: 'Login' },
-  { path: '/dashboard', component: Dashboard, name: 'Dashboard' },
-  { path: '/games', component: Games, name: 'Games' },
-  { path: '/players', component: Players, name: 'Players' },
-  { path: '/livestream', component: Livestream, name: 'Livestream' },
-  { path: '/games/create', component: CreateGame, name: 'CreateGame' }
-];
+import { getAllRoutes, isRoutePublic } from './route-util';
+import { useAuthStore } from '../stores/modules/auth';
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: getAllRoutes()
   // linkActiveClass: 'border-2 border',
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore(); // pinia fails if this isnt in here
+  let token = authStore.token;
+  let tokenNotRequired = isRoutePublic(to);
+  if (tokenNotRequired && token) {
+    authStore.getUser()
+      .then(() => next())
+      .catch(() => {
+        authStore.logout(); // if cant get user, token must be bad, logout.
+        // dont need to change pages tho
+      });
+  }
+  else if (!tokenNotRequired) { // must do auth check
+    if (token !== undefined && token !== null) {
+      authStore.getUser()
+      .then(() => next())
+      .catch(() => {
+        authStore.logout(); // if cant get user, token must be bad, logout.
+        router.push({ name: 'Login' });
+      });
+    }
+    else {
+      authStore.logout();
+      router.push({ name: 'Login' });
+    }
+  }
+  else {
+    next(); // allow access
+  }
 });
 
 export default router;

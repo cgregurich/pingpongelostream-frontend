@@ -15,7 +15,8 @@ module.exports = {
         'site-background': colors.white,
         'primary': colors.black,
         'secondary': colors.green[600],
-        'secondary-muted': colors.red[900]
+        'secondary-muted': colors.red[900],
+        'skeleton-color': colors.gray[200],
       }
     },
   },

@@ -33,7 +33,7 @@ const submit = () => {
 const reset = () => {
 	email.value = '';
 	password.value = '';
-  passwordConfirm.value = '';
+    passwordConfirm.value = '';
 };
 
 const store = useAuthStore();
@@ -56,14 +56,10 @@ const canSubmit = computed(() => {
         whole screen - nav bar size + border between nav bar and content
     -->
     <div
-        class="text-center relative overflow-hidden bg-no-repeat bg-cover h-[calc(100vh-calc(4rem+1px))]"
-        style="
-            background-color: rgba(255, 0, 255, 0.6);
-        "
+        class="text-center relative overflow-hidden bg-no-repeat bg-cover h-[calc(100vh-calc(4rem+1px))] bg-fuchsia-900"
     >
         <div
         class="absolute top-0 right-0 bottom-0 left-0 w-full h-full overflow-hidden bg-fixed"
-        style="background-color: rgba(0, 0, 0, 0.6)"
         >
             <div
                 class="flex lg:flex-row flex-col lg:justify-end mt-5 items-center h-full"
