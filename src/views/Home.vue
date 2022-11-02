@@ -33,7 +33,7 @@ const submit = () => {
 const reset = () => {
 	email.value = '';
 	password.value = '';
-    passwordConfirm = '';
+  passwordConfirm.value = '';
 };
 
 const store = useAuthStore();

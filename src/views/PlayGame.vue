@@ -33,6 +33,8 @@ const server = ref(null);
 const pointsTillServerSwap = ref(null);
 
 
+
+
 function incrementScoreClicked(player) {
   if (gameState.value !== GameStates.InProgress) return;
   else pointScored(player);
@@ -133,6 +135,9 @@ watch(pointsTillServerSwap, () => {
 });
 
 const gameControlText = computed(() => {
+  /*
+  The text to be displayed depending on the game state.
+  */
   if (gameState.value === GameStates.NotStarted) return 'Start Game';
   else if (gameState.value === GameStates.InProgress) return 'Set in progress...';
   else if (gameState.value === GameStates.SetFinished) return 'Next Set';
@@ -161,7 +166,7 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 
 
 <template>
-  <div class="display flex flex-col items-center relative">
+  <div class="display flex flex-col items-center relative h-[calc(100vh-4rem-1px)]">
 
     <!-- Controls -->
     <div class="controls absolute z-20 right-0 left-0 mx-auto my-auto bottom-0 top-0 w-min h-min flex flex-col items-center justify-center">
