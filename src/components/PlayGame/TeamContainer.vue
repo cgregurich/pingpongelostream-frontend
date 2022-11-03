@@ -16,12 +16,12 @@ function getClasses() {
   const classes = [];
   if (props.disabled) classes.push('cursor-not-allowed');
   if (props.teamNumber === 1) {
-    classes.push('bg-play-game-color-one');
-    classes.push('text-play-game-color-two');
+    classes.push('bg-site-color-one');
+    classes.push('text-site-color-two');
   }
   else if (props.teamNumber === 2) {
-    classes.push('bg-play-game-color-two');
-    classes.push('text-play-game-color-one');
+    classes.push('bg-site-color-two');
+    classes.push('text-site-color-one');
   }
   return classes;
 }
@@ -49,9 +49,9 @@ function getClasses() {
 >
   <!-- Serving Indicator -->
   <!-- For Left Team -->
-  <div v-show="teamNumber === 1 && server === teamNumber" class="serving w-[50px] h-[50px] rounded-full absolute top-24 right-10 bg-play-game-color-two"></div>
+  <div v-show="teamNumber === 1 && server === teamNumber" class="serving w-[50px] h-[50px] rounded-full absolute top-24 right-10 bg-site-color-two"></div>
   <!-- For Right Team -->
-  <div v-show="teamNumber === 2 && server === teamNumber" class="serving w-[50px] h-[50px] rounded-full absolute top-24 left-10 bg-play-game-color-one"></div>
+  <div v-show="teamNumber === 2 && server === teamNumber" class="serving w-[50px] h-[50px] rounded-full absolute top-24 left-10 bg-site-color-one"></div>
 
   <!-- Player Names -->
   <div class="players flex justify-around w-full">
@@ -73,14 +73,14 @@ function getClasses() {
   <!-- Previous Sets -->
   <!-- For Left Team -->
   <div v-show="teamNumber === 1" class="p1-won-sets w-full flex justify-around">
-    <div class="won-set text-xl font-bold bg-play-game-color-two text-play-game-color-one rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
+    <div class="won-set text-xl font-bold bg-site-color-two text-site-color-one rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
       {{ set.p1Score }} - {{ set.p2Score }}
     </div>
   </div>
   
   <!-- For Right Team -->
   <div v-if="teamNumber === 2" class="p2-won-sets w-full flex justify-around">
-    <div class="won-set text-xl font-bold bg-play-game-color-one text-play-game-color-two rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
+    <div class="won-set text-xl font-bold bg-site-color-one text-site-color-two rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
       {{ set.p1Score }} - {{ set.p2Score }}
     </div>
   </div>
