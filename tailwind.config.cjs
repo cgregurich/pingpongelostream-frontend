@@ -8,10 +8,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // 'play-game-color-one': colors.teal[400],
-        // 'play-game-color-two': colors.gray[800],
-        'play-game-color-one': colors.purple[200],
-        'play-game-color-two': colors.purple[800],
+        // 'site-color-one': colors.teal[400],
+        // 'site-color-two': colors.gray[800],
+        'site-color-one': colors.purple[100],
+        'site-color-two': colors.purple[800],
         'site-background': colors.white,
         'primary': colors.black,
         'secondary': colors.green[600],
