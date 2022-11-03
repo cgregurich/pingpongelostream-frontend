@@ -1,11 +1,14 @@
 <script setup>
 import axios from "axios";
-import { useGameStore } from "../stores/modules/games";
+// import { useGameStore } from "../stores/modules/games";
 import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
-import { ref, reactive, computed, onBeforeUpdate, onMounted } from 'vue'
-import Pagination from '../components/Pagination.vue'
+import { reactive } from 'vue'
+// import Pagination from '../components/Pagination.vue'
 
-const games = [];
+
+const games = reactive([]);
+// const game = reactive();
+// const scores = reactive([]);
 const teamMembers = [];
 const totalPages = 10;
 const currentPage = 1;
@@ -18,22 +21,33 @@ function onPageChange(page) {
       this.currentPage = page;
     }
 
-async function displayGames() {
-  const response = await axios.get(API_URL + GAMES);
-  if(response.status === 200) {
-    const fetchedGames = response.data.response.games;
-    // console.log(fetchedGames);
-    // Object.assign(games, fetchedGames);
-    for(let i = 0; i < 10; i++) {
-      games.push(fetchedGames[i]);
-    }
-    console.log(games);
-  }
+function formatDate(date) {
+  const options = {year: 'numeric', month: 'long', day: 'numeric'}
+  return new Date(date).toLocaleDateString('en', options)
+}
+
+const getScores = async (gameID) => {
+    const response = await axios.get(API_URL + GAMES + gameID)
+    //store each score in an array??
   }
 
-  onMounted(async() => {
-    await displayGames();
-  })
+const getGamesRequest = async () => {
+  try {
+    const response = await axios.get(API_URL + GAMES)
+
+    if(response.status === 200) {
+      const fetchedGames = response.data.response.games;
+      Object.assign(games, fetchedGames);
+      console.log(games);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  };
+
+  getGamesRequest();
+  // getScores();
 </script>
 
 
@@ -42,34 +56,32 @@ async function displayGames() {
     <div class="body flex justify-center w-full">
       <div
         class="
-          game-list-container
           flex flex-col
-          items-center
           sm:w-[30rem]
           w-full
           bg-gray-100
           rounded-3xl
           m-6
-          pb-5
           border border-gray-300
           shadow-lg
+          items-center
         "
       >
         <p class="flex header text-4xl font-semibold m-4">Recent Games</p>
 
-        <div class="flex stat-container items-center text-center mx-4">
+        <div class="flex">
             <ul>
-              <li class="flex flex-col" v-for="game in games" :key="game.teams">
-                <div class="flex flex-row"> {{ game.completed_at }} </div>
+              <span class="flex flex-col w-full" v-for="game in games" :key="game.teams">
+                <div class="flex flex-row self-center"><h1>{{ formatDate(game.completed_at) }}</h1></div>
                 <br/>
-                <div class="flex flex-row">
-                  <div class="flex flex-col" v-for="team in game.teams" :key="team.id">
-                    <div class="flex" v-for="member in team.members" :key="member.id">{{ member.name }}</div>
+                  <div class="flex flex-col w-full last:items-end border shadow-md rounded-xl p-1 m-1 mr-20" v-for="team in game.teams" :key="team.id">
+                    <div class="" v-for="member in team.members" :key="member.id">{{ member.name }}</div>
+                    <div class="" v-if="game.teams[0].id == team.id">{{ game.team1_elo_change }}</div>
+                    <div class="" v-else>{{ game.team2_elo_change }}</div>
                   </div>
-                </div>
-                <div class="flex flex-row" v-if="gameNum !== perPage">___________________________</div>
+                <div class="self-center" v-if="gameNum !== perPage">___________________________</div> 
                 <br/>
-              </li>
+              </span>
             </ul>
         </div>
         <div

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 import { apiCall } from '../utils/apiCall';
 import { API_URL, GAMES } from '../utils/backendRouteParts';
-import { data } from 'autoprefixer';
 
 export const useGameStore = defineStore('game', {
     state: () => ({
