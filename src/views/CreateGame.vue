@@ -16,7 +16,7 @@ onMounted(async () => {
   const response = await axios.get(`${API_URL}/players`);
   Object.assign(players, response.data.response.players);
   isLoading.value = false;
-  setUp(); // FIXME: just used for testing
+  // setUp(); // FIXME: just used for testing
 });
 
 

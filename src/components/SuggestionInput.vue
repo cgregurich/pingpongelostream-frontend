@@ -62,7 +62,7 @@ function suggestionClicked(suggestion) {
 
 <template>
 <div class="search-input relative">
-  isFocused: {{ isFocused }}
+  <!-- isFocused: {{ isFocused }} -->
   <input type="text" ref="inputField" @focus="isFocused = true" @blur="isFocused = false" v-model="enteredText" @input="$emit('update:enteredText', $event.target.value)">
   <div v-show="suggestions?.length > 0 && isFocused" class="suggestions absolute w-full bg-white border border-black">
     <div @click="suggestionClicked(suggestion)" class="suggestion hover:bg-blue-300 hover:text-white cursor-default" v-for="(suggestion, index) in suggestions" :key="index">{{ suggestion }}</div>
