@@ -16,7 +16,7 @@ const loginRequired = [
   { path: '/dashboard', component: () => import('@/views/Dashboard.vue'), name: 'Dashboard' },
   { path: '/livestream', component: () => import('@/views/Livestream.vue'), name: 'Livestream' },
   { path: '/games/create', component: () => import('@/views/CreateGame.vue'), name: 'CreateGame' },
-  { path: '/play', component: () => import('@/views/PlayMatch.vue'), name: 'Play'}
+  { path: '/play', component: () => import('@/views/PlayGame.vue'), name: 'Play'}
 ];
 
 const publicRoutes = [ ... noLoginRequired, ...loginNotRequired ];
