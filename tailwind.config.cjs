@@ -8,8 +8,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // 'site-color-one': colors.teal[400],
-        // 'site-color-two': colors.gray[800],
         'site-color-one': colors.purple[100],
         'site-color-two': colors.purple[800],
         'site-background': colors.white,
