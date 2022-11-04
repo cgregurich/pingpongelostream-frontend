@@ -23,3 +23,9 @@ export async function getPlayerSinglesTeamID(playerID) {
   if (response.status === 200) return response.data.response.team_id;
   else return null;
 }
+
+export async function getGame(gameID) {
+  const response = await axios.get(`${API_URL}/games/${gameID}`);
+  if (response.status === 200) return response.data.response.game;
+  else return null;
+}
