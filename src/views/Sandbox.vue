@@ -1,17 +1,10 @@
 <script setup>
-// import axios from 'axios';
-// import { ref, reactive } from 'vue';
-
-// async function asyncFunc() {
-//   const response = await axios.get('http://pingpong.test/api/players/2');
-//   const player = response.data.response.player;
-//   return player;
-// }
-
-
-// const player = ref(await asynFunc());
+import { ref } from 'vue';
+const input = ref(null);
 </script>
 
 <template>
-
+<div class="container bg-red-200" @click.stop.prevent="input.focus()">
+  <input ref="input" type="text" class="border border-black">
+</div>  
 </template>
