@@ -1,6 +1,7 @@
 <script setup>
 import TextInput from '@/components/TextInput.vue';
 import { ref, reactive, computed } from 'vue';
+import { onClickOutside } from '@vueuse/core'
 
 
 const props = defineProps({
@@ -10,18 +11,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:enteredText'])
 
-// const items = [
-//   'Bob',
-//   'Bill',
-//   'Bonnie',
-//   'Beluga',
-//   'Conrad',
-//   'Colin',
-//   'indigo',
-//   'illinois',
-// ];
 
-// const input = ref('');
 const isFocused = ref(false);
 
 const suggestions = computed(() => {
@@ -61,11 +51,10 @@ function suggestionClicked(suggestion) {
 </script>
 
 <template>
-<div class="search-input relative">
-  <!-- isFocused: {{ isFocused }} -->
-  <input type="text" ref="inputField" @focus="isFocused = true" @blur="isFocused = false" v-model="enteredText" @input="$emit('update:enteredText', $event.target.value)">
+<div class="search-input relative" @click.prevent="inputField.focus()">
+  <input class="border border-black px-1" type="text" ref="inputField" @focus="isFocused = true" @blur="isFocused = false" v-model="enteredText" @input="$emit('update:enteredText', $event.target.value)">
   <div v-show="suggestions?.length > 0 && isFocused" class="suggestions absolute w-full bg-white border border-black">
-    <div @click="suggestionClicked(suggestion)" class="suggestion hover:bg-blue-300 hover:text-white cursor-default" v-for="(suggestion, index) in suggestions" :key="index">{{ suggestion }}</div>
+    <div @click="suggestionClicked(suggestion)" class="suggestion cursor-default" v-for="(suggestion, index) in suggestions" :key="index">{{ suggestion }}</div>
   </div>
 </div>
 </template>
