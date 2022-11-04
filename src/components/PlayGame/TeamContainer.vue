@@ -56,7 +56,7 @@ function getClasses() {
   <!-- Player Names -->
   <div class="players flex justify-around w-full">
     <div v-for="(player, index) in players" :key="index" class="username text-2xl">
-      {{ player }}
+      {{ player.name }}
     </div>
   </div>
 
