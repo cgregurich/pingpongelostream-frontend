@@ -55,14 +55,15 @@ function getElos(game) {
   /*
   Formats the game's players' elos in the way that GameSummaryCard expects them.
   */
+  console.log(game);
   const elos = {
     teamOne: {
-      elo: 2500,
-      eloDiff: 439
+      eloAfter: game.given_team.elo_after,
+      eloChange: game.given_team.elo_change
     },
     teamTwo: {
-      elo: 2342,
-      eloDiff: -123
+      eloAfter: game.opponent_team.elo_after,
+      eloChange: game.opponent_team.elo_change
     }
   };
   return elos;
@@ -93,6 +94,7 @@ async function loadData() {
 onBeforeUpdate(async () => await loadData());
 await loadData();
 
+console.log(singlesGames.value[0]);
 </script>
 
 
