@@ -5,18 +5,22 @@ import PlayerCard from '@/components/CreateGame/PlayerCard.vue';
 import PlayerCardSkeleton from '@/components/CreateGame/PlayerCardSkeleton.vue';
 import SuggestionInput from '@/components/SuggestionInput.vue';
 import { ref, reactive, computed, onMounted, watch } from 'vue';
-import axios from 'axios';
-import { API_URL } from '@/stores/utils/backendRouteParts.js';
+import * as toasts from '@/utils/toasts.js';
+import * as apiCalls from '@/utils/apiCalls.js';
 
-const isLoading = ref(false);
+const disableInput = ref(false);
 const players = reactive([]);
 
 onMounted(async () => {
-  isLoading.value = true;
-  const response = await axios.get(`${API_URL}/players`);
-  Object.assign(players, response.data.response.players);
-  isLoading.value = false;
-  // setUp(); // FIXME: just used for testing
+  disableInput.value = true;
+  const fetchedPlayers = await apiCalls.getAllPlayers();
+  if (!fetchedPlayers) {
+    console.err('something went wrong getting all players');
+    return;
+  }
+  Object.assign(players, fetchedPlayers);
+  disableInput.value = false;
+  setUp(); // FIXME: just used for testing
 });
 
 
@@ -58,6 +62,7 @@ function setUp() { // FIXME: just used for testing
 }
 
 function toggleGameMode() {
+  if (disableInput.value) return;
   if (selectedGameModeID.value === 1) selectedGameModeID.value = 2;
   else selectedGameModeID.value = 1;
 }
@@ -69,6 +74,7 @@ function getPlayer(search) {
 }
 
 function addPlayerToUnassigned() {
+  if (disableInput.value) return;
   const player = getPlayer(addPlayerInput.value);
   if (canAddPlayer(player)) {
     unassignedPlayers.push(player);
@@ -84,23 +90,27 @@ function canAddPlayer(player) {
 }
 
 function moveToTeamOne(player) {
+  if (disableInput.value) return;
   if (teamOnePlayers.length >= playersAllowedPerTeam.value) return;
   deletePlayer(player);
   teamOnePlayers.push(player);
 }
 
 function moveToTeamTwo(player) {
+  if (disableInput.value) return;
   if (teamTwoPlayers.length >= playersAllowedPerTeam.value) return;
   deletePlayer(player);
   teamTwoPlayers.push(player);
 }
 
 function moveToUnassigned(player) {
+  if (disableInput.value) return;
   deletePlayer(player);
   unassignedPlayers.push(player);
 }
 
 function deletePlayer(player) {
+  if (disableInput.value) return;
   if (teamOnePlayers.includes(player)) {
     const indexToDelete = teamOnePlayers.indexOf(player);
     teamOnePlayers.splice(indexToDelete, 1);
@@ -143,46 +153,46 @@ const canCreateGame = computed(() => {
 });
 
 
-function createGameClicked() {
+async function createGameClicked() {
+  disableInput.value = true;
+  toasts.creatingGame();
   if (!canCreateGame.value) { 
     console.log('Can\'t create game!!');
     return;
   }
   if (selectedGameMode.value.id === 1) {
     // singles
-    createSinglesGame();
+    console.log('creating singles');
+    if (await createSinglesGame()) toasts.gameCreated();
+    else toasts.createGameFailed();
   }
   else if (selectedGameMode.value.id === 2) {
     // doubles
-    createDoublesGame();
+    console.log('creating doubles');
+    if (await createDoublesGame()) toasts.gameCreated();
+    else toasts.createGameFailed();
   }
-
+  disableInput.value = false;
 }
 
 async function createSinglesGame() {
-  const teamOneID = await getPlayerOneSinglesTeamID();
-  const teamTwoID = await getPlayerTwoSinglesTeamID();
+  const teamOneID = await apiCalls.getPlayerSinglesTeamID(teamOnePlayers[0].id);
+  const teamTwoID = await apiCalls.getPlayerSinglesTeamID(teamTwoPlayers[0].id);
   const teamOneFirstServerID = teamOnePlayers[0].id;
   const teamTwoFirstServerID = teamTwoPlayers[0].id;
-  const firstServer = 'team1'; // FIXME: is this even what the backend wants?
+  const firstServer = 'team1';
 
-
-  // FIXME: need to grab token from store and use that
-  const token = 'Bearer 5|PRYFiRWjiiAY6qPyxU9qPRdnT58zynUXPRHdiyad';
-
-  const requestBody = {
+  const gameData = {
     mode_id: selectedGameMode.value.id,
     team1_id: teamOneID,
     team2_id: teamTwoID,
     team1_first_server_id: teamOneFirstServerID,
     team2_first_server_id: teamTwoFirstServerID,
-    first_server: 'team1',
+    first_server: firstServer,
   };
-  const config = {
-    headers: { Authorization: token}
-  };
-  const response = await axios.post(`${API_URL}/games`, requestBody, config);
-  console.log(response);
+
+  const isSuccessful = await apiCalls.createGame(gameData);
+  return isSuccessful;
 }
 
 async function createDoublesGame() {
@@ -194,16 +204,13 @@ async function createDoublesGame() {
 }
 
 async function getPlayerOneSinglesTeamID() {
-  // FIXME: only worrying about, and assuming, singles right now
-  const response = await axios.get(`${API_URL}/players/${teamOnePlayers[0].id}/teams/singles`);
-  return response.data.response.team_id;
+  const teamID = await apiCalls.getPlayerSinglesTeamID(teamOnePlayers[0].id);
+  return teamID;
 }
 
 async function getPlayerTwoSinglesTeamID() {
-  // FIXME: only worrying about, and assuming, singles right now
-  const response = await axios.get(`${API_URL}/players/${teamTwoPlayers[0].id}/teams/singles`);
-  return response.data.response.team_id;
-
+  const teamID = await apiCalls.getPlayerSinglesTeamID(teamTwoPlayers[0].id);
+  return teamID;
 }
 
 </script>
@@ -211,14 +218,9 @@ async function getPlayerTwoSinglesTeamID() {
 WILO 11/2:
 
 got a basic post request to /api/games working. things to work on next:
-- loader for create game button
-- grab token from store instead of hardcoding
-- toast notifications for "game created!"
 - reset page after game created
-- put api calls into store/utils file
 - figure out doubles (will likely discuss this with alex tomorrow)
 - think about how the user would like to proceed. Get sent to games index? get sent to "play game" with the just created game? have the page reset?
-- 
 
 
 
@@ -227,7 +229,7 @@ got a basic post request to /api/games working. things to work on next:
   <!-- Controls -->
   <div class="controls flex justify-between m-8">
     <!-- Game Mode Selector -->
-    <div class="game-mode-selector flex justify-center items-center bg-site-color-one text-black shadow-sm shadow-gray-300 border border-gray-400">
+    <div class="game-mode-selector flex justify-center items-center bg-site-color-one text-black shadow-sm shadow-gray-300 border border-gray-400" :class="disableInput ? 'opacity-50' : ''">
       <button @click="toggleGameMode" class="px-4 py-3 h-full" :class="selectedGameModeID === 1 ? ['bg-site-color-two', 'text-white'] : ''">Singles</button>
       <button @click="toggleGameMode" class="px-4 py-3 h-full" :class="selectedGameModeID === 2 ? ['bg-site-color-two', 'text-white'] : ''">Doubles</button>
     </div>
@@ -235,11 +237,11 @@ got a basic post request to /api/games working. things to work on next:
     <div class="add-player flex justify-center items-center">
       <SuggestionInput :items="players.map(p => p.name)" @keydown.enter="addPlayerToUnassigned" v-model:enteredText="addPlayerInput"/>
       <!-- <TextInput @keydown.enter="addPlayerToUnassigned" v-model:enteredText="addPlayerInput" placeholder="Player's name or email"/> -->
-      <PrimaryButton @click="addPlayerToUnassigned" text="Add Player" class="text-xs whitespace-nowrap ml-4"/>
+      <PrimaryButton @click="addPlayerToUnassigned" text="Add Player" :disabled="disableInput" class="text-xs whitespace-nowrap ml-4"/>
     </div>
     <!-- Create Game Button -->
     <div class="create-game flex justify-center items-center">
-      <PrimaryButton @click="createGameClicked" :disabled="!canCreateGame" text="Create Game" class="text-xs"/>
+      <PrimaryButton @click="createGameClicked" :disabled="!canCreateGame || disableInput" text="Create Game" class="text-xs"/>
     </div>
   </div>
   
@@ -257,7 +259,9 @@ got a basic post request to /api/games working. things to work on next:
         </div>
       </div>
     </div>
+
     <div class="divider bg-gray-400 w-[1px] mb-12"></div>
+
     <!-- Unassigned PlayerOnes -->
     <div class="unassigned flex flex-col items-center justify-start w-full h-full overflow-auto">
       <div class="flex justify-center items-center text-2xl">Unassigned</div>
@@ -267,7 +271,9 @@ got a basic post request to /api/games working. things to work on next:
         </div>
       </div>
     </div>
+
     <div class="divider bg-gray-400 w-[1px] mb-12"></div>
+
     <!-- Team Two Container -->
     <div class="team-two flex flex-col items-center justify-start w-full h-full">
       <div class="team-name flex justify-center items-center text-2xl">Team Two</div>
