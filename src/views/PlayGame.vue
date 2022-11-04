@@ -1,16 +1,35 @@
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted, toRaw } from 'vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import TeamContainer from '@/components/PlayGame/TeamContainer.vue';
+import * as apiCalls from '@/utils/apiCalls.js';
+
+const props = defineProps({
+  gameID: Number
+});
+
+const game = reactive({});
+onMounted(async () => {
+  //TODO: put in apiCalls.js
+  const fetchedGame = await apiCalls.getGame(props.gameID);
+  if (!fetchedGame) console.err('Something went wrong fetching game');
+  Object.assign(game, fetchedGame);
+});
+
+// Set up game rules
+
+
+const POINTS_TO_WIN_SET = 11;
+const WIN_SET_BY = 2;
+const SETS_TO_WIN_MATCH = 2;
+
 
 
 
 // Game states used to know what text to be displayed on the control button
 // and when to allow user input for incrementing score
 const GameStates = { NotStarted: 'not started', SetFinished: 'set finished', LastSetFinished: 'last set finished', GameOver: 'game over', InProgress: 'in progress' };
-const POINTS_TO_WIN_SET = 11;
-const WIN_SET_BY = 2;
-const SETS_TO_WIN_MATCH = 2;
+
 
 // Keep track of previous finished sets in the match
 const previousSets = reactive([]);
@@ -28,10 +47,21 @@ const p1GameScore = ref(0);
 const p2GameScore = ref(0);
 
 // Which player is currently serving (1 or 2)
-const server = ref(null);
+// plus 1 because backend uses 0 or 1
+const server = ref(game.first_server + 1);
 
 const pointsTillServerSwap = ref(null);
 
+
+const teamOnePlayers = computed(() => {
+  if (!game || !game.teams) return [];
+  return game.teams[0].members.map(m => ({ name: m.name }));
+});
+
+const teamTwoPlayers = computed(() => {
+  if (!game || !game.teams) return [];
+  return game.teams[1].members.map(m => ({ name: m.name }));
+});
 
 
 
@@ -162,12 +192,12 @@ const canUndo = computed(() => undoStack.length > 0 && gameState.value !== GameS
 
 const allowScoreInput = computed(() => gameState.value === GameStates.InProgress);
 
+
 </script>
 
 
 <template>
   <div class="display flex flex-col items-center relative h-[calc(100vh-4rem-1px)]">
-
     <!-- Controls -->
     <div class="controls absolute z-20 right-0 left-0 mx-auto my-auto bottom-0 top-0 w-min h-min flex flex-col items-center justify-center">
 
@@ -199,7 +229,7 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
         :disabled="!allowScoreInput"
         :wonSets="p1WonSets"
         :server="server"
-        :players="['Colin']"
+        :players="teamOnePlayers"
       />
       <TeamContainer
         @click="() => incrementScoreClicked(2)"
@@ -209,7 +239,7 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
         :disabled="!allowScoreInput"
         :wonSets="p2WonSets"
         :server="server"
-        :players="['Bob']"
+        :players="teamTwoPlayers"
       />
     </div>
   </div>
