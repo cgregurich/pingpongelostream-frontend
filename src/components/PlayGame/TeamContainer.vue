@@ -55,8 +55,10 @@ function getClasses() {
 
   <!-- Player Names -->
   <div class="players flex justify-around w-full">
-    <div v-for="(player, index) in players" :key="index" class="username text-2xl">
+    <div v-for="(player, index) in players" :key="index" class="player-name text-2xl">
       {{ player.name }}
+    </div>
+    <div v-if="!players" class="player-name-skeleton w-[150px] h-[32px] bg-black opacity-10 rounded-lg animate-pulse">
     </div>
   </div>
 
