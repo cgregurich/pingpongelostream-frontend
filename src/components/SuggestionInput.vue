@@ -42,7 +42,6 @@ function fuzzyMatch(query, string) {
 const inputField = ref();
 
 function suggestionClicked(suggestion) {
-  console.log('emitting ', suggestion);
   emit('update:enteredText', suggestion);
   inputField.value.focus();
 }
@@ -59,7 +58,7 @@ const showSuggestions = computed(() => {
 </script>
 
 <template>
-<div class="search-input relative" @click="inputField.focus()" @mousedown.stop.prevent="">
+<div class="search-input relative" @click="inputField.focus()" @mousedown.stop.prevent>
   <input class="border border-black px-1" type="text" ref="inputField" @focus="isFocused = true" @blur="isFocused = false" v-model="enteredText" @input="$emit('update:enteredText', $event.target.value)">
   <div v-show="showSuggestions" class="suggestions absolute w-full bg-white border border-black">
     <div @click="suggestionClicked(suggestion)" class="suggestion cursor-default hover:text-white hover:bg-blue-500" v-for="(suggestion, index) in suggestions" :key="index">{{ suggestion }}</div>
