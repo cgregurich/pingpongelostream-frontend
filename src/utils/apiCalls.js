@@ -11,11 +11,12 @@ export async function getAllPlayers() {
 }
 
 export async function createGame(gameData) {
-  const config = {
-    headers: authStore.bearerToken
-  };
+  const config = { headers: authStore.bearerToken };
   const response = await axios.post(`${API_URL}/games`, gameData, config);
-  return response.status === 200;
+  if (response.status === 200) {
+    return response.data.response.game.id;
+  }
+  else return null
 }
 
 export async function getPlayerSinglesTeamID(playerID) {
@@ -33,5 +34,34 @@ export async function getGame(gameID) {
 export async function getGameMode(gameModeID) {
   const response = await axios.get(`${API_URL}/modes/${gameModeID}`);
   if (response.status === 200) return response.data.response;
+  else return null;
+}
+
+export async function getGameModes() {
+  const response = await axios.get(`${API_URL}/modes`);
+  if (response.status === 200) return response.data.response;
+  else return null;
+}
+
+export async function getTeamIDWithPlayers(playerIDs) {
+  const data = { player_ids: playerIDs };
+  const response = await axios.post(`${API_URL}/players/teams`, data);
+  if (response.status === 200) { 
+    const teams = response.data.response;
+    if (teams.length === 0) {
+      return -1;
+    }
+    else {
+      return teams[0].id;
+    }
+  }
+  else return null;
+}
+
+export async function createNewTeam(playerIDs) {
+  const data = { player_ids: playerIDs };
+  const config = { headers: authStore.bearerToken };
+  const response = await axios.post(`${API_URL}/teams`, data, config);
+  if (response.status === 200) return response.data.response.id;
   else return null;
 }
