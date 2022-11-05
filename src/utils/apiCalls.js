@@ -29,3 +29,9 @@ export async function getGame(gameID) {
   if (response.status === 200) return response.data.response.game;
   else return null;
 }
+
+export async function getGameMode(gameModeID) {
+  const response = await axios.get(`${API_URL}/modes/${gameModeID}`);
+  if (response.status === 200) return response.data.response;
+  else return null;
+}
