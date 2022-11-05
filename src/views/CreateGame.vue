@@ -5,46 +5,47 @@ import PlayerCard from '@/components/CreateGame/PlayerCard.vue';
 import PlayerCardSkeleton from '@/components/CreateGame/PlayerCardSkeleton.vue';
 import SuggestionInput from '@/components/SuggestionInput.vue';
 import { ref, reactive, computed, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import * as toasts from '@/utils/toasts.js';
 import * as apiCalls from '@/utils/apiCalls.js';
 
+const router = useRouter();
+
 const disableInput = ref(false);
+const gameModes = reactive([]);
 const players = reactive([]);
+
 
 onMounted(async () => {
   disableInput.value = true;
+  
+  await Promise.all([loadGameModes(), loadPlayers()]);
+
+  disableInput.value = false;
+
+  setUp(); // FIXME: just used for testing
+});
+
+async function loadGameModes() {
+  const fetchedGameModes = await apiCalls.getGameModes();
+  if (!fetchedGameModes) {
+    console.err('something went wrong getting all game modes');
+    return;
+  }
+  Object.assign(gameModes, fetchedGameModes);
+}
+
+async function loadPlayers() {
   const fetchedPlayers = await apiCalls.getAllPlayers();
   if (!fetchedPlayers) {
     console.err('something went wrong getting all players');
     return;
   }
   Object.assign(players, fetchedPlayers);
-  disableInput.value = false;
-  setUp(); // FIXME: just used for testing
-});
-
+}
 
 const selectedGameModeID = ref(1);
 const addPlayerInput = ref('');
-
-const gameModes = reactive([
-  {
-    id: 1,
-    name: 'Singles',
-    players: 2,
-    win_score: 11,
-    set_count: 3, 
-    serve_switch: 2,
-  },
-  {
-    id: 2,
-    name: 'Doubles',
-    players: 4,
-    win_score: 21,
-    set_count: 3, 
-    serve_switch: 5,
-  }
-]);
 
 const selectedGameMode = computed(() => gameModes.filter(gm => gm.id === selectedGameModeID.value)[0]);
 
@@ -61,10 +62,16 @@ function setUp() { // FIXME: just used for testing
   unassignedPlayers.push(getPlayer('kelvin chin'));
 }
 
-function toggleGameMode() {
+function reset() {
+  // Use splice since it's a reactive array and simply doing `= []` doesn't work
+  unassignedPlayers.splice(0);
+  teamOnePlayers.splice(0);
+  teamTwoPlayers.splice(0);
+}
+
+function changeGameMode(gameModeID) {
   if (disableInput.value) return;
-  if (selectedGameModeID.value === 1) selectedGameModeID.value = 2;
-  else selectedGameModeID.value = 1;
+  selectedGameModeID.value = gameModeID;
 }
 
 function getPlayer(search) {
@@ -91,14 +98,14 @@ function canAddPlayer(player) {
 
 function moveToTeamOne(player) {
   if (disableInput.value) return;
-  if (teamOnePlayers.length >= playersAllowedPerTeam.value) return;
+  if (teamOnePlayers.length >= playersAllowedPerTeam.value) selectedGameModeID.value = 2;
   deletePlayer(player);
   teamOnePlayers.push(player);
 }
 
 function moveToTeamTwo(player) {
   if (disableInput.value) return;
-  if (teamTwoPlayers.length >= playersAllowedPerTeam.value) return;
+  if (teamTwoPlayers.length >= playersAllowedPerTeam.value) selectedGameModeID.value = 2;
   deletePlayer(player);
   teamTwoPlayers.push(player);
 }
@@ -126,7 +133,7 @@ function deletePlayer(player) {
 }
 
 const totalPlayers = computed(() => unassignedPlayers.length + teamOnePlayers.length + teamTwoPlayers.length);
-const playersAllowedPerTeam = computed(() => selectedGameMode.value?.players / 2 || 0);
+const playersAllowedPerTeam = computed(() => selectedGameMode.value?.player_per_team_count || 0);
 
 watch(playersAllowedPerTeam, () => {
   /*
@@ -153,27 +160,42 @@ const canCreateGame = computed(() => {
 });
 
 
-async function createGameClicked() {
+
+async function createGameClicked(playImmediately) {
+  /*
+  Function used for both 'Schedule Game' and 'Start Game' button.
+  arg playImmediately is what differentiates the two buttons
+  */
   disableInput.value = true;
   toasts.creatingGame();
+
+  let gameID;
   if (!canCreateGame.value) { 
     console.log('Can\'t create game!!');
     return;
   }
   if (selectedGameMode.value.id === 1) {
     // singles
-    console.log('creating singles');
-    if (await createSinglesGame()) toasts.gameCreated();
+    gameID = await createSinglesGame();
+    if (gameID) toasts.gameCreated();
     else toasts.createGameFailed();
   }
   else if (selectedGameMode.value.id === 2) {
     // doubles
-    console.log('creating doubles');
-    if (await createDoublesGame()) toasts.gameCreated();
+    gameID = await createDoublesGame();
+    if (gameID) toasts.gameCreated();
     else toasts.createGameFailed();
+
   }
   disableInput.value = false;
+  reset();
+
+  // Go to PlayGame page with the newly created game if it's what the user chose
+  if (playImmediately && gameID != null) {
+    router.push({ name: 'Play', params: { gameID: gameID } });
+  }
 }
+
 
 async function createSinglesGame() {
   const teamOneID = await apiCalls.getPlayerSinglesTeamID(teamOnePlayers[0].id);
@@ -183,7 +205,7 @@ async function createSinglesGame() {
   const firstServer = 'team1';
 
   const gameData = {
-    mode_id: selectedGameMode.value.id,
+    mode_id: selectedGameModeID.value,
     team1_id: teamOneID,
     team2_id: teamTwoID,
     team1_first_server_id: teamOneFirstServerID,
@@ -191,16 +213,40 @@ async function createSinglesGame() {
     first_server: firstServer,
   };
 
-  const isSuccessful = await apiCalls.createGame(gameData);
-  return isSuccessful;
+  const gameID = await apiCalls.createGame(gameData);
+  return gameID;
 }
 
 async function createDoublesGame() {
-  const teamOneID = await getTeamOneID();
-  const teamTwoID = await getTeamTwoID();
-  // FIXME: how to deal with teams? 
+  const teamOnePlayerIDs = teamOnePlayers.map(p => p.id);
+  const teamTwoPlayerIDs = teamTwoPlayers.map(p => p.id);
+
+  // Try to get team ID if team already exists with given players
+  let teamOneID = await apiCalls.getTeamIDWithPlayers(teamOnePlayerIDs);
+  let teamTwoID = await apiCalls.getTeamIDWithPlayers(teamTwoPlayerIDs);
+
+  if (teamOneID == null || teamTwoID == null) return false;
+
+  // If team doesn't exist, make a new one
+  if (teamOneID === -1) teamOneID = await apiCalls.createNewTeam(teamOnePlayerIDs);
+  if (teamTwoID === -1) teamTwoID = await apiCalls.createNewTeam(teamTwoPlayerIDs);
+
+
   const teamOneFirstServerID = teamOnePlayers[0].id; // FIXME: just taking the first player for now
   const teamTwoFirstServerID = teamTwoPlayers[0].id; // FIXME: just taking the first player for now
+  const firstServer = 'team1';
+
+  const gameData = {
+    mode_id: selectedGameModeID.value,
+    team1_id: teamOneID,
+    team2_id: teamTwoID,
+    team1_first_server_id: teamOneFirstServerID,
+    team2_first_server_id: teamTwoFirstServerID,
+    first_server: firstServer
+  };
+  
+  const gameID = await apiCalls.createGame(gameData);
+  return gameID;
 }
 
 async function getPlayerOneSinglesTeamID() {
@@ -215,33 +261,24 @@ async function getPlayerTwoSinglesTeamID() {
 
 </script>
 
-WILO 11/2:
-
-got a basic post request to /api/games working. things to work on next:
-- reset page after game created
-- figure out doubles (will likely discuss this with alex tomorrow)
-- think about how the user would like to proceed. Get sent to games index? get sent to "play game" with the just created game? have the page reset?
-
-
 
 <template>
 <div class="create-game flex flex-col h-[calc(100vh-4rem-1px)]">
   <!-- Controls -->
   <div class="controls flex justify-between m-8">
     <!-- Game Mode Selector -->
-    <div class="game-mode-selector flex justify-center items-center bg-site-color-one text-black shadow-sm shadow-gray-300 border border-gray-400" :class="disableInput ? 'opacity-50' : ''">
-      <button @click="toggleGameMode" class="px-4 py-3 h-full" :class="selectedGameModeID === 1 ? ['bg-site-color-two', 'text-white'] : ''">Singles</button>
-      <button @click="toggleGameMode" class="px-4 py-3 h-full" :class="selectedGameModeID === 2 ? ['bg-site-color-two', 'text-white'] : ''">Doubles</button>
+    <div class="game-mode-selector flex justify-center items-center bg-site-color-one text-black shadow-sm shadow-gray-300 border border-gray-400" :class="disableInput ? ['opacity-50', 'cursor-not-allowed'] : ''">
+      <button v-for="gameMode in gameModes" :key="gameMode.id" @click="changeGameMode(gameMode.id)" class="px-4 py-3 h-full" :class="selectedGameModeID === gameMode.id ? ['bg-site-color-two', 'text-white'] : ''">{{ gameMode.name }}</button>
     </div>
     <!-- Add Player -->
     <div class="add-player flex justify-center items-center">
       <SuggestionInput :items="players.map(p => p.name)" @keydown.enter="addPlayerToUnassigned" v-model:enteredText="addPlayerInput"/>
-      <!-- <TextInput @keydown.enter="addPlayerToUnassigned" v-model:enteredText="addPlayerInput" placeholder="Player's name or email"/> -->
       <PrimaryButton @click="addPlayerToUnassigned" text="Add Player" :disabled="disableInput" class="text-xs whitespace-nowrap ml-4"/>
     </div>
     <!-- Create Game Button -->
     <div class="create-game flex justify-center items-center">
-      <PrimaryButton @click="createGameClicked" :disabled="!canCreateGame || disableInput" text="Create Game" class="text-xs"/>
+      <PrimaryButton @click="createGameClicked(true)" :disabled="!canCreateGame || disableInput" text="Start Game" class="text-xs mr-4"/>
+      <PrimaryButton @click="createGameClicked(false)" :disabled="!canCreateGame || disableInput" text="Schedule Game" class="text-xs"/>
     </div>
   </div>
   
@@ -262,7 +299,7 @@ got a basic post request to /api/games working. things to work on next:
 
     <div class="divider bg-gray-400 w-[1px] mb-12"></div>
 
-    <!-- Unassigned PlayerOnes -->
+    <!-- Unassigned Players -->
     <div class="unassigned flex flex-col items-center justify-start w-full h-full overflow-auto">
       <div class="flex justify-center items-center text-2xl">Unassigned</div>
       <div class="players-container flex flex-col items-center justify-center">
