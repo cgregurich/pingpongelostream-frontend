@@ -9,19 +9,34 @@ const props = defineProps({
 });
 
 const game = reactive({});
+const gameMode = reactive({});
+const disableInput = ref(true);
 onMounted(async () => {
   //TODO: put in apiCalls.js
   const fetchedGame = await apiCalls.getGame(props.gameID);
   if (!fetchedGame) console.err('Something went wrong fetching game');
+  const fetchedGameMode = await apiCalls.getGameMode(fetchedGame.mode_id);
+  if (!fetchedGameMode) console.err('Something went wrong fetching game mode');
   Object.assign(game, fetchedGame);
+  Object.assign(gameMode, fetchedGameMode);
+  setGameRules();
+  disableInput.value = false;
 });
 
-// Set up game rules
+// Game rules
 
+let POINTS_TO_WIN_SET = null;
+let WIN_SET_BY = null;
+let SETS_TO_WIN_MATCH = null;
+let SERVE_SWITCH = null;
 
-const POINTS_TO_WIN_SET = 11;
-const WIN_SET_BY = 2;
-const SETS_TO_WIN_MATCH = 2;
+function setGameRules() {
+  // Set game rules from given game mode
+  POINTS_TO_WIN_SET= gameMode.win_score;
+  WIN_SET_BY = 2;
+  SETS_TO_WIN_MATCH = Math.ceil(gameMode.set_count / 2);
+  SERVE_SWITCH = gameMode.serve_switch;
+}
 
 
 
@@ -54,12 +69,12 @@ const pointsTillServerSwap = ref(null);
 
 
 const teamOnePlayers = computed(() => {
-  if (!game || !game.teams) return [];
+  if (!game || !game.teams) return null;
   return game.teams[0].members.map(m => ({ name: m.name }));
 });
 
 const teamTwoPlayers = computed(() => {
-  if (!game || !game.teams) return [];
+  if (!game || !game.teams) return null;
   return game.teams[1].members.map(m => ({ name: m.name }));
 });
 
@@ -149,10 +164,10 @@ function isLastSet() {
 }
 
 function playerOneWonSet() {
-  return p1SetScore.value >= POINTS_TO_WIN_SET && p1SetScore.value - p2SetScore.value >= WIN_SET_BY;
+  return p1SetScore.value >= POINTS_TO_WIN_SET&& p1SetScore.value - p2SetScore.value >= WIN_SET_BY;
 }
 function playerTwoWonSet() {
-  return p2SetScore.value >= POINTS_TO_WIN_SET && p2SetScore.value - p1SetScore.value >= WIN_SET_BY;
+  return p2SetScore.value >= POINTS_TO_WIN_SET&& p2SetScore.value - p1SetScore.value >= WIN_SET_BY;
 }
 
 
@@ -184,8 +199,10 @@ const p2WonSets = computed(function() {
 });
 
 const pointsPerServe = computed(() => {
+  // If overtime, swap serves every 1 point
+  // TODO: is this also true for doubles?
   if (p1SetScore.value >= 10 && p2SetScore.value >= 10) return 1;
-  else return 2;
+  else return SERVE_SWITCH;
 });
 
 const canUndo = computed(() => undoStack.length > 0 && gameState.value !== GameStates.GameOver && gameState.value !== GameStates.NotStarted);
@@ -215,7 +232,7 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
       <!-- Game Info Box -->
       <div class="flex justify-center items-center bg-opacity-30 mt-12 w-[150px] h-[75px] bg-white p-4 backdrop-blur-lg shadow-gray-700 shadow-sm rounded-xl" >
         <div v-show="gameState === GameStates.InProgress || gameState === GameStates.GameOver">{{ gameControlText }}</div>
-        <PrimaryButton v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" @click="controlButtonClicked" :text="gameControlText" />  
+        <PrimaryButton :disabled="disableInput" v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" @click="controlButtonClicked" :text="gameControlText" />  
       </div>
     </div>
 
