@@ -15,5 +15,5 @@ export function createGameFailed() {
 
 export function gameCreated() {
   creating.dismiss();
-  toast.success('Game created!', { duration: 2000 });
+  toast.success('Game created!', { duration: 3000 });
 }
