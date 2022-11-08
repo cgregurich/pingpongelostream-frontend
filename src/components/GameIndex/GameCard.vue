@@ -1,14 +1,15 @@
 <script setup>
 import axios from "axios";
-// import { useGameStore } from "../stores/modules/games";
-import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
 import { reactive } from 'vue'
+import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
+import TeamCard from "./TeamCard.vue";
+import Score from "./Score.vue";
 // import Pagination from '../components/Pagination.vue'
 
 
 
 const games = reactive([]);
-const sets = reactive([]);
+const setsArray = reactive([]);
 const eachGame = reactive([]);
 const totalPages = 10;
 const currentPage = 1;
@@ -26,11 +27,33 @@ function formatDate(date) {
   return new Date(date).toLocaleDateString('en', options)
 }
 
+function getWinningTeam(game) {
+  let winner = game.team1_elo_change > game.team2_elo_change ? game.teams[0] : game.teams[1];
+  return winner;
+}
+
+function getLosingTeam(game) {
+  let loser = game.team1_elo_change < game.team2_elo_change ? game.teams[0] : game.teams[1];
+  return loser;
+}
+
+// function getWinningScore(sets) {
+//   let scores1 = 1;
+//   let scores2 = 1;
+//   let wins = game.team1_elo_change > game.team2_elo_change ? game.teams[0] : game.teams[1];
+//   return wins;
+// }
+
+// function getLosingScore(sets) {
+//   let losses = game.team1_elo_change < game.team2_elo_change ? game.teams[0] : game.teams[1];
+//   return losses;
+// }
+
 const getSets = async() => {
-    for(let i = 1; i <= 3; i++) {
+    for(let i = 1; i <= 10; i++) {
         await getSet(i);
     }
-    console.log(sets);
+    // await console.log(setsArray);
 }
 
 const getSet = async (gameID) => {
@@ -39,10 +62,10 @@ const getSet = async (gameID) => {
 
     if(response.status === 200) {
       const fetchedOneGame = response.data.response.game;
-      console.log(fetchedOneGame);
+      // console.log(fetchedOneGame);game.teams[0]
       eachGame.push(fetchedOneGame);
-      sets.push(fetchedOneGame.sets);
-      console.log(sets);
+      setsArray.push(fetchedOneGame.sets);
+      // console.log(setsArray);
     }
   } catch (err) {
     console.error(err);
@@ -56,7 +79,7 @@ const getGamesRequest = async () => {
     if(response.status === 200) {
       const fetchedGames = response.data.response.games;
       Object.assign(games, fetchedGames);
-      console.log(games);
+      // console.log(games);
     }
   } catch (err) {
     console.error(err);
@@ -73,7 +96,7 @@ getSets();
     <div
       class="
         flex flex-col
-        sm:w-[30rem]
+        sm:w-[60rem]
         w-full
         bg-gray-100
         rounded-3xl
@@ -88,13 +111,10 @@ getSets();
       <div class="flex">
           <ul>
             <span class="flex flex-col w-full" v-for="game in games" :key="game.teams">
-              <div class="flex flex-row self-center"><h1>{{ formatDate(game.completed_at) }}</h1></div>
-              <br/>
-                <div class="flex flex-col w-full last:items-end border shadow-md rounded-xl p-1 m-1 mr-20" v-for="team in game.teams" :key="team.id">
-                  <div class="flex flex-col" v-for="member in team.members" :key="member.id">{{ member.name }}</div>
-                    <div class="flex flex-col" v-for="set in sets" :key="set.id">
-                        <div class="" v-for="s in set" :key="s.id">{{s.team1_score}} and {{s.team2_score}}</div>
-                    </div>
+              <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
+                <div class="flex flex-row w-full last:items-end border shadow-md rounded-xl py-2 px-4 lg:py-2 lg:px-10 bg-indigo-100 hover:bg-indigo-500">
+                  <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
+                  <Score :sets="setsArray[(game.id)-1]" />
                 </div>
               <div class="self-center" v-if="gameNum !== perPage">___________________________</div> 
               <br/>

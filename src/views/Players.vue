@@ -67,11 +67,13 @@ const getPlayersRequest = async () => {
           items-center
         "
       >
-        <p class="flex header text-4xl font-semibold m-4">Players</p>
+        <p class="flex header text-4xl font-semibold m-4">Registered Players</p>
 
         <div class="flex flex-col">
               <ol class="flex flex-row w-full" v-for="player in players" :key="player">
-                <li class="flex flex-row self-center">{{ player.name }}</li>
+                <div class="flex w-full border shadow-md rounded-xl my-1 px-4 lg:py-2 lg:px-10 bg-emerald-100 hover:bg-emerald-500">
+                  {{player.name}}
+                </div>
               </ol>
         </div>
         <div
