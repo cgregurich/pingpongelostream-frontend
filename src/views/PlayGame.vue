@@ -70,12 +70,12 @@ const pointsTillServerSwap = ref(null);
 
 const teamOnePlayers = computed(() => {
   if (!game || !game.teams) return null;
-  return game.teams[0].members.map(m => ({ name: m.name }));
+  return game.teams[0].members;
 });
 
 const teamTwoPlayers = computed(() => {
   if (!game || !game.teams) return null;
-  return game.teams[1].members.map(m => ({ name: m.name }));
+  return game.teams[1].members;
 });
 
 
