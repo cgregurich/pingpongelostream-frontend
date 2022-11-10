@@ -13,7 +13,7 @@ defineProps({
 
 <template>
   <button
-    class="login-btn flex leading-none justify-center items-start bg-black text-white rounded-lg text-md transition-none px-4 py-3 h-min hover:bg-gray-800 active:bg-gray-700 disabled:bg-gray-400 disabled:text-gray-500"
+    class="primary-button flex leading-none justify-center items-start bg-site-color-two text-white rounded-lg text-md transition-none px-4 py-3 h-min hover:bg-site-color-two-light active:bg-site-color-two-lighter disabled:bg-gray-400 disabled:text-gray-500"
     :disabled="disabled"
   >
     {{ text }}
