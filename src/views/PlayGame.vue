@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, watch, onMounted, toRaw } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import TeamContainer from '@/components/PlayGame/TeamContainer.vue';
 import * as apiCalls from '@/utils/apiCalls.js';
@@ -11,15 +11,19 @@ const props = defineProps({
 const game = reactive({});
 const gameMode = reactive({});
 const disableInput = ref(true);
+
+const teamOnePlayers = ref([]);
+const teamTwoPlayers = ref([]);
+
+
 onMounted(async () => {
-  //TODO: put in apiCalls.js
-  const fetchedGame = await apiCalls.getGame(props.gameID);
-  if (!fetchedGame) console.err('Something went wrong fetching game');
-  const fetchedGameMode = await apiCalls.getGameMode(fetchedGame.mode_id);
-  if (!fetchedGameMode) console.err('Something went wrong fetching game mode');
-  Object.assign(game, fetchedGame);
-  Object.assign(gameMode, fetchedGameMode);
+  disableInput.value = true;
+
+  await loadGame();
+  await loadGameMode();
   setGameRules();
+  setTeamPlayers();
+
   disableInput.value = false;
 });
 
@@ -30,6 +34,18 @@ let WIN_SET_BY = null;
 let SETS_TO_WIN_MATCH = null;
 let SERVE_SWITCH = null;
 
+async function loadGame() {
+  const fetchedGame = await apiCalls.getGame(props.gameID);
+  if (!fetchedGame) console.err('Something went wrong fetching game');
+  Object.assign(game, fetchedGame);
+}
+
+async function loadGameMode() {
+  const fetchedGameMode = await apiCalls.getGameMode(game.mode_id);
+  if (!fetchedGameMode) console.err('Something went wrong fetching game mode');
+  Object.assign(gameMode, fetchedGameMode);
+}
+
 function setGameRules() {
   // Set game rules from given game mode
   POINTS_TO_WIN_SET= gameMode.win_score;
@@ -38,6 +54,10 @@ function setGameRules() {
   SERVE_SWITCH = gameMode.serve_switch;
 }
 
+function setTeamPlayers() {
+  teamOnePlayers.value = game.teams[0].members;
+  teamTwoPlayers.value = game.teams[1].members;
+}
 
 
 
@@ -63,21 +83,80 @@ const p2GameScore = ref(0);
 
 // Which player is currently serving (1 or 2)
 // plus 1 because backend uses 0 or 1
-const server = ref(game.first_server + 1);
+
+
+
+////////////////////////////////////////////////////////////
+/////////////// SERVING SHIT ///////////////////////////////
+////////////////////////////////////////////////////////////
+
+//FIXME: use the serving settings from backend; rn just hardcoding it
+const teamServing = ref(1);
+const teamOnePlayerServing = ref(0);
+const teamTwoPlayerServing = ref(0);
+
+// FIXME:
+const servingPlayerID = computed(() => {
+  if (teamOnePlayers.value.length === 0 || teamTwoPlayers.value.length == 0) return;
+
+  if (teamServing.value === 1) {
+    return teamOnePlayers.value[teamOnePlayerServing.value].id;
+  }
+  else {
+    return teamTwoPlayers.value[teamTwoPlayerServing.value].id;
+  }
+});
+
+
+function pickRandomServer() {
+  // teamServing is 1 or 2 but...
+  teamServing.value = Math.floor(Math.random() * 2 + 1);
+
+  // teamXXXPlayerServing is 0 or 1; this is because 0-based is what programmers use,
+  // and these values will also be used as indices. The backend wants 1 or 2 for teamServing
+  // though, so that's why I didn't use 0 and 1 up there.
+  teamOnePlayerServing.value = Math.round(Math.random());
+  teamTwoPlayerServing.value = Math.round(Math.random());
+}
 
 const pointsTillServerSwap = ref(null);
 
-
-const teamOnePlayers = computed(() => {
-  if (!game || !game.teams) return null;
-  return game.teams[0].members;
+watch(pointsTillServerSwap, () => {
+  if (pointsTillServerSwap.value === 0) {
+    changeServers();
+    pointsTillServerSwap.value = pointsPerServe.value;
+  }
 });
 
-const teamTwoPlayers = computed(() => {
-  if (!game || !game.teams) return null;
-  return game.teams[1].members;
-});
+function changeServers() {
+  /*
+  Keep in mind that the backend uses 1 and team for the two teams, but for the
+  teamXXXPlayerServing I use 0 or 1, since it'll be used as an index.
+  So in one case, numbers mean one-based, and in another it's zero-based.
+  */
+  if (teamServing.value === 1) {
+    teamServing.value = 2;
 
+    // Change which player on the team is serving only if playing doubles
+    if (gameMode.id === 2) {
+      teamOnePlayerServing.value = teamOnePlayerServing.value === 0 ? 1 : 0;
+    }
+  }
+  else if (teamServing.value === 2) {
+    teamServing.value = 1;
+    // Change whihc player on the team is serving only if playing doubles
+    if (gameMode.id === 2) {
+      teamTwoPlayerServing.value = teamTwoPlayerServing.value === 0 ? 1 : 0;
+    }
+  }
+}
+
+const pointsPerServe = computed(() => {
+  // If overtime, switch server every 1 point
+  if (p1SetScore.value >= 10 && p2SetScore.value >= 10) return 1;
+  // Otherwise, switch based on game mode's rules
+  else return SERVE_SWITCH;
+});
 
 
 function incrementScoreClicked(player) {
@@ -86,7 +165,10 @@ function incrementScoreClicked(player) {
 }
 
 function controlButtonClicked() {
-  if (gameState.value === GameStates.NotStarted) startNewSet();
+  if (gameState.value === GameStates.NotStarted) {
+    apiCalls.startGame(game.id);
+    startNewSet();
+  }
   else if (gameState.value === GameStates.InProgress) ;
   else if (gameState.value === GameStates.SetFinished) {
     saveFinishedSet();
@@ -97,15 +179,18 @@ function controlButtonClicked() {
 
 function undoLastPoint() {
   if (!canUndo.value) return;
-  const lastPoint = undoStack.pop();
-  if (lastPoint.player === 1) {
+
+  const lastPointSnapshot = undoStack.pop();
+  if (lastPointSnapshot.player === 1) {
     p1SetScore.value--;
   }
-  else if (lastPoint.player === 2) {
+  else if (lastPointSnapshot.player === 2) {
     p2SetScore.value--;
   }
-  pointsTillServerSwap.value = lastPoint.pointsTillServerSwap;
-  server.value = lastPoint.server;
+  pointsTillServerSwap.value = lastPointSnapshot.pointsTillServerSwap;
+  teamServing.value = lastPointSnapshot.teamServing;
+  teamOnePlayerServing.value = lastPointSnapshot.teamOnePlayerServing;
+  teamTwoPlayerServing.value = lastPointSnapshot.teamTwoPlayerServing;
   gameState.value = GameStates.InProgress;
 }
 
@@ -113,7 +198,7 @@ function startNewSet() {
   p1SetScore.value = 0;
   p2SetScore.value = 0;
 
-  pickRandomServer(); // TODO: should this be random on a non-first set?
+  // pickRandomServer(); // TODO: should this be random on a non-first set?
   pointsTillServerSwap.value = pointsPerServe.value;
 
   // empty undoStack; can't reassign to [] since it's const; can't use let since it's reactive
@@ -122,12 +207,17 @@ function startNewSet() {
   gameState.value = GameStates.InProgress;
 }
 
-function pickRandomServer() {
-  server.value = Math.floor(Math.random() * 2 + 1);
-}
 
 function pointScored(player) {
-  undoStack.push({ player: player, pointsTillServerSwap: pointsTillServerSwap.value, server: server.value });
+  // First add a snapshot of the current game state to the undo stack
+  undoStack.push({
+    player: player,
+    pointsTillServerSwap: pointsTillServerSwap.value,
+    teamServing: teamServing.value,
+    teamOnePlayerServing: teamOnePlayerServing.value,
+    teamTwoPlayerServing: teamTwoPlayerServing.value
+  });
+
   if (player === 1) { 
     p1SetScore.value++;
   }
@@ -171,13 +261,6 @@ function playerTwoWonSet() {
 }
 
 
-watch(pointsTillServerSwap, () => {
-  if (pointsTillServerSwap.value === 0) {
-    // Swap servers
-    server.value = server.value === 1 ? 2 : 1;
-    pointsTillServerSwap.value = pointsPerServe.value;
-  }
-});
 
 const gameControlText = computed(() => {
   /*
@@ -198,12 +281,6 @@ const p2WonSets = computed(function() {
   return previousSets.filter(set => set.p2Score > set.p1Score);
 });
 
-const pointsPerServe = computed(() => {
-  // If overtime, swap serves every 1 point
-  // TODO: is this also true for doubles?
-  if (p1SetScore.value >= 10 && p2SetScore.value >= 10) return 1;
-  else return SERVE_SWITCH;
-});
 
 const canUndo = computed(() => undoStack.length > 0 && gameState.value !== GameStates.GameOver && gameState.value !== GameStates.NotStarted);
 
@@ -237,27 +314,27 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
     </div>
 
     <!-- Team Containers -->
-    <div class="container flex justify-center h-full">
-      <TeamContainer
-        @click="() => incrementScoreClicked(1)"
-        :teamNumber="1"
-        v-model:setScore="p1SetScore"
-        v-model:gameScore="p1GameScore"
-        :disabled="!allowScoreInput"
-        :wonSets="p1WonSets"
-        :server="server"
-        :players="teamOnePlayers"
-      />
-      <TeamContainer
-        @click="() => incrementScoreClicked(2)"
-        :teamNumber="2"
-        v-model:setScore="p2SetScore"
-        v-model:gameScore="p2GameScore"
-        :disabled="!allowScoreInput"
-        :wonSets="p2WonSets"
-        :server="server"
-        :players="teamTwoPlayers"
-      />
-    </div>
+      <div class="container flex justify-center h-full">
+        <TeamContainer
+          @click="() => incrementScoreClicked(1)"
+          :teamNumber="1"
+          v-model:setScore="p1SetScore"
+          v-model:gameScore="p1GameScore"
+          :disabled="!allowScoreInput"
+          :wonSets="p1WonSets"
+          :servingPlayerID="servingPlayerID"
+          :players="teamOnePlayers"
+        />
+        <TeamContainer
+          @click="() => incrementScoreClicked(2)"
+          :teamNumber="2"
+          v-model:setScore="p2SetScore"
+          v-model:gameScore="p2GameScore"
+          :disabled="!allowScoreInput"
+          :wonSets="p2WonSets"
+          :servingPlayerID="servingPlayerID"
+          :players="teamTwoPlayers"
+        />
+      </div>
   </div>
 </template>
