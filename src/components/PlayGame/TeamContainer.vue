@@ -7,7 +7,7 @@ const props = defineProps({
   gameScore: Number,
   disabled: Boolean,
   wonSets: Array,
-  server: Number,
+  servingPlayerID: Number,
   foreground: String,
   background: String,
 });
@@ -47,16 +47,27 @@ function getClasses() {
   class="team-container relative flex flex-col items-center justify-around w-full select-none"
   :class="getClasses()"
 >
-  <!-- Serving Indicator -->
-  <!-- For Left Team -->
-  <div v-show="teamNumber === 1 && server === teamNumber" class="serving w-[50px] h-[50px] rounded-full absolute top-24 right-10 bg-site-color-two"></div>
-  <!-- For Right Team -->
-  <div v-show="teamNumber === 2 && server === teamNumber" class="serving w-[50px] h-[50px] rounded-full absolute top-24 left-10 bg-site-color-one"></div>
-
-  <!-- Player Names -->
+  <!-- Players -->
   <div class="players flex justify-around w-full">
-    <div v-for="(player, index) in players" :key="index" class="player-name text-2xl">
-      {{ player.name }}
+    <!-- Player Name and Profile Pic -->
+    <div v-for="(player, index) in players" :key="index" class="player-name flex flex-col items-center text-2xl">
+      <div class="player-info flex items-center">
+        <div class="image-container">
+          <img class="h-12 w-12 rounded-full mr-4 border border-black border-opacity-10" :src="player.profile_photo_path">
+          <div class="h-[50px] w-[1px]"></div>
+        </div>
+        <div class="name-container flex flex-col justify-center items-center">
+          {{ player.name }}
+          <!-- Serving Indicator -->
+          <div class="serving-indicator w-[50px] h-[50px] rounded-full bg-site-color-two" v-show="teamNumber === 1 && servingPlayerID === player.id"></div>
+          <div class="serving-indicator w-[50px] h-[50px] rounded-full bg-site-color-one" v-show="teamNumber === 2 && servingPlayerID === player.id"></div>
+          <!-- This exists to avoid the visible shifting when the serving indicator toggles -->
+          <div class="serving-indicator-spacer h-[50px] w-[1px]" v-show="servingPlayerID !== player.id"></div>
+
+        </div>
+      </div>
+
+
     </div>
     <div v-if="!players" class="player-name-skeleton w-[150px] h-[32px] bg-black opacity-10 rounded-lg animate-pulse">
     </div>
@@ -74,14 +85,14 @@ function getClasses() {
 
   <!-- Previous Sets -->
   <!-- For Left Team -->
-  <div v-show="teamNumber === 1" class="p1-won-sets w-full flex justify-around">
-    <div class="won-set text-xl font-bold bg-site-color-two text-site-color-one rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
+  <div v-show="teamNumber === 1" class="p1-won-sets w-full flex justify-around items-center h-[75px]">
+    <div class="won-set text-xl h-max font-bold bg-site-color-two text-site-color-one rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
       {{ set.p1Score }} - {{ set.p2Score }}
     </div>
   </div>
   
   <!-- For Right Team -->
-  <div v-if="teamNumber === 2" class="p2-won-sets w-full flex justify-around">
+  <div v-if="teamNumber === 2" class="p2-won-sets w-full flex justify-around items-center h-[75px]">
     <div class="won-set text-xl font-bold bg-site-color-one text-site-color-two rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
       {{ set.p1Score }} - {{ set.p2Score }}
     </div>
