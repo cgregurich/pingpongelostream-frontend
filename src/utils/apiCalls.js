@@ -65,3 +65,10 @@ export async function createNewTeam(playerIDs) {
   if (response.status === 200) return response.data.response.id;
   else return null;
 }
+
+export async function startGame(gameID) {
+  const config = { headers: authStore.bearerToken };
+  const response = await axios.get(`${API_URL}/games/${gameID}/start-play`, config);
+  if (response.status === 200) return response.data.response.game;
+  else return null;
+}
