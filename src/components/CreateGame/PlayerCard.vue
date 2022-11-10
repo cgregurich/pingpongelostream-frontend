@@ -11,9 +11,9 @@ const props = defineProps({
       <div class="player-name">{{ player.name }}</div>
     </div>
     <div class="controls flex flex-col mr-2 text-lg">
-      <font-awesome-icon class="cursor-pointer hover:text-gray-600 active:text-gray-500 mr-3 -mb-2" icon="fa-long-arrow-alt-left" @click="$emit('moveLeft')"/>
-      <font-awesome-icon class="cursor-pointer hover:text-gray-600 active:text-gray-500 ml-3" icon="fa-long-arrow-alt-right" @click="$emit('moveRight')"/>
-      <font-awesome-icon class="cursor-pointer hover:text-gray-600 active:text-gray-500 mt-2" icon="fa-trash-alt" @click="$emit('delete')"/>
+      <font-awesome-icon class="cursor-pointer text-2xl hover:text-gray-600 active:text-gray-500 mr-3" icon="fa-long-arrow-alt-left" @click="$emit('moveLeft')"/>
+      <font-awesome-icon class="cursor-pointer text-2xl hover:text-gray-600 active:text-gray-500 ml-3" icon="fa-long-arrow-alt-right" @click="$emit('moveRight')"/>
+      <font-awesome-icon class="cursor-pointer text-sm hover:text-gray-600 active:text-gray-500 mt-2" icon="fa-trash-alt" @click="$emit('delete')"/>
     </div>
   </div>
 </template>
