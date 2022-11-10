@@ -10,6 +10,8 @@ module.exports = {
       colors: {
         'site-color-one': colors.purple[100],
         'site-color-two': colors.purple[800],
+        'site-color-two-light': colors.purple[600],
+        'site-color-two-lighter': colors.purple[500],
         'site-background': colors.white,
         'primary': colors.black,
         'secondary': colors.green[600],
