@@ -1,11 +1,13 @@
 <script setup>
 import PrimaryButton from '@/components/PrimaryButton.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import PlayerCard from '@/components/CreateGame/PlayerCard.vue';
 import PlayerCardSkeleton from '@/components/CreateGame/PlayerCardSkeleton.vue';
-import SuggestionInput from '@/components/SuggestionInput.vue';
+
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+
 import * as toasts from '@/utils/toasts.js';
 import * as apiCalls from '@/utils/apiCalls.js';
 
@@ -98,14 +100,34 @@ function canAddPlayer(player) {
 
 function moveToTeamOne(player) {
   if (disableInput.value) return;
-  if (teamOnePlayers.length >= playersAllowedPerTeam.value) selectedGameModeID.value = 2;
+
+  if (teamOnePlayers.length >= playersAllowedPerTeam.value) {
+    // If user trying to add a second player to a team when game mode is singles,
+    // change game mode to doubles and then move the player
+    if (selectedGameModeID.value === 1) selectedGameModeID.value = 2;
+
+    // If user trying to add a third player to a team when game mode is doubles,
+    // just return because this isn't allowed
+    else if (selectedGameModeID.value === 2) return;
+  }
+
   deletePlayer(player);
   teamOnePlayers.push(player);
 }
 
 function moveToTeamTwo(player) {
   if (disableInput.value) return;
-  if (teamTwoPlayers.length >= playersAllowedPerTeam.value) selectedGameModeID.value = 2;
+
+  if (teamTwoPlayers.length >= playersAllowedPerTeam.value) {
+    // If user trying to add a second player to a team when game mode is singles,
+    // change game mode to doubles and then move the player
+    if (selectedGameModeID.value === 1) selectedGameModeID.value = 2;
+
+    // If user trying to add a third player to a team when game mode is doubles,
+    // just return because this isn't allowed
+    else if (selectedGameModeID.value === 2) return;
+  }
+
   deletePlayer(player);
   teamTwoPlayers.push(player);
 }
@@ -259,6 +281,14 @@ async function getPlayerTwoSinglesTeamID() {
   return teamID;
 }
 
+const addablePlayersNames = computed(() => {
+  return players.filter(p => canAddPlayer(p)).map(p => p.name);
+});
+
+function test() {
+  console.log('test');
+}
+
 </script>
 
 
@@ -267,18 +297,20 @@ async function getPlayerTwoSinglesTeamID() {
   <!-- Controls -->
   <div class="controls flex justify-between m-8">
     <!-- Game Mode Selector -->
-    <div class="game-mode-selector flex justify-center items-center bg-site-color-one text-black shadow-sm shadow-gray-300 border border-gray-400" :class="disableInput ? ['opacity-50', 'cursor-not-allowed'] : ''">
-      <button v-for="gameMode in gameModes" :key="gameMode.id" @click="changeGameMode(gameMode.id)" class="px-4 py-3 h-full" :class="selectedGameModeID === gameMode.id ? ['bg-site-color-two', 'text-white'] : ''">{{ gameMode.name }}</button>
+    <div class="game-mode-selector flex justify-center items-center bg-site-color-one text-black shadow-sm rounded-lg shadow-gray-300 border border-black border-site-color-two border-opacity-30" :class="disableInput ? ['opacity-50', 'cursor-not-allowed'] : ''">
+      <button v-for="gameMode in gameModes" :key="gameMode.id" @click="changeGameMode(gameMode.id)" class="px-4 py-3 h-full first:rounded-l-lg last:rounded-r-lg" :class="selectedGameModeID === gameMode.id ? ['bg-site-color-two', 'text-white'] : ''">{{ gameMode.name }}</button>
     </div>
     <!-- Add Player -->
-    <div class="add-player flex justify-center items-center">
-      <SuggestionInput :items="players.map(p => p.name)" @keydown.enter="addPlayerToUnassigned" v-model:enteredText="addPlayerInput"/>
+    <div class="add-player flex justify-center items-center border-0 border-red-400 w-[400px]">
+      <v-select class="w-full" @keydown.enter="addPlayerToUnassigned" :options="addablePlayersNames" v-model="addPlayerInput"></v-select>
       <PrimaryButton @click="addPlayerToUnassigned" text="Add Player" :disabled="disableInput" class="text-xs whitespace-nowrap ml-4"/>
     </div>
     <!-- Create Game Button -->
     <div class="create-game flex justify-center items-center">
-      <PrimaryButton @click="createGameClicked(true)" :disabled="!canCreateGame || disableInput" text="Start Game" class="text-xs mr-4"/>
-      <PrimaryButton @click="createGameClicked(false)" :disabled="!canCreateGame || disableInput" text="Schedule Game" class="text-xs"/>
+      <PrimaryButton @click="createGameClicked(true)" :disabled="!canCreateGame || disableInput" text="Start Game" class="mr-4"/>
+      <PrimaryButton @click="createGameClicked(false)" :disabled="!canCreateGame || disableInput" text="Schedule Game" class=""/>
+      
+
     </div>
   </div>
   
