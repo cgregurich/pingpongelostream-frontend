@@ -16,7 +16,7 @@ const playedGames = computed(() => games.filter(game => game.started_at != null 
 const unplayedGames = computed(() => games.filter(game => game.started_at == null));
 
 
-function getPlayersForGame(game) {
+function getPlayersInGame(game) {
   const teamOne = game.teams[0].members.map(member => member.name);
   const teamTwo = game.teams[1].members.map(member => member.name);
 
@@ -51,6 +51,10 @@ function isUnplayedGame(game) {
   return game.started_at == null;
 }
 
+function isOngoingGame(game) {
+  return game.started_at != null && game.completed_at == null;
+}
+
 const recentUnplayedSinglesGames = computed(() => {
   return games.filter(game => isSinglesGame(game) && isUnplayedGame(game)).slice(-5).reverse();
 });
@@ -59,27 +63,55 @@ const recentUnplayedDoublesGames = computed(() => {
   return games.filter(game => isDoublesGame(game) && isUnplayedGame(game)).slice(-5).reverse();
 });
 
+const allOngoingGames = computed(() => {
+  return games.filter(game => isOngoingGame(game)).reverse();
+});
+
+function getGameText(game) {
+  if (isSinglesGame(game)) return getSinglesGameText(game);
+  if (isDoublesGame(game)) return getDoublesGameText(game);
+}
+
+function getSinglesGameText(game) {
+  const playersInGame = getPlayersInGame(game);
+  return `${game.id} : ${playersInGame.teamOne.playerOne} vs ${playersInGame.teamTwo.playerOne}`;
+}
+
+function getDoublesGameText(game) {
+  const playersInGame = getPlayersInGame(game);
+  return `${game.id} : ${playersInGame.teamOne.playerOne} & ${playersInGame.teamOne.playerTwo} VS ${playersInGame.teamTwo.playerOne} & ${playersInGame.teamTwo.playerTwo}`;
+}
+
 </script>
 
 <template>
     <h1>Games</h1>
-    <p>playedGames.length: {{ playedGames.length }}</p>
-    <p>unplayedGames.length: {{ unplayedGames.length }}</p>
+    <div class="ongoing-games my-10">
+      <h1 class="text-2xl">Ongoing Games (newest at top)</h1>
+      <div class="game bg-gray-300 w-max my-4 mx-6" v-for="game in allOngoingGames" :key="game.id">
+        {{ getGameText(game) }}
+      </div>
+      <p v-show="allOngoingGames.length === 0">No ongoing games</p>
+    </div>
+
     <div class="singles">
       <h1 class="text-2xl">Recent Singles (newest at top)</h1>
       <div class="game bg-gray-300 w-max my-4 mx-6 cursor-pointer"
         v-for="game in recentUnplayedSinglesGames"
         :key="game.id"
         @click="router.push({ name: 'Play', params: { gameID: game.id } })">
-        {{ game.id }} : {{ getPlayersForGame(game).teamOne.playerOne }} vs {{ getPlayersForGame(game).teamTwo.playerOne }}
+        {{ getSinglesGameText(game) }}
       </div>
     </div>
+  
     <div class="doubles">
       <h1 class="text-2xl">Recent Doubles (newest at top)</h1>
       <div class="game bg-gray-300 w-max my-4 mx-6 cursor-pointer"
         v-for="game in recentUnplayedDoublesGames"
         :key="game.id"
         @click="router.push({ name: 'Play', params: { gameID: game.id } })"
-      >{{ game.id }} : {{ getPlayersForGame(game).teamOne.playerOne }} & {{ getPlayersForGame(game).teamOne.playerTwo }} vs {{ getPlayersForGame(game).teamTwo.playerOne }} & {{ getPlayersForGame(game).teamTwo.playerTwo }}</div>
+      >
+        {{ getDoublesGameText(game) }}
+      </div>
     </div>
 </template>
