@@ -1,22 +1,28 @@
 <script setup>
-import { ref, reactive } from 'vue';
-import SuggestionInput from '@/components/SuggestionInput.vue';
-const input = ref(null);
-function noop() {
+import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue';
 
-}
-const items = reactive([
-  'Bill',
-  'Bob',
-  'Steve',
-  'Colin'
-]);
-const enteredText = ref('');
+
+
+onBeforeMount(() => {
+  console.log('on before mount');
+  // console.log('onBeforeMount myComputed: ', myComputed.value);
+});
+
+onMounted(() => {
+  console.log('onMounted start');
+  // console.log('onMounted myComputed:', myComputed.value);
+});
+
+const myComputed = computed(() => {
+  console.log('myComputed being computed');
+  return 'hi there';
+});
+
 </script>
 
 <template>
-<div class="container bg-red-200" @click="input.focus()" @mousedown.stop.prevent="">
-  <input ref="input" type="text" class="border border-black">
-</div>  
-<SuggestionInput :items="items" v-model:enteredText="enteredText"/>
+<div>Hello, Sandbox</div>
+<div>Here is a computed property: {{ myComputed }}</div>
 </template>
+
+dom -> onMounted
