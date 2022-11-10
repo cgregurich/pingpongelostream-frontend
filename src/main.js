@@ -13,8 +13,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 library.add(faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight);
 
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
+
 createApp(App)
   .use(pinia)
   .use(router)
   .component('font-awesome-icon', FontAwesomeIcon)
+  .component('v-select', vSelect)
   .mount('#app');
