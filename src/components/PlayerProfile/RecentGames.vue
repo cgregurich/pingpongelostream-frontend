@@ -20,7 +20,7 @@ async function loadSinglesTeamID() {
   }
 }
 
-async function loadGames() {
+async function loadSinglesGames() {
   const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${props.seasonID}`);
   console.log(response);
   if (response.status === 200) {
@@ -31,6 +31,27 @@ async function loadGames() {
   }
 }
 
+// TODO: don't have route
+// async function loadDoublesGame() {
+//   const response = await axios.get(`${API_URL}`)
+// }
+
+const selfTeam = computed(() => {
+  /*
+  Formats the given player's singles team in the way that GameSummaryCard expects.
+  */
+  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
+  // FIXME: doing this just for testing the layout since doubles isn't implemented in backend
+  // selfTeamData.push({ name: 'Booter Sket', profilePhotoPath: 'https://xsgames.co/randomusers/assets/avatars/male/2.jpg' });
+  return selfTeamData;
+});
+
+// TODO: not sure what route is gonna look like, so not sure what the process to grab the data will look like
+// will it be like the above team.members.map? or the below game.opponent_team.members.map?
+// function getSelfTeam(game) {
+//   const teamData = game.
+// }
+
 function getOpponentTeam(game) {
   /*
   Formats opponent team data in the way that GameSummaryCard expects it.
@@ -38,6 +59,7 @@ function getOpponentTeam(game) {
   { name: <player name>, profilePhotoPath: <url> }
   */
   const teamData = game.opponent_team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
+  // teamData.push({ name: 'Sam Smith', profilePhotoPath: 'https://xsgames.co/randomusers/assets/avatars/male/14.jpg' });
   return teamData;
 }
 
@@ -69,13 +91,7 @@ function getElos(game) {
   return elos;
 }
 
-const selfTeam = computed(() => {
-  /*
-  Formats the given player's singles team in the way that GameSummaryCard expects.
-  */
-  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
-  return selfTeamData;
-});
+
 
 const singlesGames = computed(() => {
   /*
@@ -87,14 +103,13 @@ const singlesGames = computed(() => {
 
 async function loadData() {
   await loadSinglesTeamID();
-  await loadGames();
+  await loadSinglesGames();
 }
 
 
 onBeforeUpdate(async () => await loadData());
 await loadData();
 
-console.log(singlesGames.value[0]);
 </script>
 
 
@@ -102,6 +117,10 @@ console.log(singlesGames.value[0]);
   <div class="recent-games max-w-[750px] w-full flex flex-col items-center px-6 mt-6">
     <div class="flex justify-between w-full">
       <div class="text-lg ml-2">Recent Games</div>
+      <select>
+        <option value="singles">Singles</option>
+        <option value="doubles">Doubles</option>
+      </select>
     </div>
 
     <GameSummaryCard
