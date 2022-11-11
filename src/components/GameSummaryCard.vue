@@ -12,12 +12,18 @@ defineProps({
 
 
   <!-- Left Team -->
-  <div class="team-left flex items-center ml-1">
+  <div class="team-left flex flex items-center ml-1">
     <!-- Profile Pic and Username -->
-    <div v-for="(player, index) in teamOne" :key="index" class="name-pic-container text-sm flex flex-col items-start my-2 border-0 border-red-400 bg-red-000 sm:w-[150px]">
-      <img class="w-12 rounded-full" :src="player.profilePhotoPath">
-      <div class="username font-semibold text-black">{{ player.name }}</div>
+
+
+    <div class="players">
+      <div v-for="(player, index) in teamOne" :key="index" class="name-pic-container text-sm flex items-center justify-start my-2 border-0 border-red-400 bg-red-000 sm:w-[150px]">
+        <img class="w-12 h-12 rounded-full mr-1" :src="player.profilePhotoPath">
+        <div class="username font-semibold text-black whitespace-nowrap">{{ player.name }}</div>
+      </div>
     </div>
+
+
     <!-- Elo Change and Elo After -->
     <div class="elo-container flex items-center border-0 border-blue-400 bg-blue-000">
       <div v-if="elos.teamOne.eloChange > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
@@ -40,7 +46,6 @@ defineProps({
   </div>
 
   <!-- Right Team -->
-
   <div class="team-right flex items-center mr-1">
     <!-- Elo Change and Elo After -->
     <div class="elo-container flex items-center border-0 border-blue-400 bg-blue-000">
@@ -54,11 +59,15 @@ defineProps({
         {{ elos.teamTwo.eloChange }}
       </div>
     </div>
+
     <!-- Profile Pic and Username -->
-    <div v-for="(player, index) in teamTwo" :key="index" class="name-pic-container flex flex-col items-end text-sm my-2 border-0 border-red-400 bg-red-000 sm:w-[150px]">
-      <img class="w-12 min-w-12 rounded-full" :src="player.profilePhotoPath">
-      <div class="username font-semibold text-black">{{ player.name }}</div>
+    <div class="players">
+      <div v-for="(player, index) in teamTwo" :key="index" class="name-pic-container flex flex items-center justify-end text-sm my-2 sm:w-[150px]">
+        <div class="username font-semibold text-black whitespace-nowrap">{{ player.name }}</div>
+        <img class="w-12 h-12 min-w-12 rounded-full ml-1" :src="player.profilePhotoPath">
+      </div>
     </div>
+
   </div>
 </div>
 
