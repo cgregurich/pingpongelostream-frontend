@@ -1,3 +1,8 @@
+<script setup>
+import Leaderboard from '@/components/Leaderboard/Leaderboard.vue';
+</script>
+
+
 <template>
-  <h1>Leaderboard</h1>
+<Leaderboard />
 </template>
