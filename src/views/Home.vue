@@ -1,53 +1,6 @@
 <script setup>
-import router from '@/router/index';
-import FormInput from '@/components/FormInput.vue';
-import PrimaryButton from '@/components/PrimaryButton.vue';
-import { ref, computed } from 'vue';
-import { useAuthStore } from '../stores/modules/auth';
-
-const name = ref('');
-const email = ref('');
-const password = ref('');
-const passwordConfirm = ref('');
-const errorMessage = ref('');
-
-function submitClicked() {
-  errorMessage.value = '';
-  if (password.value !== passwordConfirm.value) {
-    errorMessage.value = 'Passwords must match';
-  }
-}
-
-const submit = () => {
-	if (canSubmit.value) {
-		store.register(
-            name.value,
-            email.value,
-            password.value,
-            passwordConfirm.value
-        ).then(
-            () => router.push({ name: 'Dashboard' })
-        ).catch((e) => console.error(e));
-	}
-};
-const reset = () => {
-	email.value = '';
-	password.value = '';
-    passwordConfirm = '';
-};
-
-const store = useAuthStore();
-
-const canSubmit = computed(() => {
-  return email.value.trim().length !== 0 
-    && password.value.trim().length !== 0
-    && passwordConfirm.value.trim().length !== 0;
-});
-
-
+import RegisterForm from '@/components/RegisterForm.vue';
 </script>
-
-
 <template>
     <!-- Background image -->
     <!--
@@ -86,31 +39,9 @@ const canSubmit = computed(() => {
                         </p>
                     </div>
                 </div>
-                <div class="body flex justify-center w-full">
-                    <div class="register-container flex flex-col items-center sm:w-[30rem] w-full  bg-gray-100 rounded-3xl m-4 pb-5 border border-gray-300 shadow-lg">
-                        <p class="header text-4xl font-semibold m-4">Register</p>
-                        <form
-                            class="w-96 flex flex-col items-center"
-                            @submit.prevent="submit" 
-                            @reset.prevent="reset"
-                        >
-                            <FormInput labelText="Name" v-model:enteredText="name" icon="fa-user"/>
-                            <FormInput labelText="Email" v-model:enteredText="email" icon="fa-user"/>
-                            <FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
-                            <FormInput labelText="Confirm Password" v-model:enteredText="passwordConfirm" icon="fa-lock" :isPassword="true"/>
-                            <PrimaryButton text="Register" :disabled="!canSubmit"/>
-                        </form>
-                        <div class="errors">
-                            <div class="text-red-700 text-xl">
-                            {{ errorMessage }}
-                            </div>
-                        </div>
-                        <div class="line w-4/5 lg:mt-40 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"></div>
-                        <div class="footer">Already have an account?
-                            <router-link :to="{ name: 'Login' }" class="font-bold hover:underline">Log in.</router-link>
-                        </div>
-                    </div>
-                </div>
+
+                <!-- Register -->
+                <RegisterForm />
             </div>
         </div>
     </div>

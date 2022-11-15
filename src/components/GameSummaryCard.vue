@@ -18,16 +18,16 @@ defineProps({
       <img class="w-12 rounded-full" :src="player.profilePhotoPath">
       <div class="username font-semibold text-black">{{ player.name }}</div>
     </div>
-    <!-- Elo Diff and Resulting Elo -->
+    <!-- Elo Change and Elo After -->
     <div class="elo-container flex items-center border-0 border-blue-400 bg-blue-000">
-      <div v-if="elos.teamOne.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
-        +{{ elos.teamOne.eloDiff }}
+      <div v-if="elos.teamOne.eloChange > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
+        +{{ elos.teamOne.eloChange }}
       </div>
-      <div v-if="elos.teamOne.eloDiff < 0" class="elo-lost text-red-400 mx-3 font-semibold text-sm">
-        {{ elos.teamOne.eloDiff }}
+      <div v-if="elos.teamOne.eloChange < 0" class="elo-lost text-red-400 mx-3 font-semibold text-sm">
+        {{ elos.teamOne.eloChange }}
       </div>
       <div class="elo text-xl">
-        {{ elos.teamOne.elo }}
+        {{ elos.teamOne.eloAfter }}
       </div>
     </div>
   </div>
@@ -42,16 +42,16 @@ defineProps({
   <!-- Right Team -->
 
   <div class="team-right flex items-center mr-1">
-    <!-- Elo Diff and Resulting Elo -->
+    <!-- Elo Change and Elo After -->
     <div class="elo-container flex items-center border-0 border-blue-400 bg-blue-000">
       <div class="elo text-xl">
-        {{ elos.teamTwo.elo }}
+        {{ elos.teamTwo.eloAfter }}
       </div>
-      <div v-if="elos.teamTwo.eloDiff > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
-        +{{ elos.teamTwo.eloDiff }}
+      <div v-if="elos.teamTwo.eloChange > 0" class="elo-gained text-green-500 mx-3 font-semibold text-sm">
+        +{{ elos.teamTwo.eloChange }}
       </div>
-      <div v-if="elos.teamTwo.eloDiff < 0" class="elo-lost text-red-400 mx-3 font-semibold text-sm">
-        {{ elos.teamTwo.eloDiff }}
+      <div v-if="elos.teamTwo.eloChange < 0" class="elo-lost text-red-400 mx-3 font-semibold text-sm">
+        {{ elos.teamTwo.eloChange }}
       </div>
     </div>
     <!-- Profile Pic and Username -->
