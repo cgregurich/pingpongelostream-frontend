@@ -3,9 +3,9 @@
 </script>
 
 <template>
-<tr class="bg-site-color-two text-white text-opacity-90 text-xs">
-  <th class="font-normal rounded-tl-lg py-2">#</th>
-  <th class="font-normal text-start pl-8">Player</th>
+<tr class="bg-site-color-two text-white text-opacity-90 text-xs mx-20">
+  <th class="font-normal rounded-tl-lg p-3">#</th>
+  <th class="font-normal text-left pl-8"></th>
   <th class="font-normal">Elo</th>
   <th class="font-normal">Games Played</th>
   <th class="font-normal">Wins</th>
