@@ -68,7 +68,14 @@ export async function createNewTeam(playerIDs) {
 
 export async function startGame(gameID) {
   const config = { headers: authStore.bearerToken };
-  const response = await axios.get(`${API_URL}/games/${gameID}/start-play`, config);
+  const response = await axios.get(`${API_URL}/games/${gameID}/play`, config);
   if (response.status === 200) return response.data.response.game;
   else return null;
+}
+
+export async function updateOngoingGame(gameID, setNum, sets) {
+  const config = { headers: authStore.bearerToken };
+  const response = await axios.post(`${API_URL}/games${gameID}/playing/sets/${setNum}/${setNum}`, sets, config);
+  
+
 }

@@ -64,7 +64,7 @@ const recentUnplayedDoublesGames = computed(() => {
 });
 
 const allOngoingGames = computed(() => {
-  return games.filter(game => isOngoingGame(game)).reverse();
+  return games.filter(game => isOngoingGame(game));
 });
 
 function getGameText(game) {
