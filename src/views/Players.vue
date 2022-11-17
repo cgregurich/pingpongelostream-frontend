@@ -5,7 +5,6 @@ import { API_URL, PLAYERS } from '@/stores/utils/backendRouteParts.js'
 import { reactive } from 'vue'
 // import Pagination from '../components/Pagination.vue'
 
-
 const players = reactive([]);
 // const game = reactive();
 // const scores = reactive([]);
@@ -71,7 +70,7 @@ const getPlayersRequest = async () => {
 
         <div class="flex flex-col">
               <ol class="flex flex-row w-full" v-for="player in players" :key="player">
-                <div class="flex w-full border shadow-md rounded-xl my-1 px-4 lg:py-2 lg:px-10 bg-emerald-100 hover:bg-emerald-500">
+                <div class="flex w-full border shadow-md rounded-xl my-1 px-4 lg:py-2 lg:px-10 bg-purple-100 hover:bg-purple-200">
                   {{player.name}}
                 </div>
               </ol>

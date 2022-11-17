@@ -107,7 +107,7 @@ const getPlayersRequest = async () => {
         <div class="flex flex-col w-3/4">
               <ol class="flex" v-for="player in players" :key="player.id">
                 <div class="flex flex-row w-full border shadow-md rounded-xl my-1 px-4 lg:py-3 lg:px-10 bg-rose-100 hover:bg-rose-500 text-xl">
-                  <div class="flex-1 flex-col self-center">{{(playersInfo[players.indexOf(player)]).elo}}</div>
+                  <!-- <div class="flex-1 flex-col self-center">{{(playersInfo[players.indexOf(player)]).elo}}</div> -->
                   <div class="flex-1 flex-col self-center">{{ player.name }}</div>
                 </div>
               </ol>

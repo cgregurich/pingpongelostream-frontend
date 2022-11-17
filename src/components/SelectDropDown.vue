@@ -4,24 +4,24 @@
 <template>
 
     <!-- Wraps our reusable drop down menu -->
-    <section class="flex relative w-1/4 h-10 rounded bg-yellow-100 border b-shadow-10px">
+    <section class="relative w-1/3 h-10 rounded bg-purple-100 border border-purple-300 b-shadow-10px text-base">
 
         <!-- Open/Close menu button -->
-        <button class="flex rounded-md absolute items-center pr-2 pl-2 w-full h-full cursor-pointer z-2" ref="menu" @click="openClose">
+        <button class="flex rounded-md absolute top-0 left-0 items-center pr-2 pl-2 w-full h-full cursor-pointer z-2" ref="menu" @click="openClose">
             {{menuTitle}}
         </button>
 
-        <!-- css icon that indicates open or closed menu -->
-        <div class="w-25 h-25 absolute pt-2 pr-2 translate-y-1/2 z-1"> 
-        <div class="w-full max-w-xs h-4 bg-blue absolute pt-2 pl-2 border -translate-x-1/2 -translate-y-1/2 ease-out" :class="{ '-translate-x-1/2 -translate-y-1/2 bg-red mt-0 rotate-45' : isOpen}"/>
-        <div class="w-full max-w-xs h-4 bg-blue absolute pt-2 pl-2 border -translate-x-1/2 -translate-y-1/2 ease-out opacity-1" :class="{ 'opacity-0' : isOpen}"/>
-        <div class="w-full max-w-xs h-4 bg-blue absolute pt-2 pl-2 border -translate-x-1/2 -translate-y-1/2 ease-out" :class="{ '-translate-x-1/2 -translate-y-1/2 bg-red mt-2 rotate-45' : isOpen}"/>
+        <!-- css icon that indicates open or closed menu ( Hamburger Icon type thing OR X to close icon )-->
+        <div class="w-6 h-6 absolute top-1/2 right-2 -translate-y-1/2 z-1"> 
+        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-[calc(-50%_-_5px)] ease-in-out duration-300" :class="{ 'bg-purple-700 -translate-x-1/2 -translate-y-[calc(-50%)] rotate-45' : isOpen}"/>
+        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-1/2 ease-in-out duration-300 opacity-1" :class="{ 'opacity-0' : isOpen}"/>
+        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-[calc(-50%_+_8px)] ease-in-out duration-300" :class="{ 'bg-purple-700 -translate-x-1/2 -translate-y-[calc(-50%)] -rotate-45' : isOpen}"/>
         </div>
 
         <!-- element that will wrap the actual menu content -->
-        <section class="absolute w-full border border-2 border-gray-600 bg-pink px-1 py-1 ease-in" v-if="isOpen">
+        <section class="absolute top-full w-full min-w-300 min-h-10 border rounded border-purple-300 shadow-md bg-purple-100 my-3.5 px-2 py-2.5 ease-in-out duration-300" v-if="isOpen">
             <!-- for pointing to menu arrow -->
-            <div class="w-2 h-2 absolute bl-1 bt-1 border-gray-600 bg-white rotate-45 rounded-md" />
+            <div class="w-5 h-5 absolute -top-2.5 left-2 border-l border-t border-purple-300 bg-purple-100 rotate-45 rounded-md" />
             <!-- content from the parent will be printed here -->
             <slot/>
         </section>
