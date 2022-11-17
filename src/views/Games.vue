@@ -55,6 +55,10 @@ function isOngoingGame(game) {
   return game.started_at != null && game.completed_at == null;
 }
 
+function isCompletedGame(game) {
+  return game.completed_at != null;
+}
+
 const recentUnplayedSinglesGames = computed(() => {
   return games.filter(game => isSinglesGame(game) && isUnplayedGame(game)).slice(-5).reverse();
 });
@@ -65,6 +69,10 @@ const recentUnplayedDoublesGames = computed(() => {
 
 const allOngoingGames = computed(() => {
   return games.filter(game => isOngoingGame(game));
+});
+
+const completedSinglesGames = computed(() => {
+  return games.filter(game => isSinglesGame(game) && isCompletedGame(game));
 });
 
 function getGameText(game) {
@@ -112,6 +120,12 @@ function getDoublesGameText(game) {
         @click="router.push({ name: 'Play', params: { gameID: game.id } })"
       >
         {{ getDoublesGameText(game) }}
+      </div>
+    </div>
+    <div class="completed">
+      <h1 class="text-2xl">Completed Singles (newest at top)</h1>
+      <div class="game bg-gray-300 w-max my-4 mx-6" v-for="game in completedSinglesGames" :key="game.id">
+        {{ getSinglesGameText(game) }}
       </div>
     </div>
 </template>

@@ -85,16 +85,16 @@ function getClasses() {
 
   <!-- Previous Sets -->
   <!-- For Left Team -->
-  <div v-show="teamNumber === 1" class="p1-won-sets w-full flex justify-around items-center h-[75px]">
+  <div v-show="teamNumber === 1" class="team-one-won-sets w-full flex justify-around items-center h-[75px]">
     <div class="won-set text-xl h-max font-bold bg-site-color-two text-site-color-one rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
-      {{ set.p1Score }} - {{ set.p2Score }}
+      {{ set.teamOneScore }} - {{ set.teamTwoScore }}
     </div>
   </div>
   
   <!-- For Right Team -->
-  <div v-if="teamNumber === 2" class="p2-won-sets w-full flex justify-around items-center h-[75px]">
+  <div v-if="teamNumber === 2" class="team-two-won-sets w-full flex justify-around items-center h-[75px]">
     <div class="won-set text-xl font-bold bg-site-color-one text-site-color-two rounded-lg px-2 py-3" v-for="(set, index) in wonSets" :key="index">
-      {{ set.p1Score }} - {{ set.p2Score }}
+      {{ set.teamOneScore }} - {{ set.teamTwoScore }}
     </div>
   </div>
 </div>

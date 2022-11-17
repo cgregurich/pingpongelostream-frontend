@@ -73,9 +73,21 @@ export async function startGame(gameID) {
   else return null;
 }
 
-export async function updateOngoingGame(gameID, setNum, sets) {
+export async function updateOngoingGame(gameID, setNum, points) {
+  const data = { points: points };
   const config = { headers: authStore.bearerToken };
-  const response = await axios.post(`${API_URL}/games${gameID}/playing/sets/${setNum}/${setNum}`, sets, config);
-  
+  const response = await axios.post(`${API_URL}/games/${gameID}/playing/sets/${setNum}`, data, config);
+  if (response.status === 200) {
+    return response.data.response;
+  }
+  else return null;
+}
 
+export async function completeGame(gameID) {
+  const config = { headers: authStore.bearerToken };
+  const response = await axios.post(`${API_URL}/games/${gameID}/complete`, null, config);
+  if (response.status === 200) {
+    return response.data.response;
+  }
+  else return null;
 }

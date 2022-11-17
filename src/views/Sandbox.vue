@@ -21,8 +21,7 @@ const myComputed = computed(() => {
 </script>
 
 <template>
-<div>Hello, Sandbox</div>
-<div>Here is a computed property: {{ myComputed }}</div>
+<button>Add to ref thign</button>
 </template>
 
 dom -> onMounted
