@@ -1,8 +1,12 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, toRaw } from 'vue';
+import { useRouter } from 'vue-router';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import TeamContainer from '@/components/PlayGame/TeamContainer.vue';
 import * as apiCalls from '@/utils/apiCalls.js';
+import * as toasts from '@/utils/toasts.js';
+
+const router = useRouter();
 
 const props = defineProps({
   gameID: Number
@@ -34,10 +38,14 @@ const currentSetPoints = reactive([]);
 onMounted(async () => {
   disableInput.value = true;
 
-  await loadGame();
+  if (!await loadGame()) {
+    toasts.gameNotFound(() => router.push({ name: 'Games' }));
+    return;
+  }
   await loadGameMode();
   setGameRules();
   setTeamPlayers();
+  setStartingServers();
 
   disableInput.value = false;
 });
@@ -45,13 +53,14 @@ onMounted(async () => {
 
 async function loadGame() {
   const fetchedGame = await apiCalls.getGame(props.gameID);
-  if (!fetchedGame) console.err('Something went wrong fetching game');
+  if (!fetchedGame) return false;
   Object.assign(game, fetchedGame);
+  return true;
 }
 
 async function loadGameMode() {
   const fetchedGameMode = await apiCalls.getGameMode(game.mode_id);
-  if (!fetchedGameMode) console.err('Something went wrong fetching game mode');
+  if (!fetchedGameMode) console.error('Something went wrong fetching game mode');
   Object.assign(gameMode, fetchedGameMode);
 }
 
@@ -68,7 +77,6 @@ function setGameRules() {
   SETS_TO_WIN_MATCH = Math.ceil(gameMode.set_count / 2);
   SERVE_SWITCH = gameMode.serve_switch;
 
-  // plus 1 because of weirdness in the backend. 
   teamServing.value = game.first_server;
 }
 
@@ -77,6 +85,17 @@ function setTeamPlayers() {
   teamTwoPlayers.value = game.teams[1].members;
 }
 
+function setStartingServers() {
+  if (game.team1_first_server_id === game.teams[0].members[0].id) {
+    teamOnePlayerServing.value = 0;
+  }
+  else teamOnePlayerServing.value = 1;
+
+  if (game.team2_first_server_id === game.teams[1].members[0].id) {
+    teamTwoPlayerServing.value = 0;
+  }
+  else teamTwoPlayerServing.value = 1;
+}
 
 
 
@@ -101,6 +120,8 @@ const teamTwoGameScore = ref(0);
 
 //FIXME: use the serving settings from backend; rn just hardcoding it
 const teamServing = ref(null);
+
+// These are indices, not IDs
 const teamOnePlayerServing = ref(0);
 const teamTwoPlayerServing = ref(0);
 
@@ -116,20 +137,6 @@ const servingPlayerID = computed(() => {
 });
 
 
-function pickRandomServer() {
-  // teamServing is 0 or 1
-  teamServing.value = Math.round(Math.random());
-
-  /*
-  teamXXXPlayerServing is 0 or 1
-  */
-  if (gameMode.id === 2) {
-    // Only pick random servers within teams if playing doubles
-    teamOnePlayerServing.value = Math.round(Math.random());
-    teamTwoPlayerServing.value = Math.round(Math.random());
-  }
-}
-
 const pointsTillServerSwap = ref(null);
 
 watch(pointsTillServerSwap, () => {
@@ -140,11 +147,6 @@ watch(pointsTillServerSwap, () => {
 });
 
 function changeServers() {
-  /*
-  Keep in mind that the backend uses 1 and 2 for the two teams, but for the
-  teamXXXPlayerServing I use 0 or 1, since it'll be used as an index.
-  So in one case, numbers mean one-based, and in another it's zero-based.
-  */
   if (teamServing.value === 0) {
     teamServing.value = 1;
 
@@ -182,14 +184,31 @@ async function controlButtonClicked() {
     apiCalls.startGame(game.id);
     startNewSet();
   }
-  else if (gameState.value === GameStates.InProgress) ;
+
+  // Set is over, but more sets need to be played before game is over
   else if (gameState.value === GameStates.SetFinished) {
-    await saveFinishedSet();
-    pickRandomServer();
-    startNewSet();
+    toasts.submittingSet();
+    if (await sendGameUpdate()) {
+      toasts.setSubmitted();
+      saveFinishedSet();
+      startNewSet();
+    }
+    else {
+      toasts.submittingSetFailed();
+    }
   }
+
+
+  // Last set is over, so set and game needs to be submitted
   else if (gameState.value === GameStates.LastSetFinished) {
-    await confirmLastSetFinished();
+    toasts.submittingGame();
+    if (await sendFinalGameUpdate()) {
+      toasts.gameSubmitted();
+      confirmLastSetFinished();
+    }
+    else {
+      toasts.submittingGameFailed();
+    }
   }
 }
 
@@ -215,14 +234,28 @@ function undoLastPoint() {
 }
 
 function startNewSet() {
+  // Reset set scores
   teamOneSetScore.value = 0;
   teamTwoSetScore.value = 0;
   
+  // Empty current set points and undo stack
   // must use splice(0) to empty reactive arrays
   currentSetPoints.splice(0);
   undoStack.splice(0);
 
   pointsTillServerSwap.value = pointsPerServer.value;
+
+  // Assign serving team of new set
+  if (previousSets.length % 2 === 0) {
+    teamServing.value = game.first_server;
+  }
+  else {
+    // If first_server is 1, teamServing should be 0
+    // If first_server is 0, teamServing should be 1
+    teamServing.value = Math.abs(game.first_server - 1);
+  }
+
+
 
 
   gameState.value = GameStates.InProgress;
@@ -257,21 +290,26 @@ function pointScored(teamID) {
 }
 
 async function sendGameUpdate() {
-  await apiCalls.updateOngoingGame(game.id, previousSets.length + 1, toRaw(currentSetPoints));
+  return await apiCalls.updateOngoingGame(game.id, previousSets.length + 1, toRaw(currentSetPoints));
 }
 
-async function saveFinishedSet() {
-  console.log('sending game update');
-  await sendGameUpdate();
-  console.log('done with game update');
+async function sendFinalGameUpdate() {
+  if (await sendGameUpdate()) {
+    return await apiCalls.completeGame(game.id);
+  }
+  else {
+    return null;
+  }
+}
+
+function saveFinishedSet() {
   previousSets.push({ teamOneScore: teamOneSetScore.value, teamTwoScore: teamTwoSetScore.value });
   if (playerOneWonSet()) teamOneGameScore.value++;
   else if (playerTwoWonSet()) teamTwoGameScore.value++;
 }
 
 async function confirmLastSetFinished() {
-  await saveFinishedSet();
-  apiCalls.completeGame(game.id);
+  saveFinishedSet();
   gameState.value = GameStates.GameOver;
 }
 
@@ -321,6 +359,10 @@ const allowScoreInput = computed(() => gameState.value === GameStates.InProgress
 const teamOneID = computed(() => game.teams[0].id);
 const teamTwoID = computed(() => game.teams[1].id);
 
+function test() {
+  toasts.submittingSet();
+}
+
 </script>
 
 
@@ -344,6 +386,7 @@ const teamTwoID = computed(() => game.teams[1].id);
       <div class="flex justify-center items-center bg-opacity-30 mt-12 w-[150px] h-[75px] bg-white p-4 backdrop-blur-lg shadow-gray-700 shadow-sm rounded-xl" >
         <div v-show="gameState === GameStates.InProgress || gameState === GameStates.GameOver">{{ gameControlText }}</div>
         <PrimaryButton class="animate-pulse" :disabled="disableInput" v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" @click="controlButtonClicked" :text="gameControlText" />  
+        <!-- <PrimaryButton @click="test" text="Test" />   -->
       </div>
     </div>
 

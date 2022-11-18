@@ -31,7 +31,7 @@ onMounted(async () => {
 async function loadGameModes() {
   const fetchedGameModes = await apiCalls.getGameModes();
   if (!fetchedGameModes) {
-    console.err('something went wrong getting all game modes');
+    console.error('something went wrong getting all game modes');
     return;
   }
   Object.assign(gameModes, fetchedGameModes);
@@ -40,7 +40,7 @@ async function loadGameModes() {
 async function loadPlayers() {
   const fetchedPlayers = await apiCalls.getAllPlayers();
   if (!fetchedPlayers) {
-    console.err('something went wrong getting all players');
+    console.error('something went wrong getting all players');
     return;
   }
   Object.assign(players, fetchedPlayers);

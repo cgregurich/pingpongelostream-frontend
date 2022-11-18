@@ -24,7 +24,7 @@ async function loadGames() {
   const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${props.seasonID}`);
   console.log(response);
   if (response.status === 200) {
-    const fetchedGames = response.data.response.games;
+    const fetchedGames = response.data.response.games.reverse();
     const fetchedTeam = response.data.response.team;
     Object.assign(games, fetchedGames);
     Object.assign(team, fetchedTeam);
