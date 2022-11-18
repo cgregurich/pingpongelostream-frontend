@@ -9,6 +9,8 @@ module.exports = {
     extend: {
       colors: {
         'skeleton-color': colors.gray[200],
+        'site-color-one': colors.purple[100],
+        'site-color-two': colors.purple[800],
       }
     },
   },
