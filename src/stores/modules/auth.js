@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { apiCall } from '../utils/apiCall';
-import { API_URL, REGISTER, LOGIN, SELF, PROFILE } from '../utils/backendRouteParts';
+import { API_URL, REGISTER, LOGIN, SELF, PROFILE, DELETE } from '../utils/backendRouteParts';
 
 export const useAuthStore = defineStore('user', {
     state: () => ({
@@ -96,6 +96,22 @@ export const useAuthStore = defineStore('user', {
                 (data) => {
                     console.log(data);
                     this.user = data.user;
+                },
+                undefined,
+                typeof callback == 'function' ? callback : undefined,
+                undefined,
+                typeof errorHandler == 'function' ? errorHandler : (e) => { console.error(e); }
+            );
+        },
+        async deleteUser(pass, callback, errorHandler, setState) {
+            return await apiCall(
+                () => axios.post(
+                    API_URL + PROFILE + DELETE,
+                    pass,
+                    this.baseHeader
+                ),
+                () => {
+                    this.logout();
                 },
                 undefined,
                 typeof callback == 'function' ? callback : undefined,

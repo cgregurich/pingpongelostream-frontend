@@ -4,6 +4,7 @@ const SELF = '/self';
 const LOGIN = '/login';
 const REGISTER = '/register';
 const PROFILE = '/profile';
+const DELETE = '/delete';
 
 console.log(API_URL, import.meta.env.VITE_BACKEND_BASE_URL);
 export {
@@ -11,5 +12,6 @@ export {
     SELF,
     LOGIN,
     REGISTER,
-    PROFILE
+    PROFILE,
+    DELETE
 };
