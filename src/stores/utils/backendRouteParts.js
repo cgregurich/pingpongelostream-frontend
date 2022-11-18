@@ -6,6 +6,8 @@ const REGISTER = '/register';
 const PROFILE = '/profile';
 const DELETE = '/delete';
 const PASSWORD = '/password';
+const ALLTOKENS = '/get-all-tokens';
+const DELETEALLTOKENS = '/full-sign-out';
 
 console.log(API_URL, import.meta.env.VITE_BACKEND_BASE_URL);
 export {
@@ -15,5 +17,7 @@ export {
     REGISTER,
     PROFILE,
     DELETE,
-    PASSWORD
+    PASSWORD,
+    ALLTOKENS,
+    DELETEALLTOKENS
 };
