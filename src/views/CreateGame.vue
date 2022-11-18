@@ -25,7 +25,7 @@ onMounted(async () => {
 
   disableInput.value = false;
 
-  setUp(); // FIXME: just used for testing
+  // setUp(); // FIXME: just used for testing
 });
 
 async function loadGameModes() {
@@ -57,7 +57,7 @@ const teamTwoPlayers = reactive([]);
 
 
 
-function setUp() { // FIXME: just used for testing
+function setUp() { // start with some players in the unassigned; used for testing
   unassignedPlayers.push(getPlayer('alex wissing'));
   unassignedPlayers.push(getPlayer('colin gregurich'));
   unassignedPlayers.push(getPlayer('terrah quinlan'));

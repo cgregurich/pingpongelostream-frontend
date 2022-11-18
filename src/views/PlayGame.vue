@@ -155,7 +155,7 @@ function changeServers() {
   }
   else if (teamServing.value === 1) {
     teamServing.value = 0;
-    // Change whihc player on the team is serving only if playing doubles
+    // Change which player on the team is serving only if playing doubles
     if (gameMode.id === 2) {
       teamTwoPlayerServing.value = teamTwoPlayerServing.value === 0 ? 1 : 0;
     }
@@ -164,7 +164,9 @@ function changeServers() {
 
 const pointsPerServer = computed(() => {
   // If overtime, switch server every 1 point
-  if (teamOneSetScore.value >= 10 && teamTwoSetScore.value >= 10) return 1;
+  if (teamOneSetScore.value >= gameMode.win_score - 1 && teamTwoSetScore.value >= gameMode.win_score - 1) {
+    return 1;
+  }
   // Otherwise, switch based on game mode's rules
   else return SERVE_SWITCH;
 });
@@ -175,18 +177,20 @@ function incrementScoreClicked(teamID) {
   else pointScored(teamID);
 }
 
-function controlButtonClicked() {
+async function controlButtonClicked() {
   if (gameState.value === GameStates.NotStarted) {
     apiCalls.startGame(game.id);
     startNewSet();
   }
   else if (gameState.value === GameStates.InProgress) ;
   else if (gameState.value === GameStates.SetFinished) {
-    saveFinishedSet();
+    await saveFinishedSet();
     pickRandomServer();
     startNewSet();
   }
-  else if (gameState.value === GameStates.LastSetFinished) confirmLastSetFinished();
+  else if (gameState.value === GameStates.LastSetFinished) {
+    await confirmLastSetFinished();
+  }
 }
 
 function undoLastPoint() {
@@ -253,19 +257,20 @@ function pointScored(teamID) {
 }
 
 async function sendGameUpdate() {
-  return await apiCalls.updateOngoingGame(game.id, previousSets.length + 1, toRaw(currentSetPoints));
+  await apiCalls.updateOngoingGame(game.id, previousSets.length + 1, toRaw(currentSetPoints));
 }
 
-function saveFinishedSet() {
-  sendGameUpdate();
+async function saveFinishedSet() {
+  console.log('sending game update');
+  await sendGameUpdate();
+  console.log('done with game update');
   previousSets.push({ teamOneScore: teamOneSetScore.value, teamTwoScore: teamTwoSetScore.value });
   if (playerOneWonSet()) teamOneGameScore.value++;
   else if (playerTwoWonSet()) teamTwoGameScore.value++;
 }
 
-function confirmLastSetFinished() {
-  saveFinishedSet();
-  console.log('calling complete game');
+async function confirmLastSetFinished() {
+  await saveFinishedSet();
   apiCalls.completeGame(game.id);
   gameState.value = GameStates.GameOver;
 }
@@ -281,10 +286,10 @@ function isLastSet() {
 }
 
 function playerOneWonSet() {
-  return teamOneSetScore.value >= POINTS_TO_WIN_SET&& teamOneSetScore.value - teamTwoSetScore.value >= WIN_SET_BY;
+  return teamOneSetScore.value >= POINTS_TO_WIN_SET && teamOneSetScore.value - teamTwoSetScore.value >= WIN_SET_BY;
 }
 function playerTwoWonSet() {
-  return teamTwoSetScore.value >= POINTS_TO_WIN_SET&& teamTwoSetScore.value - teamOneSetScore.value >= WIN_SET_BY;
+  return teamTwoSetScore.value >= POINTS_TO_WIN_SET && teamTwoSetScore.value - teamOneSetScore.value >= WIN_SET_BY;
 }
 
 
@@ -320,8 +325,6 @@ const teamTwoID = computed(() => game.teams[1].id);
 
 
 <template>
-  <div>currentSetPoints: {{ currentSetPoints }}</div>
-  <div>teamOneWonSets: {{ teamOneWonSets }}</div>
   <div class="display flex flex-col items-center relative h-[calc(100vh-4rem-1px)]">
     <!-- Controls -->
     <div class="controls absolute z-20 right-0 left-0 mx-auto my-auto bottom-0 top-0 w-min h-min flex flex-col items-center justify-center">
