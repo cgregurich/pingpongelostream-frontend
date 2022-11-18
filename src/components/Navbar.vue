@@ -1,18 +1,24 @@
 <script setup>
 	import { ref, computed, watch } from 'vue';
-	import { useRoute } from 'vue-router'
+	import { useRouter, useRoute } from 'vue-router'
+	import { isRoutePublic } from '../router/route-util';
 	import Dropdown from '@/components/Dropdown.vue';
 	import DropdownLink from '@/components/DropdownLink.vue';
 	import NavLink from '@/components/NavLink.vue';
 	import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
+	import { useAuthStore } from '../stores/modules/auth';
+
+	const authStore = useAuthStore();
+	const router = useRouter();
 	const route = useRoute();
 	const props = defineProps({
 		user: Object
 	});
 	const showingNavigationDropdown = ref(false);
 	const logout = () => {
-		// call sign out route.
-		console.error('not yet implemented. Log out.');
+		authStore.logout();
+		if (!isRoutePublic(route))
+			router.push({ name: 'Login' });
 	};
 	const isLoggedIn = computed(
 		() => props.user
@@ -85,7 +91,7 @@
 										<button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
 											<img
 												class="h-8 w-8 rounded-full object-cover"
-												:src="user.profile_photo_url"
+												:src="user.profile_photo_path"
 												:alt="user.name"
 											>
 										</button>
@@ -185,7 +191,7 @@
 								<div class="shrink-0 mr-3">
 									<img
 										class="h-10 w-10 rounded-full object-cover"
-										:src="user.profile_photo_url"
+										:src="user.profile_photo_path"
 										:alt="user.name"
 									>
 								</div>
