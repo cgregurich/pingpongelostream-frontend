@@ -8,9 +8,9 @@ import DeleteUserForm from '@/components/EditProfile/DeleteUserForm.vue';
     <div>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
             <UpdateProfileInformationForm />
-            <UpdatePasswordForm class="mt-10 sm:mt-0" />
-            <ActiveSessionsForm :sessions="{}" class="mt-10 sm:mt-0" />
-            <DeleteUserForm class="mt-10 sm:mt-0" />
+            <UpdatePasswordForm class="mt-10" />
+            <ActiveSessionsForm :sessions="{}" class="mt-10" />
+            <DeleteUserForm class="mt-10" />
         </div>
     </div>
 </template>
