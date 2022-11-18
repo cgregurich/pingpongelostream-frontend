@@ -16,6 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.1",
     "axios": "^1.1.2",
     "dotenv": "^16.0.3",
+    "form-data": "^4.0.0",
     "pinia": "^2.0.22",
     "video.js": "^7.20.3",
     "vue": "^3.2.37",

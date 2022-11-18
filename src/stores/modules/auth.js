@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { apiCall } from '../utils/apiCall';
-import { API_URL, REGISTER, LOGIN, SELF } from '../utils/backendRouteParts';
+import { API_URL, REGISTER, LOGIN, SELF, PROFILE } from '../utils/backendRouteParts';
 
 export const useAuthStore = defineStore('user', {
     state: () => ({
@@ -79,6 +79,29 @@ export const useAuthStore = defineStore('user', {
             this.token = null;
             this.user = null;
             window.localStorage.clear();
+        },
+        async updateProfile(updatedUserInfo, callback, errorHandler) {
+            console.log(updatedUserInfo);
+            let data = new FormData();
+            data.append('_method', 'PUT');
+            data.append('name', updatedUserInfo.name);
+            data.append('email', updatedUserInfo.email);
+            data.append('photo', updatedUserInfo.photo, updatedUserInfo.photo.name);
+            return await apiCall(
+                () => axios.post( // php doesn't parse mutli-part/form-data on puts, so create a fake put
+                    API_URL + PROFILE,
+                    data,
+                    {headers: { ...this.baseHeader.headers, 'Content-Type': 'multipart/form-data' }}
+                ),
+                (data) => {
+                    console.log(data);
+                    this.user = data.user;
+                },
+                undefined,
+                typeof callback == 'function' ? callback : undefined,
+                undefined,
+                typeof errorHandler == 'function' ? errorHandler : (e) => { console.error(e); }
+            );
         }
     }
 });
