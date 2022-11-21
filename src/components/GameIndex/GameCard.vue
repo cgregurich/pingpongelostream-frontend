@@ -1,32 +1,40 @@
 <script setup>
 import axios from "axios";
-import { onMounted, reactive } from 'vue'
+import { onBeforeMount, onMounted, onUpdated, reactive, ref } from 'vue'
 import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
 import SelectDropDown from "../SelectDropDown.vue";
 import TeamCard from "./TeamCard.vue";
 // import Pagination from '../components/Pagination.vue'
 
+// var gameData = ({
+//   data() {
+//     return { games: [] }
+//   },
 
-const games = reactive([]);
+// })
+
+const games = ref([]);
+const pageHeader = ref('Completed');
 var winningTeamObject = "";
 var losingTeamObject = "";
-const dropDownSelections = { Recent:'Recent Played Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
-var gameOption = 'recent';
+const dropDownSelections = { Completed:'Recent Played Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
+var gameOption = 'completed';
 var currentSeason = 1;
 // const totalPages = 10;
 const currentPage = 1;
 // const perPage = 6;
 // var gameNum = 0;
-// var page = 1;
+var pageNum = 1;
+var value = 'completed';
 
-// function onPageChange(page) {
-//       console.log(page)
-//       this.currentPage = page;
-//     }
 
 onMounted(async () => {
   await getRequest();
 })
+
+// onUpdated(async () => {
+//    games;
+// })
 
 function formatDate(date) {
   const options = {year: 'numeric', month: 'long', day: 'numeric'}
@@ -55,15 +63,21 @@ function getLosingTeam(game) {
  * Handles get request
  * TODO - only handling season #1
  */
-const getGames = async (value) => {
-  if(value == 'recent') {
-    getRequest(value);
+function getGames(value) {
+  if(value == 'completed') {
+    gameOption = value = 'completed';
+    pageHeader.value = 'Completed';
+    getRequest();
   }
   else if(value == 'scheduled') {
-    getRequest(value);
+    gameOption = value = 'scheduled';
+    pageHeader.value = 'Scheduled';
+    getRequest();
   }
   else if(value == 'playing'){
-    getRequest(value);
+    gameOption = value = 'playing';
+    pageHeader.value = 'Playing';
+    getRequest();
   }
   else {
     gameOption = value;
@@ -71,16 +85,20 @@ const getGames = async (value) => {
   }
 }
 
-const getRequest = async (value) => {
+/**
+ * Game options are: scheduled, playing, completed
+ * 
+ */
+const getRequest = async () => {
   try {
-    const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason);
+    const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason + "?page=" + pageNum + "&size=5&type=" + gameOption);
     // /paginated/season/" + currentSeason "?page=" + currentPage + "&size=10&type=" + gameOption
     if(response.status === 200) {
         const fetchedGames = response.data.response.games;
         console.log(fetchedGames);
-        Object.assign(games, fetchedGames);
+        // Object.assign(games, fetchedGames);
+        games.value = fetchedGames;
     }
-    gameOption = value;
   } catch (err) {
     console.error(err);
   }
@@ -91,7 +109,8 @@ const getRequest = async (value) => {
  */
 function getPage(value) {
   console.log("value: " + value + " and gameOption: " + gameOption);
-  value != gameOption && getGames(value)
+  value != gameOption && getGames(value);
+  console.log(games.value);
 }
 
 </script>
@@ -112,22 +131,23 @@ function getPage(value) {
       "
     >
     <div class="flex flex-row w-full p-4 pt-7">
-      <div class="flex w-full text-5xl font-semibold relative left-20">Recent Games</div>
+      <div class="flex w-full text-5xl font-semibold relative left-20">{{pageHeader}} Games</div>
       <div class="flex w-full mb-12">
         <SelectDropDown menu-title="Game Options" class="w-2/3 absolute left-20">
           <section class="pb-1 border-b border-purple-300">
-            <button @click="getPage('recent')">{{dropDownSelections.Recent}}</button>
+            <button :id="gameOption" @click="getPage('completed')">{{dropDownSelections.Completed}}</button>
           </section>
           <section class="py-1 border-b border-purple-300">
-            <button @click="getPage('scheduled')">{{dropDownSelections.Scheduled}}</button>
+            <button :id="gameOption" @click="getPage('scheduled')">{{dropDownSelections.Scheduled}}</button>
           </section>
           <section class="pt-1">
-            <button @click="getPage('playing')">{{dropDownSelections.Playing}}</button>
+            <button :id="gameOption" @click="getPage('playing')">{{dropDownSelections.Playing}}</button>
           </section>
         </SelectDropDown>
       </div>
     </div>
       <div class="flex flex-col w-3/4 mt-10">
+        <!-- TODO Something when no games are displayed -->
             <div class="flex flex-col w-full" v-for="game in games" :key="game.teams">
               <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
                 <!-- <div class="flex flex-row w-full last:items-end border shadow-md rounded-xl py-2 px-4 lg:py-2 lg:px-10 bg-indigo-100 hover:bg-indigo-500"> -->

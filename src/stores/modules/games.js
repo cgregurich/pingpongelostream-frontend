@@ -6,7 +6,10 @@ import { API_URL, GAMES } from '../utils/backendRouteParts';
 export const useGameStore = defineStore('game', {
     state: () => ({
         gameData: null,
-        token: null
+        // token: null
+        currentSeason,
+        pageNum,
+        gameOption,
     }),
     getters: {
         baseHeader(state) {
@@ -17,7 +20,7 @@ export const useGameStore = defineStore('game', {
         async getGames() {
             await apiCall(
                 () => axios.get(
-                    API_URL + GAMES,
+                    API_URL + GAMES + "/season/" + currentSeason + "?page=" + pageNum + "&size=5&type=" + gameOption,
                     this.baseHeader
                 ),
                 (data) => {
