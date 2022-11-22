@@ -50,7 +50,7 @@
 							<div class="logo flex items-center text-2xl font-bold h2">
 								<router-link
 									:to="isLoggedIn
-										? { name: 'Dashboard' }
+										? { name: 'Leaderboard' }
 										: { name: 'Home' }"
 								>
 									<font-awesome-icon icon="fa-table-tennis-paddle-ball" class="pl-4 pr-1" />
