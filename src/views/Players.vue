@@ -3,7 +3,7 @@ import axios from "axios";
 // import { useGameStore } from "../stores/modules/games";
 import { API_URL, PLAYERS } from '@/stores/utils/backendRouteParts.js'
 import { reactive } from 'vue'
-// import Pagination from '../components/Pagination.vue'
+import Pagination from '../components/Pagination.vue'
 
 const players = reactive([]);
 // const game = reactive();
@@ -78,12 +78,13 @@ const getPlayersRequest = async () => {
         <div
           class="line w-4/5 lg:mt-40 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
         ></div>
-        <!-- <pagination
-          :totalPages= totalPages
-          :perPage=perPage
-          :currentPage= currentPage
-          @pagechanged="onPageChange"
-        /> -->
+        <pagination
+        :totalPages='totalPages'
+        :totalItems="totalItems"
+        :perPage="perPage"
+        :currentPage="currentPage"
+        @pagechanged='onPageChange'
+        />
       </div>
     </div>
   </body>

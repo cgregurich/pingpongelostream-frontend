@@ -68,7 +68,7 @@
     </ul>
   </template>
   
-  <script>
+<script>
   export default {
     name: 'Pagination',
     props: {

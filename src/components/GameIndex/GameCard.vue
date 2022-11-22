@@ -115,6 +115,7 @@ function getPage(value) {
 function onPageChange(page) {
   console.log("page is " + page);
   currentPage.value = page;
+  getRequest();
 }
 
 </script>
@@ -170,7 +171,7 @@ function onPageChange(page) {
         :totalItems="totalItems"
         :perPage="perPage"
         :currentPage="currentPage"
-        @pagechanged='onPageChange()'/>
+        @pagechanged='onPageChange'/>
     </div>
   </div>
 </template>

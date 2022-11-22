@@ -13,9 +13,9 @@
 
         <!-- css icon that indicates open or closed menu ( Hamburger Icon type thing OR X to close icon )-->
         <div class="w-6 h-6 absolute top-1/2 right-2 -translate-y-1/2 z-1"> 
-        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-[calc(-50%_-_5px)] ease-in-out duration-300" :class="{ 'bg-purple-700 -translate-x-1/2 translate-y-1/3 rotate-45' : isOpen}"/>
+        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-[calc(-50%_-_5px)] ease-in-out duration-300" :class="{ 'bg-purple-700 -translate-x-1/2 translate-y-1/2 rotate-45' : isOpen}"/>
         <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-1/2 ease-in-out duration-300 opacity-1" :class="{ 'opacity-0' : isOpen}"/>
-        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-[calc(-50%_+_8px)] ease-in-out duration-300" :class="{ 'bg-purple-700 absolute top-1/2 -translate-x-1/2 translate-y-1/3 -rotate-45' : isOpen}"/>
+        <div class="w-full max-w-xs h-0.5 bg-stone-800 absolute top-1/2 left-1/2 rounded-3xl -translate-x-1/2 -translate-y-[calc(-50%_+_8px)] ease-in-out duration-300" :class="{ 'bg-purple-700 absolute top-1/2 -translate-x-1/2 translate-y-1/2 -rotate-45' : isOpen}"/>
         </div>
 
         <!-- element that will wrap the actual menu content -->
