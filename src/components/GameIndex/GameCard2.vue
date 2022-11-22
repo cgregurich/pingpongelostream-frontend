@@ -1,4 +1,4 @@
-<script setup>
+<script>
 import axios from "axios";
 import { onBeforeMount, onMounted, onUpdated, reactive, ref } from 'vue'
 import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
@@ -6,89 +6,84 @@ import SelectDropDown from "../SelectDropDown.vue";
 import TeamCard from "./TeamCard.vue";
 import Pagination from "../Pagination.vue";
 
-const games = ref([]);
-// const games = reactive([]);
-const pageHeader = ref('Completed');
-var winningTeamObject = "";
-var losingTeamObject = "";
-const dropDownSelections = { Completed:'Recent Played Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
-var gameOption = 'completed';
-var value = 'completed';
-// TODO - need to grab current Season
-var currentSeason = 1;
-// Variables for Pagination component
-const totalPages = ref(10);
-const totalItems = ref(100);
-const perPage = 5;
-const currentPage = ref(1);
+// ATTEMPTING TO UNDERSTAND A BETTER WAY TO SETUP/MOUNT THIS PAGE
 
+export default {
+    name: 'GameCard2',
+    components: {
+        SelectDropDown,
+        TeamCard,
+        Pagination
+    },
+    data() {
+        return {
+            //Do I need the 'return?'
+            games: [],
+            pageHeader: 'Completed',
+            winningTeamObject: '',
+            losingTeamObject: '',
+            dropDownSelections: { Completed:'Recent Played Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'},
+            gameOption: 'completed',
+            value: 'completed',
+            currentSeason: 1,
+            totalPages: 10,
+            totalItems: games.length,
+            perPage: 5,
+            currentPage: 1,
+        }
+    },
+    mounted() {
+      getRequest();
+    },
+    methods: {
+        formatDate: function (date) {
+            const options = {year: 'numeric', month: 'long', day: 'numeric'}
+            return new Date(date).toLocaleDateString('en', options)
+        },
+        getWinningTeam: function (game) {
+            let winner = game.teams[0].pivot.set_score > game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
+            return winner;
+        },
+        getLosingTeam: function (game) {
+            let loser = game.teams[0].pivot.set_score < game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
+            return loser;
+        },
+        getGames: function (value) {
+            if(value == 'completed') {
+                gameOption = value = 'completed';
+                pageHeader.value = 'Completed';
+                getRequest();
+            }
+            else if(value == 'scheduled') {
+                gameOption = value = 'scheduled';
+                pageHeader.value = 'Scheduled';
+                getRequest();
+            }
+            else if(value == 'playing'){
+                gameOption = value = 'playing';
+                pageHeader.value = 'Playing';
+                getRequest();
+            }
+            else {
+                gameOption = value;
+                console.log("Something went wrong, gameOption is " + gameOption)
+            }
+        },
+        getPage: function (value) {
+            console.log("value: " + value + " and gameOption: " + gameOption);
+            value != gameOption && getGames(value);
+            console.log(games.value);
+            },
 
-
-
-onMounted(async () => {
-  await getRequest();
-})
-
-// onUpdated(async () => {
-//    games;
-// })
-
-function formatDate(date) {
-  const options = {year: 'numeric', month: 'long', day: 'numeric'}
-  return new Date(date).toLocaleDateString('en', options)
+        onPageChange: function (page) {
+            this.currentPage = page;
+            },
+    }
 }
 
-/**
- * Handles setting winningTeam
- * TODO - also needs to handle more than 2 teams
- */
-function getWinningTeam(game) {
-  let winner = game.teams[0].pivot.set_score > game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
-  return winner;
-}
-/**
- * Handles setting losingTeam
- * TODO - also needs to handle more than 2 teams
- */
-function getLosingTeam(game) {
-  let loser = game.teams[0].pivot.set_score < game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
-  return loser;
-}
-
-
-/**
- * Handles get request
- * TODO - only handling season #1
- */
-function getGames(value) {
-  if(value == 'completed') {
-    gameOption = value = 'completed';
-    pageHeader.value = 'Completed';
-    getRequest();
-  }
-  else if(value == 'scheduled') {
-    gameOption = value = 'scheduled';
-    pageHeader.value = 'Scheduled';
-    getRequest();
-  }
-  else if(value == 'playing'){
-    gameOption = value = 'playing';
-    pageHeader.value = 'Playing';
-    getRequest();
-  }
-  else {
-    gameOption = value;
-    console.log("Something went wrong, gameOption is " + gameOption)
-  }
-}
-
-/**
- * Game options are: scheduled, playing, completed
- * 
- */
 const getRequest = async () => {
   try {
-    const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption);
+    const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason + "?page=" + currentPage + "&size=" + perPage +"&type=" + gameOption);
     // /paginated/season/" + currentSeason "?page=" + currentPage + "&size=10&type=" + gameOption
     if(response.status === 200) {
         const fetchedGames = response.data.response.games;
@@ -99,22 +94,6 @@ const getRequest = async () => {
   } catch (err) {
     console.error(err);
   }
-}
-
-/**
- * Function that calls getGames if the currentPage needs changing
- */
-function getPage(value) {
-  console.log("value: " + value + " and gameOption: " + gameOption);
-  value != gameOption && getGames(value);
-  console.log(games.value);
-  Object.assign(totalItems, games.value.length);
-  Object.assign(totalPages, totalItems.value/perPage);
-}
-
-function onPageChange(page) {
-  console.log("page is " + page);
-  currentPage.value = page;
 }
 
 </script>
@@ -166,11 +145,11 @@ function onPageChange(page) {
       ></div>
       <!-- Need to send: perPage, totalPages, currentPage (Dynamic Props) -->
       <Pagination
-        :totalPages='totalPages'
-        :totalItems="totalItems"
-        :perPage="perPage"
-        :currentPage="currentPage"
-        @pagechanged='onPageChange()'/>
+        :totalPages=totalPages
+        :totalItems=totalItems
+        :perPage=perPage
+        :currentPage=currentPage
+        @pagechanged="onPageChange"/>
     </div>
   </div>
 </template>

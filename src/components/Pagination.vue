@@ -2,21 +2,23 @@
 
 <template>
     <ul class="">
-      <li class="display.inline-block">
+      <li class="border rounded mx-1 mb-3 px-1 bg-gray-50 inline-block shadow-sm hover:shadow-gray-400">
         <button
           type="button"
           @click="onClickFirstPage"
           :disabled="isInFirstPage"
+          aria-label="Go to first page"
         >
           First
         </button>
       </li>
   
-      <li class="display.inline-block">
+      <li class="border rounded mx-1 mb-3 px-1 bg-gray-50 inline-block shadow-sm hover:shadow-gray-400">
         <button
           type="button"
           @click="onClickPreviousPage"
           :disabled="isInFirstPage"
+          aria-label="Go to previous page"
         >
           Previous
         </button>
@@ -25,7 +27,7 @@
       <!-- Visible Buttons Start -->
   
       <li 
-      class="display.inline-block"
+      class="border rounded mx-1 mb-3 px-1 bg-gray-50 inline-block shadow-sm hover:shadow-gray-400"
       v-for="page in pages"
       :key="page.name"
     >
@@ -33,7 +35,8 @@
         type="button"
         :disabled="page.isDisabled"
         @click="onClickPage(page.name)"
-        :class="{ active: isPageActive(page.name)}"
+        :class="{ 'bg-purple-700, text-green-700': isPageActive(page.name)}"
+        :aria-label="`Go to page number ${page.name}`"
       >
         {{ page.name }}
       </button>
@@ -41,21 +44,23 @@
   
       <!-- Visible Buttons End -->
   
-      <li class="display.inline-block">
+      <li class="border rounded mx-1 mb-3 px-1 bg-gray-50 inline-block shadow-sm hover:shadow-gray-400">
         <button
           type="button"
           @click="onClickNextPage"
           :disabled="isInLastPage"
+          aria-label="Go to next page"
         >
           Next
         </button>
       </li>
   
-      <li class="display.inline-block">
+      <li class="border rounded mx-1 mb-3 px-1 bg-gray-50 inline-block shadow-sm hover:shadow-gray-400">
         <button
           type="button"
           @click="onClickLastPage"
           :disabled="isInLastPage"
+          aria-label="Go to last page"
         >
           Last
         </button>
@@ -65,6 +70,7 @@
   
   <script>
   export default {
+    name: 'Pagination',
     props: {
       maxVisibleButtons: {
         type: Number,
@@ -72,6 +78,10 @@
         default: 3
       },    
       totalPages: {
+        type: Number,
+        required: true
+      },
+      totalItems: {
         type: Number,
         required: true
       },
@@ -84,7 +94,7 @@
         required: true
       }
     },
-    computed: {
+  computed: {
     startPage() {
       // When on the first page
       if (this.currentPage === 1) {
@@ -140,15 +150,7 @@
           isDisabled: i === this.currentPage
         });
       }
-
       return range;
     }
   }
   </script>
-
-  <style>
-    .active {
-      background-color: #4AAE9B;
-      color: #ffffff;
-    }
-  </style>
