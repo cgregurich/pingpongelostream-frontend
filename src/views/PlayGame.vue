@@ -6,6 +6,35 @@ import TeamContainer from '@/components/PlayGame/TeamContainer.vue';
 import * as apiCalls from '@/utils/apiCalls.js';
 import * as toasts from '@/utils/toasts.js';
 
+/*
+
+Variables used to manage the Play Game logic.
+game - the game object being played. Contains gameMode id, players, sets, start/end dates, etc.
+gameMode - gameMode object indicating what the rules of the game are. Fetched from backend using game's gameMode id
+disableInput - disables input for the controls so when async calls are happening, or data is being fetched, the user can't mess things up
+teamOnePlayers - array of player objects on team one
+teamTwoPlayers - array of player objects on team two
+currentSetPoints - an array that consists of <teamOneID> and <teamTwoID> in the order of points scored. Used to send game updates to the backend for the current set. On new sets, this is reset.
+
+These are set when the gameMode is loaded, and shouldn't change during the course of the game. They exist to make reading the code a bit easier.
+POINTS_TO_WIN_SET - the points needed for a set to be considered "finished", where the user will then be asked to click "next set"
+WIN_SET_BY - the points advantage needed for a team to win the set. (Usually 2)
+SETS_TO_WIN_GAME - sets needed for the game to be considered "finished", where the user will then be asked to click "finish game"
+SERVE_SWITCH - The default number of points needed to be scored before the server is swapped. "default" because in overtime, this rule might be ignored in favor of switching server more frequently.
+
+previousSets - The scores of previous, completed sets. Used to display the won sets for each team. Contains the teamOneScore and teamTwoScore for the set.
+undoStack - Used for the undo functionality. Adds a new object each point with relevant information of the game state when that point was scored
+gameState - Holds an enum indicating either NotStarted, InProgress, SetFinished, LastSetFinished, or GameOver
+teamOneSetScore - Number of points for team one in the current set
+teamTwoSetScore - Number of points for team two in the current set
+teamOneGameScore - Number of sets won for team one in the game
+teamTwoGameScore - Number of sets won for team two in the game
+teamServing - 0 or 1 to indicate which team is currently serving
+
+
+
+*/
+
 const router = useRouter();
 
 const props = defineProps({
@@ -26,6 +55,34 @@ const disableInput = ref(true);
 const teamOnePlayers = ref([]);
 const teamTwoPlayers = ref([]);
 
+// Game rules
+let POINTS_TO_WIN_SET = null;
+let WIN_SET_BY = null;
+let SETS_TO_WIN_GAME = null;
+let SERVE_SWITCH = null;
+
+
+const previousSets = reactive([]);
+
+const undoStack = reactive([]);
+
+const gameState = ref(GameStates.NotStarted);
+
+// The number of points scored in the current set
+const teamOneSetScore = ref(0);
+const teamTwoSetScore = ref(0);
+
+// Number of sets won in the game so far
+const teamOneGameScore = ref(0);
+const teamTwoGameScore = ref(0);
+
+// 0 or 1, not team IDs
+const teamServing = ref(null);
+
+// 0 or 1, not player IDs
+const teamOnePlayerServing = ref(0);
+const teamTwoPlayerServing = ref(0);
+
 /*
 Array of teamIDs indicating who scored what points.
 Eg. [1, 3, 3, 3, 1]
@@ -33,6 +90,8 @@ Team with ID 1 scored 1st and 5th point. Team with ID 3 scored 2nd, 3rd, and 4th
 Used to send game progress to backend.
 */
 const currentSetPoints = reactive([]);
+
+const pointsTillServerSwap = ref(null);
 
 
 onMounted(async () => {
@@ -43,6 +102,7 @@ onMounted(async () => {
     return;
   }
   await loadGameMode();
+
   setGameRules();
   setTeamPlayers();
   setStartingServers();
@@ -64,17 +124,12 @@ async function loadGameMode() {
   Object.assign(gameMode, fetchedGameMode);
 }
 
-// Game rules
-let POINTS_TO_WIN_SET = null;
-let WIN_SET_BY = null;
-let SETS_TO_WIN_MATCH = null;
-let SERVE_SWITCH = null;
 
 function setGameRules() {
   // Set game rules from given game mode
   POINTS_TO_WIN_SET= gameMode.win_score;
   WIN_SET_BY = 2;
-  SETS_TO_WIN_MATCH = Math.ceil(gameMode.set_count / 2);
+  SETS_TO_WIN_GAME = Math.ceil(gameMode.set_count / 2);
   SERVE_SWITCH = gameMode.serve_switch;
 
   teamServing.value = game.first_server;
@@ -86,6 +141,13 @@ function setTeamPlayers() {
 }
 
 function setStartingServers() {
+  /*
+  Sets the variables used to know which players on each team is serving.
+  Even though one team serves at a time, the non-serving team will still have
+  a designated serving player so when the serve swaps, the other team will be
+  ready to go.
+  0 or 1 indicates which player on a given team is serving.
+  */
   if (game.team1_first_server_id === game.teams[0].members[0].id) {
     teamOnePlayerServing.value = 0;
   }
@@ -104,27 +166,6 @@ Keep track of previous finished sets in the match.
 Contains objects that look like:
 { teamOneScore: <number>, teamTwoScore: <number> }
 */
-const previousSets = reactive([]);
-
-const undoStack = reactive([]);
-
-const gameState = ref(GameStates.NotStarted);
-
-// The number of points scored in the current set
-const teamOneSetScore = ref(0);
-const teamTwoSetScore = ref(0);
-
-// Number of sets won in the game so far
-const teamOneGameScore = ref(0);
-const teamTwoGameScore = ref(0);
-
-//FIXME: use the serving settings from backend; rn just hardcoding it
-const teamServing = ref(null);
-
-// These are indices, not IDs
-const teamOnePlayerServing = ref(0);
-const teamTwoPlayerServing = ref(0);
-
 const servingPlayerID = computed(() => {
   if (teamOnePlayers.value.length === 0 || teamTwoPlayers.value.length == 0) return;
 
@@ -137,7 +178,6 @@ const servingPlayerID = computed(() => {
 });
 
 
-const pointsTillServerSwap = ref(null);
 
 watch(pointsTillServerSwap, () => {
   if (pointsTillServerSwap.value === 0) {
@@ -318,8 +358,8 @@ function isSetFinished() {
 }
 
 function isLastSet() {
-  if (teamOneGameScore.value + 1 === SETS_TO_WIN_MATCH && playerOneWonSet()) return true;
-  else if (teamTwoGameScore.value + 1 === SETS_TO_WIN_MATCH && playerTwoWonSet()) return true;
+  if (teamOneGameScore.value + 1 === SETS_TO_WIN_GAME && playerOneWonSet()) return true;
+  else if (teamTwoGameScore.value + 1 === SETS_TO_WIN_GAME && playerTwoWonSet()) return true;
   else return false
 }
 
