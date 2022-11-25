@@ -53,7 +53,7 @@ function getClasses() {
     <div v-for="(player, index) in players" :key="index" class="player-name flex flex-col items-center text-2xl">
       <div class="player-info flex items-center">
         <div class="image-container">
-          <img class="h-12 w-12 rounded-full mr-4 border border-black border-opacity-10" :src="player.profile_photo_path">
+          <img class="h-12 w-12 rounded-full mr-4 border border-black border-opacity-10" :src="player.profile_photo_url">
           <div class="h-[50px] w-[1px]"></div>
         </div>
         <div class="name-container flex flex-col justify-center items-center">

@@ -7,7 +7,7 @@ const props = defineProps({
 <template>
   <div class="player-card flex justify-between items-center w-content bg-site-color-one border-2 border-gray-300 rounded-md mx-4 px-4 py-2 my-4 w-[300px] select-none shadow-lg">
     <div class="player-info flex items-center justify-center">
-      <img :src="player.profile_photo_path" draggable="false" class="h-16 w-16 rounded-full mr-2">
+      <img :src="player.profile_photo_url" draggable="false" class="h-16 w-16 rounded-full mr-2">
       <div class="player-name">{{ player.name }}</div>
     </div>
     <div class="controls flex flex-col mr-2 text-lg">
