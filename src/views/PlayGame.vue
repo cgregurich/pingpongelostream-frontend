@@ -148,7 +148,6 @@ function setStartingServers() {
   ready to go.
   0 or 1 indicates which player on a given team is serving.
   */
- console.log('game', game);
   if (game.team1_first_server_id === game.teams[0].members[0].id) {
     teamOnePlayerServing.value = 0;
   }
@@ -158,7 +157,6 @@ function setStartingServers() {
     teamTwoPlayerServing.value = 0;
   }
   else teamTwoPlayerServing.value = 1;
-  console.log(teamOnePlayerServing.value, teamTwoPlayerServing.value);
 }
 
 
@@ -169,7 +167,6 @@ Contains objects that look like:
 { teamOneScore: <number>, teamTwoScore: <number> }
 */
 const servingPlayerID = computed(() => {
-  console.log(teamOnePlayers.value, teamTwoPlayers.value, teamOnePlayerServing.value, teamTwoPlayerServing.value);
   if (teamOnePlayers.value.length === 0 || teamTwoPlayers.value.length == 0) return;
 
   console.log('teamOnePlayerServing: ', teamOnePlayerServing.value);

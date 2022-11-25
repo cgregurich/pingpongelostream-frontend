@@ -51,7 +51,6 @@ authStore.getAllTokens((data) => {
         sessions.tokens[i].browser = browserType(sessions.tokens[i].device_name);
         sessions.tokens[i].platform = platformType(sessions.tokens[i].device_name);
     }
-    console.log(sessions.tokens);
     loading.value = false;
 });
 
@@ -74,9 +73,7 @@ const logoutAllBrowserSessions = () => {
             router.go({ name: 'Home' });
         },
         (e) => {
-            console.log('printing error', e.response.data.response);
             passwordErrorMessage.value = e.response.data.response?.password?.join(' ');
-            console.log(passwordErrorMessage.value);
             passwordInput.value.focus()
             password.value = '';
         }

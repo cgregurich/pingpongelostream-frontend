@@ -49,7 +49,6 @@ export default {
                     password_confirmation: this.password_confirmation
                 },
                 () => {
-                    console.log('callback');
                     this.successMessage = 'Password Changed Successfully.';
                     this.password = null;
                     this.password_confirmation = null;
