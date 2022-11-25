@@ -86,7 +86,8 @@ export const useAuthStore = defineStore('user', {
             data.append('_method', 'PUT');
             data.append('name', updatedUserInfo.name);
             data.append('email', updatedUserInfo.email);
-            data.append('photo', updatedUserInfo.photo, updatedUserInfo.photo.name);
+            if (updatedUserInfo.photo)
+                data.append('photo', updatedUserInfo.photo, updatedUserInfo.photo.name);
             return await apiCall(
                 () => axios.post( // php doesn't parse mutli-part/form-data on puts, so create a fake put
                     API_URL + PROFILE,

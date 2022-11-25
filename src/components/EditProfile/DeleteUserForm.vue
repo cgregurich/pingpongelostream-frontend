@@ -20,7 +20,7 @@ const confirmUserDeletion = () => {
 };
 const deleteUser = () => {
     loading = true;
-    const afterResult = () => { password.value = ''; this.loading = false; };
+    const afterResult = () => { password.value = ''; loading = false; };
     authStore.deleteUser(
         { password: password.value },
         () => { closeModal(); afterResult(); router.go({ name: 'Home' }) },
