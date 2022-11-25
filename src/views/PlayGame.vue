@@ -169,7 +169,10 @@ Contains objects that look like:
 const servingPlayerID = computed(() => {
   if (teamOnePlayers.value.length === 0 || teamTwoPlayers.value.length == 0) return;
 
+  console.log('teamOnePlayerServing: ', teamOnePlayerServing.value);
+  console.log('teamTwoPlayerServing: ', teamTwoPlayerServing.value);
   if (teamServing.value === 0) {
+    console.log(teamOnePlayers.value);
     return teamOnePlayers.value[teamOnePlayerServing.value].id;
   }
   else if (teamServing.value === 1) {
@@ -227,6 +230,7 @@ async function controlButtonClicked() {
 
   // Set is over, but more sets need to be played before game is over
   else if (gameState.value === GameStates.SetFinished) {
+    disableInput.value = true;
     toasts.submittingSet();
     if (await sendGameUpdate()) {
       toasts.setSubmitted();
@@ -236,11 +240,13 @@ async function controlButtonClicked() {
     else {
       toasts.submittingSetFailed();
     }
+    disableInput.value = false;
   }
 
 
   // Last set is over, so set and game needs to be submitted
   else if (gameState.value === GameStates.LastSetFinished) {
+    disableInput.value = true;
     toasts.submittingGame();
     if (await sendFinalGameUpdate()) {
       toasts.gameSubmitted();
@@ -249,6 +255,7 @@ async function controlButtonClicked() {
     else {
       toasts.submittingGameFailed();
     }
+    disableInput.value = false;
   }
 }
 
@@ -426,7 +433,6 @@ function test() {
       <div class="flex justify-center items-center bg-opacity-30 mt-12 w-[150px] h-[75px] bg-white p-4 backdrop-blur-lg shadow-gray-700 shadow-sm rounded-xl" >
         <div v-show="gameState === GameStates.InProgress || gameState === GameStates.GameOver">{{ gameControlText }}</div>
         <PrimaryButton class="animate-pulse" :disabled="disableInput" v-show="gameState !== GameStates.InProgress && gameState !== GameStates.GameOver" @click="controlButtonClicked" :text="gameControlText" />  
-        <!-- <PrimaryButton @click="test" text="Test" />   -->
       </div>
     </div>
 
