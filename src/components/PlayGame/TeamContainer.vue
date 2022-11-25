@@ -69,7 +69,7 @@ function getClasses() {
 
 
     </div>
-    <div v-if="!players" class="player-name-skeleton w-[150px] h-[32px] bg-black opacity-10 rounded-lg animate-pulse">
+    <div v-if="players.length === 0" class="player-name-skeleton w-[150px] h-[32px] bg-black opacity-10 rounded-lg animate-pulse">
     </div>
   </div>
 
