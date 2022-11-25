@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/modules/auth.js';
 
 const authStore = useAuthStore();
 
-const seasonID = 1;
+const seasonID = 2;
 
 </script>
 

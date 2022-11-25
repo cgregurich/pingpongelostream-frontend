@@ -17,7 +17,8 @@ const loginRequired = [
   { path: '/livestream', component: () => import('@/views/Livestream.vue'), name: 'Livestream' },
   { path: '/games/create', component: () => import('@/views/CreateGame.vue'), name: 'CreateGame' },
   { path: '/play', component: () => import('@/views/PlayMatch.vue'), name: 'Play' },
-  { path: '/profile/edit', component: () => import('@/views/EditProfile.vue'), name: 'EditProfile' }
+  { path: '/profile/edit', component: () => import('@/views/EditProfile.vue'), name: 'EditProfile' },
+  { path: '/play/:gameID', props: route => ({ gameID: Number(route.params.gameID) }), component: () => import('@/views/PlayGame.vue'), name: 'Play'}
 ];
 
 const publicRoutes = [ ... noLoginRequired, ...loginNotRequired ];
