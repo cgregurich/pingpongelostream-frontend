@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import PlayerHeader from '@/components/PlayerProfile/PlayerHeader.vue';
 import PlayerHeaderSkeleton from '@/components/PlayerProfile/PlayerHeaderSkeleton.vue';
 import PlayerStats from '@/components/PlayerProfile/PlayerStats.vue';
@@ -6,16 +7,26 @@ import PlayerStatsSkeleton from '@/components/PlayerProfile/PlayerStatsSkeleton.
 import RecentGames from '@/components/PlayerProfile/RecentGames.vue';
 import RecentGamesSkeleton from '@/components/PlayerProfile/RecentGamesSkeleton.vue';
 import { useAuthStore } from '@/stores/modules/auth.js';
+import * as apiCalls from '@/utils/apiCalls.js';
 
 const authStore = useAuthStore();
 
-const seasonID = 2;
+const seasonID = ref(null);
+// onMounted(async () => {
+//   const fetchedSeasonID = await apiCalls.getCurrentSeason();
+//   if (fetchedSeasonID) seasonID.value = fetchedSeasonID;
+// });
+seasonID.value = 2;
 
 </script>
 
 <template>
 	<body class="flex flex-col items-center">
-    
+    seasonID: {{ seasonID }}
+    <!-- <select v-model="seasonID">
+      <option value="1">1</option>
+      <option value="2">2</option>
+    </select>  -->
     <!-- Player Header (name & photo) -->
     <Suspense>
       <template #default>

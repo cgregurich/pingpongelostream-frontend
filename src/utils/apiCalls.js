@@ -91,3 +91,10 @@ export async function completeGame(gameID) {
   }
   else return null;
 }
+
+export async function getCurrentSeason() {
+  const response = await axios.get(`${API_URL}/seasons/current`);
+  console.log('respons: ', response);
+  if (response.status === 200) return response.data.response.season_number;
+  else return null;
+}
