@@ -1,16 +1,13 @@
 <script setup>
-import router from '@/router/index';
 
 const props = defineProps({
     winningTeam: Object,
     losingTeam: Object
 })
 
-
 </script>
 
 <template>
-	<router-link :to="{ name: 'GameDetail'}">
         <div class="flex flex-row">
             <div class="flex-1 flex-col self-center px-4 py-2">
                 <div class="flex-row text-right" v-for="member in props.winningTeam.members" :key="member.id">
@@ -24,10 +21,9 @@ const props = defineProps({
                 </div>
             </div>
         </div>
-        <div class="flex flex-row self-center pb-2">
-            <div class="flex-row px-3 font-semibold text-center text-3xl">{{ props.winningTeam.pivot.set_score }}</div>
-            <div class="flex-row text-center text-3xl "> - </div>
-            <div class="flex-row px-3 text-center text-3xl">{{ props.losingTeam.pivot.set_score }}</div>
+        <div class="flex pb-2 justify-center text-3xl">
+            <div class="px-3 font-semibold">{{ props.winningTeam.pivot.set_score }}</div>
+            <div class=""> - </div>
+            <div class="px-3">{{ props.losingTeam.pivot.set_score }}</div>
         </div>
-    </router-link>
 </template>

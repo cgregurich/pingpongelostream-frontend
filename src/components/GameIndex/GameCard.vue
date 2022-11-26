@@ -5,6 +5,7 @@ import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
 import SelectDropDown from "../SelectDropDown.vue";
 import TeamCard from "./TeamCard.vue";
 import Pagination from "../Pagination.vue";
+import router from '@/router/index';
 
 const games = ref([]);
 // const games = reactive([]);
@@ -155,9 +156,10 @@ function onPageChange(page) {
         <!-- TODO Something when no games are displayed -->
             <div class="flex flex-col w-full" v-for="game in games" :key="game.teams">
               <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
-                <!-- <div class="flex flex-row w-full last:items-end border shadow-md rounded-xl py-2 px-4 lg:py-2 lg:px-10 bg-indigo-100 hover:bg-indigo-500"> -->
                   <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 py-2 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
-                  <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
+                    <router-link :to="{ name: 'GameDetail', params: {id: game.id}}">
+                      <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
+                    </router-link>
                 </div>
               <br/>
             </div>

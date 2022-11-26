@@ -35,7 +35,7 @@
         type="button"
         :disabled="page.isDisabled"
         @click="onClickPage(page.name)"
-        :class="{ 'bg-purple-700, text-green-700': isPageActive(page.name)}"
+        :class="{ 'text-purple-600 font-bold': isPageActive(page.name)}"
         :aria-label="`Go to page number ${page.name}`"
       >
         {{ page.name }}
@@ -71,6 +71,9 @@
 <script>
   export default {
     name: 'Pagination',
+    data() {
+      return { pages: [] }
+    },
     props: {
       maxVisibleButtons: {
         type: Number,
@@ -94,63 +97,77 @@
         required: true
       }
     },
-  computed: {
-    startPage() {
-      // When on the first page
-      if (this.currentPage === 1) {
-        return 1;
-      }
+    mounted() {
+      this.updatePages();
+    },
+    computed: {
+      startPage() {
+        // When on the first page
+        if (this.currentPage === 1) {
+          return 1;
+        }
 
-      // When on the last page
-      if (this.currentPage === this.totalPages) {
-        return this.totalPages - this.maxVisibleButtons; //TODO subtract 1 from here???????
-      }
+        // When on the last page
+        if (this.currentPage === this.totalPages) {
+          return this.totalPages - (this.maxVisibleButtons - 1); //TODO subtract 1 from here???????
+        }
 
-      // When inbetween
-      return this.currentPage - 1;
-      
+        // When inbetween
+        return this.currentPage - 1;
+        
+      },
+      endPage() {
+        return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
+      },
+      isInFirstPage() {
+        return this.currentPage === 1;
+      },
+      isInLastPage() {
+        return this.currentPage === this.totalPages;
+      },
     },
-    isInFirstPage() {
-      return this.currentPage === 1;
-    },
-    isInLastPage() {
-      return this.currentPage === this.totalPages;
-    },
-  },
-  methods: {
-    onClickFirstPage() {
-      this.$emit('pagechanged', 1);
-    },
-    onClickPreviousPage() {
-      this.$emit('pagechanged', this.currentPage - 1);
-    },
-    onClickPage(page) {
-      this.$emit('pagechanged', page);
-    },
-    onClickNextPage() {
-      this.$emit('pagechanged', this.currentPage + 1);
-    },
-    onClickLastPage() {
-      this.$emit('pagechanged', this.totalPages);
-    },
-    isPageActive(page) {
-      return this.currentPage === page;
-    } 
-  },
-    pages() {
-      const range = [];
+    methods: {
+      onClickFirstPage() {
+        this.$emit('pagechanged', 1);
+        this.updatePages();
+      },
+      onClickPreviousPage() {
+        this.$emit('pagechanged', this.currentPage - 1);
+        this.updatePages();
+      },
+      onClickPage(page) {
+        this.$emit('pagechanged', page);
+        this.updatePages();
+      },
+      onClickNextPage() {
+        this.$emit('pagechanged', this.currentPage + 1);
+        this.updatePages();
+      },
+      onClickLastPage() {
+        this.$emit('pagechanged', this.totalPages);
+        this.updatePages();
+      },
+      isPageActive(page) {
+        return this.currentPage === page;
+      },
+      currentPages() {
+        const range = [];
 
-      for (
-        let i = this.startPage;
-        i <= Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
-        i++
-      ) {
-        range.push({
-          name: i,
-          isDisabled: i === this.currentPage
-        });
+        for (
+          let i = this.startPage;
+          i <= this.endPage;
+          i++
+        ) {
+          range.push({
+            name: i,
+            isDisabled: i === this.currentPage
+          });
+        }
+        return range;
+      },
+      updatePages() {
+        this.pages = this.currentPages();
       }
-      return range;
     }
   }
   </script>
