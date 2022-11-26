@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onBeforeUpdate} from 'vue';
+import { ref, reactive, computed, onBeforeUpdate, watch } from 'vue';
 import GameSummaryCard from '@/components/GameSummaryCard.vue';
 import axios from 'axios';
 import { API_URL } from '@/stores/utils/backendRouteParts.js';
@@ -22,7 +22,6 @@ async function loadSinglesTeamID() {
 
 async function loadGames() {
   const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${props.seasonID}`);
-  console.log(response);
   if (response.status === 200) {
     const fetchedGames = response.data.response.games.reverse();
     const fetchedTeam = response.data.response.team;
@@ -55,7 +54,6 @@ function getElos(game) {
   /*
   Formats the game's players' elos in the way that GameSummaryCard expects them.
   */
-  console.log(game);
   const elos = {
     teamOne: {
       eloAfter: game.given_team.elo_after,
@@ -90,11 +88,8 @@ async function loadData() {
   await loadGames();
 }
 
-
-onBeforeUpdate(async () => await loadData());
 await loadData();
 
-console.log(singlesGames.value[0]);
 </script>
 
 
