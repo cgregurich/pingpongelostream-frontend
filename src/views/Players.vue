@@ -9,9 +9,10 @@ const players = reactive([]);
 // const game = reactive();
 // const scores = reactive([]);
 const teamMembers = [];
-const totalPages = 10;
+const totalPages = 1;
+const totalItems = 7;
 const currentPage = 1;
-const perPage = 6;
+const perPage = 20;
 let gameNum = 0;
 let page = 1;
 
@@ -78,13 +79,13 @@ const getPlayersRequest = async () => {
         <div
           class="line w-4/5 lg:mt-40 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
         ></div>
-        <pagination
-        :totalPages='totalPages'
-        :totalItems="totalItems"
-        :perPage="perPage"
-        :currentPage="currentPage"
-        @pagechanged='onPageChange'
-        />
+          <pagination v-if="totalItems > perPage"
+          :totalPages='totalPages'
+          :totalItems="totalItems"
+          :perPage="perPage"
+          :currentPage="currentPage"
+          @pagechanged='onPageChange'
+          />
       </div>
     </div>
   </body>

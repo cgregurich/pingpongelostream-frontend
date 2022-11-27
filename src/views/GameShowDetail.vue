@@ -73,10 +73,12 @@ function getElos(game) {
   return elos;
 }
 
+
 export default {
   data() {
     return {
       game: null,
+      setNum: 1,
     }
   },
   props: {
@@ -94,38 +96,53 @@ export default {
       }
   },
   methods: {
+    formatDate(date) {
+      const options = {year: 'numeric', month: 'long', day: 'numeric'}
+      return new Date(date).toLocaleDateString('en', options)
+    },
 
-  }
+  },
 }
 </script>
 
 <template>
-<div class="body flex justify-center w-full">
-    <div
-      class="
+<div class="flex justify-center">
+  <div class="
         flex flex-col
         sm:w-[60rem]
-        w-full
         rounded-3xl
-        m-6
+        m-10
+        p-5
         border border-gray-300
         shadow-lg
-        items-center
-        bg-natural-100
-      ">
-    <div class="flex flex-row w-full p-4 pt-7">
-      <div class="flex w-full text-3xl font-semibold relative left-20" v-for="team in game.teams" :key="team.id">
-      <div class="flex" v-for="member in team.members" :key="member.id">{{member.name}}</div></div>
-    </div>
-    <div>{{game.completed_at}}</div>
-      <div class="flex" v-for="set in game.sets" :key="set.id">
-        {{set.team1_score}} - 
-        {{set.team2_score}}
-        
+        bg-white">
+    <div class="flex justify-center">{{ formatDate(game.completed_at) }}</div>
+    <div class="flex border-b border-r border-gray-300 p-2" v-for="team in game.teams" :key="team.id">
+      <div class="flex-1">
+        <div class="flex text-3xl font-semibold p-1" v-for="member in team.members" :key="member.id">
+          {{member.name}}
+        </div>
       </div>
-    
-
-
+      <div class="flex-1 py-4 text-5xl font-semibold">
+        <div class="flex" v-if="game.teams.indexOf(team) == 0">
+          <div class="flex-1" v-for="set in game.sets" :key="set.id">
+              {{set.team1_score}}
+          </div>
+        </div>
+        <div class="flex" v-if="game.teams.indexOf(team) == 1">
+          <div class="flex-1" v-for="set in game.sets" :key="set.id">
+              {{set.team2_score}}
+          </div>
+        </div>
+      </div>
     </div>
+    <!-- <div class="flex py-4">
+      <div class="flex" v-for="set in game.sets" :key="set.id">
+          {{set.set_number}}. 
+          {{set.team1_score}} - 
+          {{set.team2_score}}
+      </div>
+    </div> -->
   </div>
+</div>
 </template>

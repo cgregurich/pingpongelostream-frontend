@@ -23,17 +23,14 @@ const totalItems = ref(100);
 const perPage = 5;
 const currentPage = ref(1);
 
-
-
-
 onMounted(async () => {
   await getRequest();
 })
 
-// onUpdated(async () => {
-//    games;
-// })
-
+/**
+ * To display date nicely for each game
+ * @param {*} date 
+ */
 function formatDate(date) {
   const options = {year: 'numeric', month: 'long', day: 'numeric'}
   return new Date(date).toLocaleDateString('en', options)
@@ -90,11 +87,10 @@ function getGames(value) {
 const getRequest = async () => {
   try {
     const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption);
-    // /paginated/season/" + currentSeason "?page=" + currentPage + "&size=10&type=" + gameOption
+
     if(response.status === 200) {
         const fetchedGames = response.data.response.games;
         console.log(fetchedGames);
-        // Object.assign(games, fetchedGames);
         games.value = fetchedGames;
     }
   } catch (err) {
@@ -113,6 +109,10 @@ function getPage(value) {
   Object.assign(totalPages, totalItems.value/perPage);
 }
 
+/**
+ * Used for pagination component
+ * @param {*} page 
+ */
 function onPageChange(page) {
   console.log("page is " + page);
   currentPage.value = page;
@@ -167,8 +167,7 @@ function onPageChange(page) {
       <div
         class="line w-4/5 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
       ></div>
-      <!-- Need to send: perPage, totalPages, currentPage (Dynamic Props) -->
-      <Pagination
+      <Pagination v-if="totalItems > perPage"
         :totalPages='totalPages'
         :totalItems="totalItems"
         :perPage="perPage"
