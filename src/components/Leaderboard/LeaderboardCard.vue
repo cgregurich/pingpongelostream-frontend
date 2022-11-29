@@ -1,10 +1,16 @@
 <script setup>
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+
+
 const props = defineProps({
   // player: Object,
   team: Object,
   ranking: Number
 });
+
+const router = useRouter();
 
 const trophyClass = computed(() => {
   const classes = [
