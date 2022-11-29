@@ -2,7 +2,7 @@
 import axios from "axios";
 // import { useGameStore } from "../stores/modules/games";
 import { API_URL, PLAYERS } from '@/stores/utils/backendRouteParts.js'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import Pagination from '../components/Pagination.vue'
 
 const players = reactive([]);
@@ -10,7 +10,7 @@ const players = reactive([]);
 // const scores = reactive([]);
 const teamMembers = [];
 const totalPages = 1;
-const totalItems = 7;
+const totalItems = ref(10);
 const currentPage = 1;
 const perPage = 20;
 let gameNum = 0;
@@ -38,7 +38,7 @@ const getPlayersRequest = async () => {
     if(response.status === 200) {
       const fetchedPlayers = response.data.response.players;
       Object.assign(players, fetchedPlayers);
-      console.log(players);
+      totalItems.value = fetchedPlayers.length;
     }
   } catch (err) {
     console.error(err);
@@ -59,26 +59,25 @@ const getPlayersRequest = async () => {
           flex flex-col
           sm:w-[30rem]
           w-full
-          bg-gray-100
+          bg-white
           rounded-3xl
           m-6
-          border border-gray-300
+          border border-purple-300
           shadow-lg
           items-center
         "
       >
-        <p class="flex header text-4xl font-semibold m-4">Registered Players</p>
+        <p class="flex text-4xl font-semibold m-4">Registered Players</p>
 
-        <div class="flex flex-col">
-              <ol class="flex flex-row w-full" v-for="player in players" :key="player">
-                <div class="flex w-full border shadow-md rounded-xl my-1 px-4 lg:py-2 lg:px-10 bg-purple-100 hover:bg-purple-200">
-                  {{player.name}}
+        <div class="flex flex-col pb-5">
+              <div class="flex flex-row" v-for="player in players" :key="player">
+                <div class="flex w-full border border-purple-300 shadow-md rounded-xl my-1 px-3 lg:py-3 lg:px-5 bg-stone-100 hover:bg-stone-50">
+                  <img class="flex-1 rounded-full w-5 p-1" :src="player.profile_photo_path">
+                  <div class="flex-1 font-semibold self-center pl-4">{{player.name}}</div> 
                 </div>
-              </ol>
+              </div>
         </div>
-        <div
-          class="line w-4/5 lg:mt-40 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
-        ></div>
+        <div class="line w-4/5 lg:mt-40 mt-1 bg-opacity-10 bg-black h-[1px] mb-4" v-if="totalItems > perPage"></div>
           <pagination v-if="totalItems > perPage"
           :totalPages='totalPages'
           :totalItems="totalItems"

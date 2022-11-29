@@ -54,20 +54,20 @@ export default {
             const options = { year: "numeric", month: "long", day: "numeric" };
             return new Date(date).toLocaleDateString("en", options);
         },
-        async getProfilePhoto(playerId) {
-            try {
-                const playerResponse = await axios.get(API_URL + "/players/" + playerId);
-                if (playerResponse.status === 200) {
-                    const fetchedPlayer = playerResponse.data.response.player;
-                    this.player = fetchedPlayer;
-                    // console.log(this.player);
-                    return this.player;
-                }
-            }
-            catch (err) {
-                console.error(err);
-            }
-        },
+        // async getProfilePhoto(playerId) {
+        //     try {
+        //         const playerResponse = await axios.get(API_URL + "/players/" + playerId);
+        //         if (playerResponse.status === 200) {
+        //             const fetchedPlayer = playerResponse.data.response.player;
+        //             this.player = fetchedPlayer;
+        //             console.log(this.player);
+        //             // return this.player;
+        //         }
+        //     }
+        //     catch (err) {
+        //         console.error(err);
+        //     }
+        // },
     },
     components: { GameShowContent }
 }
@@ -84,14 +84,13 @@ export default {
         border border-gray-300
         shadow-lg
         bg-white">
-    <div class="flex justify-center pb-5">{{ formatDate(game.completed_at) }}</div>
+    <div class="flex justify-center pb-5" v-if="game">{{ formatDate(game.completed_at) }}</div>
       <!-- Tennis style set scores in a box -->
-    <div class="border border-gray-300 rounded-md shadow-md"> 
+    <div class="border border-gray-300 rounded-md shadow-md" v-if="game"> 
     <div class="flex p-4" v-for="team in game.teams" :key="team.id" :class="{'border-b border-gray-300' : game.teams.indexOf(team) == 0 }">
       <div class="flex-1">
         <div class="flex lg:text-3xl sm:text-2xl font-semibold p-1" v-for="member in team.members" :key="member.id">
-          <img class="border border-blue-800 rounded-full w-9 shadow-2xl" :src="getProfilePhoto(member.id).profile_photo_path">
-          <!-- <img class="rounded-full w-10 shadow-2xl" src="https://media.istockphoto.com/id/938218100/vector/ping-pong-rackets-and-ball.jpg?s=612x612&w=is&k=20&c=1kbr77_rXFKJmF86JO3jS7z_2Te_bY_VzOSesCsDMf8="> -->
+          <img class="border border-grey-800 rounded-full w-11 shadow-xl" :src="member.profile_photo_path">
           <div class="pl-3">
             {{member.name}}
           </div>
@@ -112,7 +111,7 @@ export default {
     </div>
     </div>
     <!-- Wordy part. TODO: add leaderboard info -->
-    <GameShowContent
+    <GameShowContent v-if="game"
       :game="game"
       :team1="game.teams[0]"
       :team2="game.teams[1]"

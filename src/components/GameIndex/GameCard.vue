@@ -17,7 +17,7 @@ const dropDownSelections = { Completed:'Recent Played Games', Scheduled:'Schedul
 var gameOption = 'completed';
 var value = 'completed';
 // TODO - need to grab current Season
-var currentSeason = 1;
+var currentSeason = 2;
 // Variables for Pagination component
 const totalPages = ref(10);
 const totalItems = ref(100);
@@ -86,17 +86,21 @@ function getGames(value) {
  * 
  */
 const getRequest = async () => {
+  // Get Games
   try {
     const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption);
 
     if(response.status === 200) {
         const fetchedGames = response.data.response.games;
-        console.log(fetchedGames);
+        // console.log(fetchedGames);
         games.value = fetchedGames;
     }
   } catch (err) {
     console.error(err);
   }
+  // Get number of games
+  
+
 }
 
 /**
@@ -140,7 +144,7 @@ function onPageChange(page) {
     <div class="flex flex-row w-full p-4 pt-7">
       <div class="flex w-full lg:text-5xl md:text-4xl sm:text-5xl font-semibold relative left-20">{{pageHeader}} Games</div>
       <div class="flex lg:w-full md:w-1/2 mb-12">
-        <SelectDropDown menu-title="Game Options" class="w-2/3 absolute left-20">
+        <SelectDropDown menu-title="Game Options" class="w-2/3 absolute left-20" v-if="games">
           <section class="pb-1 border-b border-purple-300">
             <button :id="gameOption" @click="getPage('completed')">{{dropDownSelections.Completed}}</button>
           </section>

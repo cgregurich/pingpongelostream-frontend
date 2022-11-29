@@ -97,6 +97,11 @@
         required: true
       }
     },
+    watch: {
+      currentPage(oldVal, newVal) {
+        this.updatePages();
+      },
+    },
     mounted() {
       this.updatePages();
     },
@@ -129,23 +134,23 @@
     methods: {
       onClickFirstPage() {
         this.$emit('pagechanged', 1);
-        this.updatePages();
+        
       },
       onClickPreviousPage() {
         this.$emit('pagechanged', this.currentPage - 1);
-        this.updatePages();
+        
       },
       onClickPage(page) {
         this.$emit('pagechanged', page);
-        this.updatePages();
+        
       },
       onClickNextPage() {
         this.$emit('pagechanged', this.currentPage + 1);
-        this.updatePages();
+        
       },
       onClickLastPage() {
         this.$emit('pagechanged', this.totalPages);
-        this.updatePages();
+        
       },
       isPageActive(page) {
         return this.currentPage === page;
