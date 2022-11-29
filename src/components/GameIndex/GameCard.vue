@@ -6,6 +6,7 @@ import SelectDropDown from "../SelectDropDown.vue";
 import TeamCard from "./TeamCard.vue";
 import Pagination from "../Pagination.vue";
 import router from '@/router/index';
+import GameIndexSkeleton from "./GameIndexSkeleton.vue";
 
 const games = ref([]);
 // const games = reactive([]);
@@ -133,12 +134,12 @@ function onPageChange(page) {
         border border-gray-300
         shadow-lg
         items-center
-        bg-amber-100
+        bg-white
       "
     >
     <div class="flex flex-row w-full p-4 pt-7">
-      <div class="flex w-full text-5xl font-semibold relative left-20">{{pageHeader}} Games</div>
-      <div class="flex w-full mb-12">
+      <div class="flex w-full lg:text-5xl md:text-4xl sm:text-5xl font-semibold relative left-20">{{pageHeader}} Games</div>
+      <div class="flex lg:w-full md:w-1/2 mb-12">
         <SelectDropDown menu-title="Game Options" class="w-2/3 absolute left-20">
           <section class="pb-1 border-b border-purple-300">
             <button :id="gameOption" @click="getPage('completed')">{{dropDownSelections.Completed}}</button>
@@ -158,7 +159,12 @@ function onPageChange(page) {
               <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
                   <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 py-2 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
                     <router-link :to="{ name: 'GameDetail', params: {id: game.id}}">
-                      <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
+                      <template #default>
+                        <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
+                      </template>
+                      <template #fallback>
+                        <GameIndexSkeleton/>
+                      </template>
                     </router-link>
                 </div>
               <br/>

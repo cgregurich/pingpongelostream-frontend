@@ -3,105 +3,73 @@ import axios from "axios";
 import { ref, reactive, computed, onBeforeUpdate} from 'vue';
 import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
 import GameSummaryCard from '../components/GameSummaryCard.vue';
-
-
-const team = reactive({});
-const singlesTeamID = ref(null);
-const games = reactive([]);
-
-async function loadSinglesTeamID() {
-  const response = await axios.get(`${API_URL}/players/${props.playerID}/teams/singles`);
-  if (response.status === 200) {
-    singlesTeamID.value = response.data.response.team_id;
-  }
-}
-
-async function loadGames() {
-  const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${props.seasonID}`);
-  console.log(response);
-  if (response.status === 200) {
-    const fetchedGames = response.data.response.games;
-    const fetchedTeam = response.data.response.team;
-    Object.assign(games, fetchedGames);
-    Object.assign(team, fetchedTeam);
-  }
-}
-
-const selfTeam = computed(() => {
-  /*
-  Formats the given player's singles team in the way that GameSummaryCard expects.
-  */
-  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
-  return selfTeamData;
-});
-
-function getOpponentTeam(game) {
-  /*
-  Formats opponent team data in the way that GameSummaryCard expects it.
-  i.e. an array of objects where each object is 
-  { name: <player name>, profilePhotoPath: <url> }
-  */
-  const teamData = game.opponent_team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
-  return teamData;
-}
-
-function getScore(game) {
-  /*
-  Formats the game's score in the way that GameSummaryCard expects them.
-  i.e. { teamOne: <score>, teamTwo: <score> }
-  */
-  const teamOne = game.given_team.set_score;
-  const teamTwo = game.opponent_team.set_score;
-  return { teamOne, teamTwo };
-}
-
-function getElos(game) {
-  /*
-  Formats the game's players' elos in the way that GameSummaryCard expects them.
-  */
-  console.log(game);
-  const elos = {
-    teamOne: {
-      eloAfter: game.given_team.elo_after,
-      eloChange: game.given_team.elo_change
-    },
-    teamTwo: {
-      eloAfter: game.opponent_team.elo_after,
-      eloChange: game.opponent_team.elo_change
-    }
-  };
-  return elos;
-}
+import GameShowContent from "../components/GameShowContent.vue";
 
 
 export default {
-  data() {
-    return {
-      game: null,
-      setNum: 1,
-    }
-  },
-  props: {
-  },
-  async created() {
-      try {
-        const response = await axios.get(API_URL + GAMES + "/" + this.$route.params.id);
-        if(response.status === 200) {
-            const fetchedGame = response.data.response.game;
-            this.game = fetchedGame;
-            console.log(this.game);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-  },
-  methods: {
-    formatDate(date) {
-      const options = {year: 'numeric', month: 'long', day: 'numeric'}
-      return new Date(date).toLocaleDateString('en', options)
+    data() {
+        return {
+            game: null,
+            setNum: 1,
+            // player: [],
+            team1Score: 0,
+            team2Score: 0,
+        };
     },
-
-  },
+    props: {},
+    async created() {
+        // async function getResponsePlayer(id) {
+        //   const playerResponse = await axios.get(API_URL + "/players/" + id);
+        //   if(playerResponse.status === 200) {
+        //     const fetchedPlayer = playerResponse.data.response.player;
+        //     return fetchedPlayer;
+        //   }
+        // }
+        try {
+            const gameResponse = await axios.get(API_URL + GAMES + "/" + this.$route.params.id);
+            if (gameResponse.status === 200) {
+                const fetchedGame = gameResponse.data.response.game;
+                this.game = fetchedGame;
+                console.log(this.game);
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+        // console.log(this.game.teams[0].members[0].id)
+        // try {
+        //   this.game.teams.forEach(element => {
+        //     element.members.forEach(element2 => {
+        //       this.player.push(getResponsePlayer(element2.id));
+        //     })
+        //   });
+        //   console.log(this.player);
+        // } catch (err) {
+        //   console.error(err);
+        // }
+        this.game.sets.forEach(element => element.team1_score > element.team2_score ? this.team1Score++ : this.team2Score++);
+    },
+    methods: {
+        formatDate(date) {
+            const options = { year: "numeric", month: "long", day: "numeric" };
+            return new Date(date).toLocaleDateString("en", options);
+        },
+        async getProfilePhoto(playerId) {
+            try {
+                const playerResponse = await axios.get(API_URL + "/players/" + playerId);
+                if (playerResponse.status === 200) {
+                    const fetchedPlayer = playerResponse.data.response.player;
+                    this.player = fetchedPlayer;
+                    // console.log(this.player);
+                    return this.player;
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
+        },
+    },
+    components: { GameShowContent }
 }
 </script>
 
@@ -116,33 +84,41 @@ export default {
         border border-gray-300
         shadow-lg
         bg-white">
-    <div class="flex justify-center">{{ formatDate(game.completed_at) }}</div>
-    <div class="flex border-b border-r border-gray-300 p-2" v-for="team in game.teams" :key="team.id">
+    <div class="flex justify-center pb-5">{{ formatDate(game.completed_at) }}</div>
+      <!-- Tennis style set scores in a box -->
+    <div class="border border-gray-300 rounded-md shadow-md"> 
+    <div class="flex p-4" v-for="team in game.teams" :key="team.id" :class="{'border-b border-gray-300' : game.teams.indexOf(team) == 0 }">
       <div class="flex-1">
-        <div class="flex text-3xl font-semibold p-1" v-for="member in team.members" :key="member.id">
-          {{member.name}}
+        <div class="flex lg:text-3xl sm:text-2xl font-semibold p-1" v-for="member in team.members" :key="member.id">
+          <img class="border border-blue-800 rounded-full w-9 shadow-2xl" :src="getProfilePhoto(member.id).profile_photo_path">
+          <!-- <img class="rounded-full w-10 shadow-2xl" src="https://media.istockphoto.com/id/938218100/vector/ping-pong-rackets-and-ball.jpg?s=612x612&w=is&k=20&c=1kbr77_rXFKJmF86JO3jS7z_2Te_bY_VzOSesCsDMf8="> -->
+          <div class="pl-3">
+            {{member.name}}
+          </div>
         </div>
       </div>
-      <div class="flex-1 py-4 text-5xl font-semibold">
+      <div class="flex-1 lg:text-5xl sm:text-4xl self-center font-normal text-gray-700">
         <div class="flex" v-if="game.teams.indexOf(team) == 0">
-          <div class="flex-1" v-for="set in game.sets" :key="set.id">
+          <div class="flex-1 text-center" :class="{ 'text-black font-semibold' : set.team1_score > set.team2_score}" v-for="set in game.sets" :key="set.id">
               {{set.team1_score}}
           </div>
         </div>
         <div class="flex" v-if="game.teams.indexOf(team) == 1">
-          <div class="flex-1" v-for="set in game.sets" :key="set.id">
+          <div class="flex-1 text-center" :class="{ 'text-black font-semibold' : set.team2_score > set.team1_score}" v-for="set in game.sets" :key="set.id">
               {{set.team2_score}}
           </div>
         </div>
       </div>
     </div>
-    <!-- <div class="flex py-4">
-      <div class="flex" v-for="set in game.sets" :key="set.id">
-          {{set.set_number}}. 
-          {{set.team1_score}} - 
-          {{set.team2_score}}
-      </div>
-    </div> -->
+    </div>
+    <!-- Wordy part. TODO: add leaderboard info -->
+    <GameShowContent
+      :game="game"
+      :team1="game.teams[0]"
+      :team2="game.teams[1]"
+      :team1Score="team1Score"
+      :team2Score="team2Score"
+    />
   </div>
 </div>
 </template>
