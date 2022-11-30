@@ -14,19 +14,19 @@ const doublesTeams = reactive([]);
 const page = ref(1);
 const teamsPerPage = ref(5);
 
-onMounted(async () => {
-  await fetchSinglesLeaderboard();
-  await fetchDoublesLeaderboard();
-});
+// onMounted(async () => {
+//   await fetchSinglesLeaderboard();
+//   await fetchDoublesLeaderboard();
+// });
 
-async function fetchSinglesLeaderboard() {
+async function loadSinglesLeaderboard() {
   const fetchedTeams = await apiCalls.getSinglesLeaderboard();
   console.log('fetchedTeams: ', fetchedTeams);
   if (fetchedTeams) Object.assign(singlesTeams, fetchedTeams);
   else toasts.somethingWentWrong();
 }
 
-async function fetchDoublesLeaderboard() {
+async function loadDoublesLeaderboard() {
   const fetchedTeams = await apiCalls.getDoublesLeaderboard();
   if (fetchedTeams) Object.assign(doublesTeams, fetchedTeams);
   else toasts.somethingWentWrong();
@@ -60,6 +60,12 @@ const numberOfPages = computed(() => {
   if (gameMode.value === 'singles') return Math.ceil(singlesTeams.length / teamsPerPage.value);
   else if (gameMode.value === 'doubles') return Math.ceil(doublesTeams.length / teamsPerPage.value);
 });
+
+async function fake() {
+  await new Promise(resolve => setTimeout(resolve, 5000));
+}
+await Promise.all([loadSinglesLeaderboard(), loadDoublesLeaderboard()]);
+// await fake();
 
 </script>
 
