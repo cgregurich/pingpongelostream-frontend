@@ -116,3 +116,4 @@ export async function getDoublesLeaderboard() {
   catch (err) {
     return null;
   }
+}
