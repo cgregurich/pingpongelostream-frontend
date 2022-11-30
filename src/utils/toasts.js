@@ -51,3 +51,7 @@ export function gameNotFound(redirectCallback) {
   toast.error('Game not found. Redirecting to games page.');
   redirectCallback();
 }
+
+export function somethingWentWrong() {
+  toast.error('Something went wrong...', { duration: 3000 });
+}
