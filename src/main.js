@@ -8,13 +8,18 @@ import router from '@/router';
 const pinia = createPinia();
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faLock, faTableTennisPaddleBall, faEnvelope, faTrophy } from '@fortawesome/free-solid-svg-icons';
+
+import { faEnvelope, faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-library.add(faUser, faLock, faTableTennisPaddleBall, faEnvelope, faTrophy);
+library.add(faEnvelope, faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight);
+
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 createApp(App)
   .use(pinia)
   .use(router)
   .component('font-awesome-icon', FontAwesomeIcon)
+  .component('v-select', vSelect)
   .mount('#app');

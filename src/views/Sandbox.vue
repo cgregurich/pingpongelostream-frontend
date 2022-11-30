@@ -1,17 +1,27 @@
 <script setup>
-// import axios from 'axios';
-// import { ref, reactive } from 'vue';
-
-// async function asyncFunc() {
-//   const response = await axios.get('http://pingpong.test/api/players/2');
-//   const player = response.data.response.player;
-//   return player;
-// }
+import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue';
 
 
-// const player = ref(await asynFunc());
+
+onBeforeMount(() => {
+  console.log('on before mount');
+  // console.log('onBeforeMount myComputed: ', myComputed.value);
+});
+
+onMounted(() => {
+  console.log('onMounted start');
+  // console.log('onMounted myComputed:', myComputed.value);
+});
+
+const myComputed = computed(() => {
+  console.log('myComputed being computed');
+  return 'hi there';
+});
+
 </script>
 
 <template>
-
+<button>Add to ref thign</button>
 </template>
+
+dom -> onMounted
