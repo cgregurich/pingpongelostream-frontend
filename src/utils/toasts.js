@@ -55,3 +55,19 @@ export function gameNotFound(redirectCallback) {
 export function somethingWentWrong() {
   toast.error('Something went wrong...', { duration: 3000 });
 }
+
+export function loginSuccessful() {
+  toast.success('Login successful', { duration: 2000 });
+}
+
+export function loginFailed() {
+  toast.error('Login failed', { duration: 2000 });
+}
+
+export function registrationSuccessful() {
+  toast.success('Registration successful.', { duration: 2000 });
+}
+
+export function registrationFailed() {
+  toast.error('Registration failed', { duration: 2000 });
+}
