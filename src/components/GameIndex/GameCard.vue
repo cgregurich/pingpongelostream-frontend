@@ -173,10 +173,10 @@ function maxButtonsForPagination() {
       <div class="flex w-full lg:text-5xl md:text-4xl sm:text-5xl font-semibold relative left-20 justify-center">{{pageHeader}}</div>
       <div class="flex lg:w-full md:w-1/2 mb-12">
         <SelectDropDown menu-title="Game Options" class="w-2/3 absolute left-20" v-if="games">
-          <section class="pb-1 border-b border-purple-300">
+          <section class="pb-1 border-b border-site-color-two">
             <button :id="gameOption" @click="getPage('completed')">{{dropDownSelections.Completed}}</button>
           </section>
-          <section class="py-1 border-b border-purple-300">
+          <section class="py-1 border-b border-site-color-two">
             <button :id="gameOption" @click="getPage('scheduled')">{{dropDownSelections.Scheduled}}</button>
           </section>
           <section class="pt-1">
@@ -186,8 +186,8 @@ function maxButtonsForPagination() {
       </div>
     </div>
     <div class="flex flex-row">
-      <div class="flex flex-col border border-purple-300 p-1 m-1 rounded bg-grey-100 hover:cursor-pointer hover:shadow-md" 
-            :class="{'bg-purple-100' : season.season_number == selectedSeason}" @click="updateSeason(season.season_number)" v-for="season in seasons" :key="season.id">
+      <div class="flex flex-col border border-site-color-two p-1 m-1 rounded bg-grey-100 hover:cursor-pointer hover:shadow-md" 
+            :class="{'bg-site-color-two text-white' : season.season_number == selectedSeason}" @click="updateSeason(season.season_number)" v-for="season in seasons" :key="season.id">
         Season {{season.season_number}}
       </div>
     </div>

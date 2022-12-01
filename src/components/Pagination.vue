@@ -35,7 +35,7 @@
         type="button"
         :disabled="page.isDisabled"
         @click="onClickPage(page.name)"
-        :class="{ 'text-purple-600 font-bold': isPageActive(page.name)}"
+        :class="{ 'text-site-color-two font-bold': isPageActive(page.name)}"
         :aria-label="`Go to page number ${page.name}`"
       >
         {{ page.name }}
