@@ -6,6 +6,9 @@ const props = defineProps({
   gameMode: String,
 });
 
+const localGameMode = props.gameMode;
+
+alert('alex loves python');
 
 
 
@@ -17,7 +20,7 @@ const props = defineProps({
   <td class="bg-site-color-two text-white rounded-b-lg py-2" colspan="7">
     <div class="paginater flex justify-end text-xs">
       <!-- <select class="text-black rounded-lg border-none" v-model="gameMode" @change="$emit('update:gameMode', gameMode)"> -->
-      <select class="text-black rounded-lg border-none" v-model="gameMode" @change="$emit('game-mode-changed', gameMode)">
+      <select class="text-black rounded-lg border-none" v-model="localGameMode" @change="$emit('game-mode-changed', localGameMode)">
         <option value="singles">Singles</option>
         <option value="doubles">Doubles</option>
       </select>
