@@ -57,7 +57,7 @@ defineProps({
     <!-- Profile Pic and Username -->
     <div v-for="(player, index) in teamTwo" :key="index" class="name-pic-container flex flex-col items-end text-sm my-2 border-0 border-red-400 bg-red-000 sm:w-[150px]">
       <img class="w-12 min-w-12 rounded-full" :src="player.profilePhotoPath">
-      <div class="username font-semibold text-black">{{ player.name }}</div>
+      <div class="username font-semibold text-black whitespace-nowrap">{{ player.name }}</div>
     </div>
   </div>
 </div>

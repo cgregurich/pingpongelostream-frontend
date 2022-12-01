@@ -1,33 +1,31 @@
 <script setup>
-import { ref, reactive, computed, onBeforeUpdate, watch } from 'vue';
+import { ref, reactive, computed, toRaw } from 'vue';
 import GameSummaryCard from '@/components/GameSummaryCard.vue';
-import axios from 'axios';
-import { API_URL } from '@/stores/utils/backendRouteParts.js';
+import * as apiCalls from '@/utils/apiCalls.js';
+import * as toasts from '@/utils/toasts.js';
 
 const props = defineProps({
   playerID: Number,
   seasonID: Number,
 });
 
-const team = reactive({});
 const singlesTeamID = ref(null);
+const player = reactive({});
 const games = reactive([]);
 
+async function loadPlayer() {
+  const fetchedPlayer = await apiCalls.getPlayer(props.playerID);
+  if (fetchedPlayer) Object.assign(player, fetchedPlayer);
+}
+
 async function loadSinglesTeamID() {
-  const response = await axios.get(`${API_URL}/players/${props.playerID}/teams/singles`);
-  if (response.status === 200) {
-    singlesTeamID.value = response.data.response.team_id;
-  }
+  const fetchedTeamID = await apiCalls.getPlayerSinglesTeamID(props.playerID);
+  if (fetchedTeamID) singlesTeamID.value = fetchedTeamID;
 }
 
 async function loadGames() {
-  const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${props.seasonID}`);
-  if (response.status === 200) {
-    const fetchedGames = response.data.response.games.reverse();
-    const fetchedTeam = response.data.response.team;
-    Object.assign(games, fetchedGames);
-    Object.assign(team, fetchedTeam);
-  }
+  const fetchedGames = await apiCalls.getGamesForTeam(singlesTeamID.value, props.seasonID);
+  if (fetchedGames) Object.assign(games, fetchedGames);
 }
 
 function getOpponentTeam(game) {
@@ -71,7 +69,7 @@ const selfTeam = computed(() => {
   /*
   Formats the given player's singles team in the way that GameSummaryCard expects.
   */
-  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_url }));
+  const selfTeamData = [{ name: player.name, profilePhotoPath: player.profile_photo_url }];
   return selfTeamData;
 });
 
@@ -84,6 +82,7 @@ const singlesGames = computed(() => {
 });
 
 async function loadData() {
+  await loadPlayer();
   await loadSinglesTeamID();
   await loadGames();
 }
@@ -98,7 +97,6 @@ await loadData();
     <div class="flex justify-between w-full">
       <div class="text-lg ml-2">Recent Games</div>
     </div>
-
     <GameSummaryCard
       v-for="game in singlesGames.slice(0, 3)"
       :key="game.id" 
