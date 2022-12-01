@@ -63,7 +63,7 @@ const canSubmit = computed(() => {
                 <FormInput labelText="Email" v-model:enteredText="email" icon="fa-envelope"/>
                 <FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
                 <FormInput labelText="Confirm Password" v-model:enteredText="passwordConfirm" icon="fa-lock" :isPassword="true"/>
-                <PrimaryButton text="Register" :disabled="!canSubmit"/>
+                <PrimaryButton text="Register" :disabled="!canSubmit || disableInput"/>
             </form>
 			<div class="line w-4/5 mt-4 bg-opacity-10 bg-black h-[1px] mb-4"></div>
 			<div class="footer">Already have an account?
