@@ -19,7 +19,7 @@ export function gameCreated() {
 }
 
 export function submittingSet() {
-  current = toast.info('Submitting set...', { duration: 2000 });
+  current = toast.info('Submitting set...', { duration: 2000, dismissible: false });
 }
 
 export function setSubmitted() {
@@ -33,7 +33,7 @@ export function submittingSetFailed() {
 }
 
 export function submittingGame() {
-  current = toast.info('Submitting game...', { duration: 2000 });
+  current = toast.info('Submitting game...', { duration: 2000, dismissible: false });
 }
 
 export function gameSubmitted() {

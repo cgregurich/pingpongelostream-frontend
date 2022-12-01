@@ -31,7 +31,7 @@ onMounted(async () => {
 async function loadGameModes() {
   const fetchedGameModes = await apiCalls.getGameModes();
   if (!fetchedGameModes) {
-    console.error('something went wrong getting all game modes');
+    toasts.somethingWentWrong();
     return;
   }
   Object.assign(gameModes, fetchedGameModes);
@@ -40,7 +40,7 @@ async function loadGameModes() {
 async function loadPlayers() {
   const fetchedPlayers = await apiCalls.getAllPlayers();
   if (!fetchedPlayers) {
-    console.error('something went wrong getting all players');
+    toasts.somethingWentWrong();
     return;
   }
   Object.assign(players, fetchedPlayers);
@@ -193,7 +193,6 @@ async function createGameClicked(playImmediately) {
 
   let gameID;
   if (!canCreateGame.value) { 
-    console.log('Can\'t create game!!');
     return;
   }
   if (selectedGameMode.value.id === 1) {
@@ -222,6 +221,11 @@ async function createGameClicked(playImmediately) {
 async function createSinglesGame() {
   const teamOneID = await apiCalls.getPlayerSinglesTeamID(teamOnePlayers[0].id);
   const teamTwoID = await apiCalls.getPlayerSinglesTeamID(teamTwoPlayers[0].id);
+
+  if (!teamOneID || !teamTwoID) {
+    toasts.somethingWentWrong();
+    return null;
+  }
   const teamOneFirstServerID = teamOnePlayers[0].id;
   const teamTwoFirstServerID = teamTwoPlayers[0].id;
   const firstServer = 'team1';
@@ -244,14 +248,18 @@ async function createDoublesGame() {
   const teamTwoPlayerIDs = teamTwoPlayers.map(p => p.id);
 
   // Try to get team ID if team already exists with given players
+  // These api calls will return team ID if a team with players exist
+  // or will return -1 if no team exists, or null if the request didn't work
   let teamOneID = await apiCalls.getTeamIDWithPlayers(teamOnePlayerIDs);
   let teamTwoID = await apiCalls.getTeamIDWithPlayers(teamTwoPlayerIDs);
 
-  if (teamOneID == null || teamTwoID == null) return false;
+  if (!teamOneID || !teamTwoID) return null;
 
   // If team doesn't exist, make a new one
   if (teamOneID === -1) teamOneID = await apiCalls.createNewTeam(teamOnePlayerIDs);
   if (teamTwoID === -1) teamTwoID = await apiCalls.createNewTeam(teamTwoPlayerIDs);
+
+  if (!teamOneID || !teamTwoID) return null;
 
 
   const teamOneFirstServerID = teamOnePlayers[0].id; // FIXME: just taking the first player for now
@@ -271,23 +279,12 @@ async function createDoublesGame() {
   return gameID;
 }
 
-async function getPlayerOneSinglesTeamID() {
-  const teamID = await apiCalls.getPlayerSinglesTeamID(teamOnePlayers[0].id);
-  return teamID;
-}
 
-async function getPlayerTwoSinglesTeamID() {
-  const teamID = await apiCalls.getPlayerSinglesTeamID(teamTwoPlayers[0].id);
-  return teamID;
-}
 
 const addablePlayersNames = computed(() => {
   return players.filter(p => canAddPlayer(p)).map(p => p.name);
 });
 
-function test() {
-  console.log('test');
-}
 
 </script>
 

@@ -120,8 +120,8 @@ async function loadGame() {
 
 async function loadGameMode() {
   const fetchedGameMode = await apiCalls.getGameMode(game.mode_id);
-  if (!fetchedGameMode) console.error('Something went wrong fetching game mode');
-  Object.assign(gameMode, fetchedGameMode);
+  if (fetchedGameMode) Object.assign(gameMode, fetchedGameMode);
+  else toasts.somethingWentWrong();
 }
 
 
@@ -169,10 +169,7 @@ Contains objects that look like:
 const servingPlayerID = computed(() => {
   if (teamOnePlayers.value.length === 0 || teamTwoPlayers.value.length == 0) return;
 
-  console.log('teamOnePlayerServing: ', teamOnePlayerServing.value);
-  console.log('teamTwoPlayerServing: ', teamTwoPlayerServing.value);
   if (teamServing.value === 0) {
-    console.log(teamOnePlayers.value);
     return teamOnePlayers.value[teamOnePlayerServing.value].id;
   }
   else if (teamServing.value === 1) {
