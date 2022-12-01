@@ -91,7 +91,7 @@
 										<button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
 											<img
 												class="h-8 w-8 rounded-full object-cover"
-												:src="user.profile_photo_path"
+												:src="user.profile_photo_url"
 												:alt="user.name"
 											>
 										</button>
@@ -103,6 +103,9 @@
 										</div>
 										<DropdownLink :to="{ name: 'Profile' }">
 											Profile
+										</DropdownLink>
+										<DropdownLink :to="{ name: 'EditProfile' }">
+											Edit Profile
 										</DropdownLink>
 										<div class="border-t border-gray-100" />
 										<!-- Authentication -->
@@ -191,7 +194,7 @@
 								<div class="shrink-0 mr-3">
 									<img
 										class="h-10 w-10 rounded-full object-cover"
-										:src="user.profile_photo_path"
+										:src="user.profile_photo_url"
 										:alt="user.name"
 									>
 								</div>
@@ -211,7 +214,9 @@
 								<ResponsiveNavLink :to="{ name: 'Profile' }">
 									Profile
 								</ResponsiveNavLink>
-
+								<ResponsiveNavLink :to="{ name: 'EditProfile' }">
+									Edit Profile
+								</ResponsiveNavLink>
 								<!-- Authentication -->
 								<form method="POST" @submit.prevent="logout">
 									<ResponsiveNavLink as="button">

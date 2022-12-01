@@ -36,7 +36,7 @@ function getOpponentTeam(game) {
   i.e. an array of objects where each object is 
   { name: <player name>, profilePhotoPath: <url> }
   */
-  const teamData = game.opponent_team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
+  const teamData = game.opponent_team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_url }));
   return teamData;
 }
 
@@ -71,7 +71,7 @@ const selfTeam = computed(() => {
   /*
   Formats the given player's singles team in the way that GameSummaryCard expects.
   */
-  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_path }));
+  const selfTeamData = team.members.map(member => ({ name: member.name, profilePhotoPath: member.profile_photo_url }));
   return selfTeamData;
 });
 
