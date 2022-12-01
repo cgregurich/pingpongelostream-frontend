@@ -23,7 +23,7 @@ await loadUser();
 
 <template>
   <div class="header flex items-center mt-4">
-    <img class="profile-pic rounded-full w-44 shadow-2xl" :src="player.profile_photo_path">
+    <img class="profile-pic rounded-full w-44 shadow-2xl" :src="player.profile_photo_url">
     <div class="username ml-4 font-semibold text-2xl">{{ player.name }}</div>
   </div>
 </template>

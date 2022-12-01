@@ -4,6 +4,7 @@ import PrimaryButton from '@/components/PrimaryButton.vue';
 import { ref, computed } from 'vue';
 import { useAuthStore } from'@/stores/modules/auth';
 import router from '@/router/index';
+import * as toasts from '@/utils/toasts.js';
 
 const store = useAuthStore();
 
@@ -11,16 +12,12 @@ const name = ref('');
 const email = ref('');
 const password = ref('');
 const passwordConfirm = ref('');
-const errorMessage = ref('');
 
-function submitClicked() {
-    errorMessage.value = '';
-    if (password.value !== passwordConfirm.value) {
-        errorMessage.value = 'Passwords must match';
-    }
-}
+const disableInput = ref(false);
+
 
 function submit() {
+    disableInput.value = true;
     if (canSubmit.value) {
         store.register(
             name.value,
@@ -28,8 +25,15 @@ function submit() {
             password.value,
             passwordConfirm.value
         ).then(
-            () => router.push({ name: 'Dashboard' })
-        ).catch(e => console.error(e));
+            () => {
+              toasts.registrationSuccessful();
+              router.push({ name: 'Dashboard' });
+            }
+        ).catch(e => {
+          disableInput.value = false;
+          toasts.registrationFailed();
+          console.error(e);
+        });
     }
 }
 
@@ -59,13 +63,8 @@ const canSubmit = computed(() => {
                 <FormInput labelText="Email" v-model:enteredText="email" icon="fa-envelope"/>
                 <FormInput labelText="Password" v-model:enteredText="password" icon="fa-lock" :isPassword="true"/>
                 <FormInput labelText="Confirm Password" v-model:enteredText="passwordConfirm" icon="fa-lock" :isPassword="true"/>
-                <PrimaryButton text="Register" :disabled="!canSubmit"/>
+                <PrimaryButton text="Register" :disabled="!canSubmit || disableInput"/>
             </form>
-            <div class="errors">
-                <div class="text-red-700 text-xl">
-                    {{ errorMessage }}
-                </div>
-            </div>
 			<div class="line w-4/5 mt-4 bg-opacity-10 bg-black h-[1px] mb-4"></div>
 			<div class="footer">Already have an account?
 				<router-link :to="{ name: 'Login' }" class="font-bold hover:underline">Log in.</router-link>
