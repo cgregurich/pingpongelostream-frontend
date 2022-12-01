@@ -67,6 +67,10 @@ async function fake() {
 await Promise.all([loadSinglesLeaderboard(), loadDoublesLeaderboard()]);
 // await fake();
 
+function gameModeChanged(newGameMode) {
+  gameMode.value = newGameMode;
+}
+
 </script>
 
 
@@ -76,7 +80,8 @@ await Promise.all([loadSinglesLeaderboard(), loadDoublesLeaderboard()]);
   <table class="shadow-lg shadow-gray-400 rounded-lg w-[700px]">
     <LeaderboardHeader />
     <LeaderboardCard v-for="(team, index) in currentPageTeams" :key="team.id" :team="team" :ranking="index + 1 + (page - 1) * teamsPerPage" />
-    <LeaderboardFooter  v-model:gameMode="gameMode" :page="page" :numberOfPages="numberOfPages" @paginate-next="page++" @paginate-previous="page--" @jump-to-page="jumpToPage"/>
+    <!-- <LeaderboardFooter  v-model:gameMode="gameMode" :page="page" :numberOfPages="numberOfPages" @paginate-next="page++" @paginate-previous="page--" @jump-to-page="jumpToPage"/> -->
+    <LeaderboardFooter :gameMode="gameMode" @game-mode-changed="gameModeChanged" :page="page" :numberOfPages="numberOfPages" @paginate-next="page++" @paginate-previous="page--" @jump-to-page="jumpToPage"/>
   </table>
 </div>
 </template>
