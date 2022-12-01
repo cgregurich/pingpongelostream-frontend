@@ -11,20 +11,21 @@ import GameIndexSkeleton from "./GameIndexSkeleton.vue";
 const games = ref([]);
 // const games = reactive([]);
 const pageHeader = ref('Completed');
-var winningTeamObject = "";
-var losingTeamObject = "";
-const dropDownSelections = { Completed:'Recent Played Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
+const dropDownSelections = { Completed:'Completed Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
 var gameOption = 'completed';
 var value = 'completed';
-// TODO - need to grab current Season
-var currentSeason = 2;
+// TODO - need to grab all Seasons
+const currentSeason = ref(1);
+const selectedSeason = ref();
+const seasons = ref([]);
 // Variables for Pagination component
 const totalPages = ref(10);
-const totalItems = ref(100);
+const totalItems = ref(10);
 const perPage = 5;
 const currentPage = ref(1);
 
 onMounted(async () => {
+  await getSeasons();
   await getRequest();
 })
 
@@ -35,6 +36,33 @@ onMounted(async () => {
 function formatDate(date) {
   const options = {year: 'numeric', month: 'long', day: 'numeric'}
   return new Date(date).toLocaleDateString('en', options)
+}
+
+const getSeasons = async () => {
+  try {
+    const currentSeasonResponse = await axios.get(API_URL + "/seasons/current");
+    if(currentSeasonResponse.status === 200) {
+      currentSeason.value = currentSeasonResponse.data.response.season_number;
+      selectedSeason.value = currentSeason.value;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const seasonsResponse = await axios.get(API_URL + "/seasons");
+    if(seasonsResponse.status === 200) {
+      seasons.value = seasonsResponse.data.response;
+    }
+  } catch (err) {
+    console.log(err);
+  } 
+}
+
+function updateSeason(seasonNum) {
+  console.log(seasonNum);
+  selectedSeason.value = seasonNum;
+  getRequest();
 }
 
 /**
@@ -88,19 +116,16 @@ function getGames(value) {
 const getRequest = async () => {
   // Get Games
   try {
-    const response = await axios.get(API_URL + GAMES + "/season/" + currentSeason + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption);
-
+    const response = await axios.get(API_URL + GAMES + "/season/" + selectedSeason.value + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption);
     if(response.status === 200) {
-        const fetchedGames = response.data.response.games;
-        // console.log(fetchedGames);
-        games.value = fetchedGames;
+        const fetchedGames = response.data.response;
+        totalPages.value = fetchedGames.totalPages;
+        games.value = fetchedGames.games;
+        // console.log(games.value);
     }
   } catch (err) {
     console.error(err);
-  }
-  // Get number of games
-  
-
+  }  
 }
 
 /**
@@ -109,9 +134,8 @@ const getRequest = async () => {
 function getPage(value) {
   console.log("value: " + value + " and gameOption: " + gameOption);
   value != gameOption && getGames(value);
-  console.log(games.value);
-  Object.assign(totalItems, games.value.length);
-  Object.assign(totalPages, totalItems.value/perPage);
+  // Object.assign(totalItems, games.value.length);
+  // Object.assign(totalPages, Math.ceil(totalItems.value/perPage));
 }
 
 /**
@@ -122,6 +146,10 @@ function onPageChange(page) {
   console.log("page is " + page);
   currentPage.value = page;
   getRequest();
+}
+
+function maxButtonsForPagination() {
+  return totalPages.value < 3 ? totalPages.value : 3;
 }
 
 </script>
@@ -142,7 +170,7 @@ function onPageChange(page) {
       "
     >
     <div class="flex flex-row w-full p-4 pt-7">
-      <div class="flex w-full lg:text-5xl md:text-4xl sm:text-5xl font-semibold relative left-20">{{pageHeader}} Games</div>
+      <div class="flex w-full lg:text-5xl md:text-4xl sm:text-5xl font-semibold relative left-20 justify-center">{{pageHeader}}</div>
       <div class="flex lg:w-full md:w-1/2 mb-12">
         <SelectDropDown menu-title="Game Options" class="w-2/3 absolute left-20" v-if="games">
           <section class="pb-1 border-b border-purple-300">
@@ -157,8 +185,16 @@ function onPageChange(page) {
         </SelectDropDown>
       </div>
     </div>
+    <div class="flex flex-row">
+      <div class="flex flex-col border border-purple-300 p-1 m-1 rounded bg-grey-100 hover:cursor-pointer hover:shadow-md" 
+            :class="{'bg-purple-100' : season.season_number == selectedSeason}" @click="updateSeason(season.season_number)" v-for="season in seasons" :key="season.id">
+        Season {{season.season_number}}
+      </div>
+    </div>
       <div class="flex flex-col w-3/4 mt-10">
         <!-- TODO Something when no games are displayed -->
+        <div class="self-center pb-10" v-if="(games.length == 0)">No Games To Show</div>
+        
             <div class="flex flex-col w-full" v-for="game in games" :key="game.teams">
               <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
                   <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 py-2 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
@@ -170,19 +206,19 @@ function onPageChange(page) {
                         <GameIndexSkeleton/>
                       </template>
                     </router-link>
-                </div>
-              <br/>
+                  </div><br/>
+              </div>
             </div>
+          <div
+            class="line w-4/5 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
+          ></div>
+          <Pagination v-if="(totalPages > 1)"
+            :maxVisibleButtons="maxButtonsForPagination()"
+            :totalPages='totalPages'
+            :totalItems="totalItems"
+            :perPage="perPage"
+            :currentPage="currentPage"
+            @pagechanged='onPageChange'/>
       </div>
-      <div
-        class="line w-4/5 mt-1 bg-opacity-10 bg-black h-[1px] mb-4"
-      ></div>
-      <Pagination v-if="totalItems > perPage"
-        :totalPages='totalPages'
-        :totalItems="totalItems"
-        :perPage="perPage"
-        :currentPage="currentPage"
-        @pagechanged='onPageChange'/>
-    </div>
   </div>
 </template>

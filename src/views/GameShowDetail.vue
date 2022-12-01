@@ -90,7 +90,7 @@ export default {
     <div class="flex p-4" v-for="team in game.teams" :key="team.id" :class="{'border-b border-gray-300' : game.teams.indexOf(team) == 0 }">
       <div class="flex-1">
         <div class="flex lg:text-3xl sm:text-2xl font-semibold p-1" v-for="member in team.members" :key="member.id">
-          <img class="border border-grey-800 rounded-full w-11 shadow-xl" :src="member.profile_photo_path">
+          <img class="border border-grey-800 rounded-full w-11 shadow-xl" :src="member.profile_photo_url">
           <div class="pl-3">
             {{member.name}}
           </div>
