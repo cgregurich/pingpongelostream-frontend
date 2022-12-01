@@ -1,7 +1,6 @@
 <script setup>
-import { ref, reactive, computed, onBeforeUpdate } from 'vue'
-import axios from 'axios';
-import { API_URL } from '@/stores/utils/backendRouteParts.js';
+import { ref, reactive, computed, onBeforeUpdate, watch } from 'vue'
+import * as apiCalls from '@/utils/apiCalls.js';
 
 const props = defineProps({
   playerID: Number,
@@ -11,31 +10,24 @@ const props = defineProps({
 const stats = reactive({});
 const singlesTeamID = ref(null);
 const games = reactive([]);
-const team = reactive({});
 
 async function loadStats() {
-  const response = await axios.get(`${API_URL}/players/${props.playerID}/teams/singles/ranking/season/${props.seasonID}`);
-  if (response.status === 200) {
-    const fetchedStats = response.data.response;
+  const fetchedStats = await apiCalls.getPlayerStats(props.playerID, props.seasonID);
+  if (fetchedStats) {
     Object.assign(stats, fetchedStats);
+    return true;
   }
+  else return false;
 }
 
 async function loadSinglesTeamID() {
-  const response = await axios.get(`${API_URL}/players/${props.playerID}/teams/singles`);
-  if (response.status === 200) {
-    singlesTeamID.value = response.data.response.team_id;
-  }
+  const fetchedTeamID = await apiCalls.getPlayerSinglesTeamID(props.playerID);
+  if (fetchedTeamID) singlesTeamID.value = fetchedTeamID;
 }
 
 async function loadGames() {
-  const response = await axios.get(`${API_URL}/teams/${singlesTeamID.value}/games/${props.seasonID}`);
-  if (response.status === 200) {
-    const fetchedGames = response.data.response.games;
-    const fetchedTeam = response.data.response.team;
-    Object.assign(games, fetchedGames);
-    Object.assign(team, fetchedTeam);
-  }
+  const fetchedGames = await apiCalls.getGamesForTeam(singlesTeamID.value, props.seasonID);
+  if (fetchedGames) Object.assign(games, fetchedGames);
 }
 
 const gamesPlayed = computed(() => games.length);
@@ -51,7 +43,6 @@ async function loadData() {
   await loadGames();
 }
 
-onBeforeUpdate(async () => await loadData());
 await loadData();
 
 </script>

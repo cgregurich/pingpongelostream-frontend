@@ -101,7 +101,7 @@
 										<div class="block px-4 py-2 text-xs text-gray-400">
 											Manage Account
 										</div>
-										<DropdownLink :to="{ name: 'Profile' }">
+										<DropdownLink :to="{ name: 'Player', params: { id: user.id } }">
 											Profile
 										</DropdownLink>
 										<DropdownLink :to="{ name: 'EditProfile' }">
@@ -211,7 +211,7 @@
 							<div
 								class="mt-3 space-y-1"
 							>
-								<ResponsiveNavLink :to="{ name: 'Profile' }">
+								<ResponsiveNavLink :to="{ name: 'Player', params: { id: user.id } }">
 									Profile
 								</ResponsiveNavLink>
 								<ResponsiveNavLink :to="{ name: 'EditProfile' }">

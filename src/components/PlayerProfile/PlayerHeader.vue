@@ -1,23 +1,20 @@
 <script setup>
-import { ref, reactive, onBeforeUpdate } from 'vue';
-import axios from 'axios';
-import { API_URL } from '@/stores/utils/backendRouteParts.js';
+import { ref, reactive, onBeforeUpdate, watch } from 'vue';
+import * as apiCalls from '@/utils/apiCalls.js';
 
 const props = defineProps({
   playerID: Number,
 });
+
+
 const player = reactive({});
 
-async function loadUser() {
-  const response = await axios.get(`${API_URL}/players/${props.playerID}`);
-  if (response.status === 200) {
-    const fetchedPlayer = response.data.response.player;
-    Object.assign(player, fetchedPlayer);
-  }
+async function loadPlayer() {
+  const fetchedPlayer = await apiCalls.getPlayer(props.playerID);
+  if (fetchedPlayer) Object.assign(player, fetchedPlayer);
 }
 
-onBeforeUpdate(async () => await loadUser());
-await loadUser();
+await loadPlayer();
 
 </script>
 

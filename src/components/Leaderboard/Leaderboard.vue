@@ -3,8 +3,6 @@ import { ref, reactive, computed, onMounted, watch } from 'vue';
 import LeaderboardCard from '@/components/Leaderboard/LeaderboardCard.vue';
 import LeaderboardHeader from '@/components/Leaderboard/LeaderboardHeader.vue';
 import LeaderboardFooter from '@/components/Leaderboard/LeaderboardFooter.vue';
-import axios from 'axios';
-import { API_URL } from '@/stores/utils/backendRouteParts.js';
 import * as apiCalls from '@/utils/apiCalls.js';
 import * as toasts from '@/utils/toasts.js';
 

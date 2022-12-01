@@ -19,6 +19,17 @@ export async function getAllPlayers() {
   }
 }
 
+export async function getPlayer(playerID) {
+  try {
+    const response = await axios.get(`${API_URL}/players/${playerID}`);
+    return response.data.response.player;
+  }
+  catch(err) {
+    console.error(err);
+    return null;
+  }
+}
+
 export async function createGame(gameData) {
   try {
     const config = { headers: authStore.bearerToken };
@@ -35,6 +46,32 @@ export async function getPlayerSinglesTeamID(playerID) {
   try {
     const response = await axios.get(`${API_URL}/players/${playerID}/teams/singles`);
     return response.data.response.team_id;
+  }
+  catch(err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function getSinglesTeam(playerID) {
+
+}
+
+export async function getGamesForTeam(teamID, seasonID) {
+  try {
+    const response = await axios.get(`${API_URL}/teams/${teamID}/games/${seasonID}`);
+    return response.data.response.games;
+  }
+  catch(err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function getPlayerStats(playerID, seasonID) {
+  try {
+    const response = await axios.get(`${API_URL}/players/${playerID}/teams/singles/ranking/season/${seasonID}`);
+    return response.data.response;
   }
   catch(err) {
     console.error(err);
@@ -132,6 +169,17 @@ export async function completeGame(gameID) {
     const config = { headers: authStore.bearerToken };
     const response = await axios.post(`${API_URL}/games/${gameID}/complete`, null, config);
     return response.data.response;
+  }
+  catch(err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function getCurrentSeason() {
+  try {
+    const response = await axios.get(`${API_URL}/seasons/current`);
+    return response.data.response.season_number;
   }
   catch(err) {
     console.error(err);
