@@ -73,6 +73,6 @@ export function registrationFailed() {
 }
 
 export function playerNotFound(redirectCallback) {
-  toast.error('Player not found. Redirecting to dashboard...');
+  toast.error('Player not found. Redirecting to leaderboards...');
   redirectCallback();
 }

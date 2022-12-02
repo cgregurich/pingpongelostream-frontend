@@ -27,7 +27,7 @@ const submit = () => {
         ).then(
             () => {
               toasts.loginSuccessful();
-              router.push({ name: 'Dashboard' });
+              router.push({ name: 'Leaderboard' });
             }
         ).catch((e) => {
           disableInput.value = false;
