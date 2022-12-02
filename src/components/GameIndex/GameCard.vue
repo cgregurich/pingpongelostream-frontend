@@ -9,15 +9,16 @@ import router from '@/router/index';
 import GameIndexSkeleton from "./GameIndexSkeleton.vue";
 
 const games = ref([]);
-// const games = reactive([]);
+
 const pageHeader = ref('Completed');
 const dropDownSelections = { Completed:'Completed Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
 var gameOption = 'completed';
 var value = 'completed';
-// TODO - need to grab all Seasons
+
 const currentSeason = ref(1);
 const selectedSeason = ref();
 const seasons = ref([]);
+
 // Variables for Pagination component
 const totalPages = ref(10);
 const totalItems = ref(10);

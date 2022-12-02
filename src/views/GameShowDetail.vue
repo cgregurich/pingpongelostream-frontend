@@ -11,20 +11,12 @@ export default {
         return {
             game: null,
             setNum: 1,
-            // player: [],
             team1Score: 0,
             team2Score: 0,
         };
     },
     props: {},
     async created() {
-        // async function getResponsePlayer(id) {
-        //   const playerResponse = await axios.get(API_URL + "/players/" + id);
-        //   if(playerResponse.status === 200) {
-        //     const fetchedPlayer = playerResponse.data.response.player;
-        //     return fetchedPlayer;
-        //   }
-        // }
         try {
             const gameResponse = await axios.get(API_URL + GAMES + "/" + this.$route.params.id);
             if (gameResponse.status === 200) {
@@ -36,17 +28,6 @@ export default {
         catch (err) {
             console.error(err);
         }
-        // console.log(this.game.teams[0].members[0].id)
-        // try {
-        //   this.game.teams.forEach(element => {
-        //     element.members.forEach(element2 => {
-        //       this.player.push(getResponsePlayer(element2.id));
-        //     })
-        //   });
-        //   console.log(this.player);
-        // } catch (err) {
-        //   console.error(err);
-        // }
         this.game.sets.forEach(element => element.team1_score > element.team2_score ? this.team1Score++ : this.team2Score++);
     },
     methods: {
@@ -54,20 +35,6 @@ export default {
             const options = { year: "numeric", month: "long", day: "numeric" };
             return new Date(date).toLocaleDateString("en", options);
         },
-        // async getProfilePhoto(playerId) {
-        //     try {
-        //         const playerResponse = await axios.get(API_URL + "/players/" + playerId);
-        //         if (playerResponse.status === 200) {
-        //             const fetchedPlayer = playerResponse.data.response.player;
-        //             this.player = fetchedPlayer;
-        //             console.log(this.player);
-        //             // return this.player;
-        //         }
-        //     }
-        //     catch (err) {
-        //         console.error(err);
-        //     }
-        // },
     },
     components: { GameShowContent }
 }
@@ -90,10 +57,12 @@ export default {
     <div class="flex p-4" v-for="team in game.teams" :key="team.id" :class="{'border-b border-gray-300' : game.teams.indexOf(team) == 0 }">
       <div class="flex-1">
         <div class="flex lg:text-3xl sm:text-2xl font-semibold p-1" v-for="member in team.members" :key="member.id">
-          <img class="border border-grey-800 rounded-full w-11 shadow-xl" :src="member.profile_photo_url">
-          <div class="pl-3">
-            {{member.name}}
-          </div>
+          <router-link class="flex" :to="{ name: 'Player', params: {id: member.id}}">
+            <img class="border border-grey-800 rounded-full w-11 shadow-xl" :src="member.profile_photo_url">
+            <div class="pl-3 hover:underline hover:cursor-pointer">
+              {{member.name}}
+            </div>
+          </router-link>
         </div>
       </div>
       <div class="flex-1 lg:text-5xl sm:text-4xl self-center font-normal text-gray-700">
