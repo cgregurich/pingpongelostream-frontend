@@ -3,6 +3,8 @@ const API_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 const SELF = '/self';
 const LOGIN = '/login';
 const REGISTER = '/register';
+const GAMES = '/games';
+const PLAYERS = '/players';
 const PROFILE = '/profile';
 const DELETE = '/delete';
 const PASSWORD = '/password';
@@ -15,6 +17,8 @@ export {
     SELF,
     LOGIN,
     REGISTER,
+    GAMES,
+    PLAYERS,
     PROFILE,
     DELETE,
     PASSWORD,
