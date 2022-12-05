@@ -30,9 +30,12 @@ export default {
                 sources: [
                     {
                         src: import.meta.env.VITE_BACKEND_ENV == 'prod'
+                            ? 'https://stream.atticpingpong.com/stream/hls/obs_stream.m3u8'
+                            : 'http://stream.atticpingpong.com:8088/hls/obs_stream.m3u8'
+                        /*src: import.meta.env.VITE_BACKEND_ENV == 'prod'
                             ? 'https://stream.atticpingpong.com/stream/dash/obs_stream.mpd'
                             : 'http://stream.atticpingpong.com:8088/dash/obs_stream.mpd',
-                        type: 'application/dash+xml'
+                        type: 'application/dash+xml'*/
                     }
                 ]
             }
