@@ -29,7 +29,9 @@ export default {
                 height: 'auto',
                 sources: [
                     {
-                        src: 'http://stream.atticpingpong.com:8088/dash/obs_stream.mpd',
+                        src: import.meta.env.VITE_BACKEND_ENV == 'prod'
+                            ? 'https://stream.atticpingpong.com/stream/dash/obs_stream.mpd'
+                            : 'http://stream.atticpingpong.com:8088/dash/obs_stream.mpd',
                         type: 'application/dash+xml'
                     }
                 ]
