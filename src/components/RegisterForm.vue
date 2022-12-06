@@ -27,7 +27,7 @@ function submit() {
         ).then(
             () => {
               toasts.registrationSuccessful();
-              router.push({ name: 'Dashboard' });
+              router.push({ name: 'Leaderboard' });
             }
         ).catch(e => {
           disableInput.value = false;
