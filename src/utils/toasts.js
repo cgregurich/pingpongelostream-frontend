@@ -48,7 +48,7 @@ export function submittingGameFailed() {
 
 export function gameNotFound(redirectCallback) {
   // Takes a callback function to call, 
-  toast.error('Game not found. Redirecting to games page.');
+  toast.error('Game not found. Redirecting to games page...');
   redirectCallback();
 }
 
@@ -70,4 +70,9 @@ export function registrationSuccessful() {
 
 export function registrationFailed() {
   toast.error('Registration failed', { duration: 2000 });
+}
+
+export function playerNotFound(redirectCallback) {
+  toast.error('Player not found. Redirecting to dashboard...');
+  redirectCallback();
 }
