@@ -51,7 +51,8 @@ export default {
         border border-gray-300
         shadow-lg
         bg-white">
-    <div class="flex justify-center pb-5" v-if="game">{{ formatDate(game.completed_at) }}</div>
+    <div class="flex justify-center pb-5" v-if="(game.completed_at != null)">{{ formatDate(game.completed_at) }}</div>
+    <div class="flex justify-center pb-5" v-else>TBD</div>
       <!-- Tennis style set scores in a box -->
     <div class="border border-gray-300 rounded-md shadow-md" v-if="game"> 
     <div class="flex p-4" v-for="team in game.teams" :key="team.id" :class="{'border-b border-gray-300' : game.teams.indexOf(team) == 0 }">

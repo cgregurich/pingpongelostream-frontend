@@ -197,7 +197,8 @@ function maxButtonsForPagination() {
         <div class="self-center pb-10" v-if="(games.length == 0)">No Games To Show</div>
         
             <div class="flex flex-col w-full" v-for="game in games" :key="game.teams">
-              <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
+              <div class="flex flex-row self-center pb-1" v-if="(game.completed_at != null)">{{ formatDate(game.completed_at) }}</div>
+              <div class="flex flex-row self-center pb-1" v-else>TBD</div>
                   <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 py-2 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
                     <router-link :to="{ name: 'GameDetail', params: {id: game.id}}">
                       <template #default>
