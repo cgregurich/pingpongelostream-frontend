@@ -9,15 +9,16 @@ import router from '@/router/index';
 import GameIndexSkeleton from "./GameIndexSkeleton.vue";
 
 const games = ref([]);
-// const games = reactive([]);
+
 const pageHeader = ref('Completed');
 const dropDownSelections = { Completed:'Completed Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
 var gameOption = 'completed';
 var value = 'completed';
-// TODO - need to grab all Seasons
+
 const currentSeason = ref(1);
 const selectedSeason = ref();
 const seasons = ref([]);
+
 // Variables for Pagination component
 const totalPages = ref(10);
 const totalItems = ref(10);
@@ -196,7 +197,8 @@ function maxButtonsForPagination() {
         <div class="self-center pb-10" v-if="(games.length == 0)">No Games To Show</div>
         
             <div class="flex flex-col w-full" v-for="game in games" :key="game.teams">
-              <div class="flex flex-row self-center pb-1"><h1>{{ formatDate(game.completed_at) }}</h1></div>
+              <div class="flex flex-row self-center pb-1" v-if="(game.completed_at != null)">{{ formatDate(game.completed_at) }}</div>
+              <div class="flex flex-row self-center pb-1" v-else>TBD</div>
                   <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 py-2 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
                     <router-link :to="{ name: 'GameDetail', params: {id: game.id}}">
                       <template #default>
