@@ -79,10 +79,12 @@ function maxButtonsForPagination() {
 
         <div class="flex flex-col pb-5">
               <div class="flex flex-row" v-for="player in players" :key="player">
-                <div class="flex w-full border border-site-color-two shadow-md rounded-xl my-1 px-3 lg:py-3 lg:px-5 bg-stone-100 hover:bg-stone-50">
-                  <img class="flex-1 rounded-full w-5 p-1" :src="player.profile_photo_url">
-                  <div class="flex-1 font-semibold self-center pl-4">{{player.name}}</div> 
-                </div>
+                <router-link class="flex w-full" :to="{ name: 'Player', params: {id: player.id}}">
+                  <div class="flex w-full border border-site-color-two shadow-md rounded-xl my-1 px-3 lg:py-3 lg:px-5 bg-stone-100 hover:bg-stone-50">
+                    <img class="flex-1 rounded-full w-5 p-1" :src="player.profile_photo_url">
+                    <div class="flex-1 font-semibold self-center pl-4">{{player.name}}</div> 
+                  </div>
+                </router-link>
               </div>
         </div>
         <div v-if="players">
