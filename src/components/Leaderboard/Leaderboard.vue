@@ -59,6 +59,10 @@ async function fake() {
 }
 await Promise.all([loadSinglesLeaderboard(), loadDoublesLeaderboard()]);
 
+function gameModeChanged(newGameMode) {
+  gameMode.value = newGameMode;
+}
+
 </script>
 
 
@@ -68,7 +72,22 @@ await Promise.all([loadSinglesLeaderboard(), loadDoublesLeaderboard()]);
   <table class="shadow-lg shadow-gray-400 rounded- w-[700px]">
     <LeaderboardHeader />
     <LeaderboardCard v-for="(team, index) in currentPageTeams" :key="team.id" :team="team" :ranking="index + 1 + (page - 1) * teamsPerPage" />
-    <LeaderboardFooter  v-model:gameMode="gameMode" :page="page" :numberOfPages="numberOfPages" @paginate-next="page++" @paginate-previous="page--" @jump-to-page="jumpToPage"/>
+
+
+    <!-- Leaderboard Footer -->
+    <tr>
+      <td class="bg-site-color-two text-white rounded-b-lg py-2" colspan="7">
+        <div class="paginater flex justify-end text-xs">
+          <select class="text-black rounded-lg border-none" v-model="gameMode">
+            <option value="singles">Singles</option>
+            <option value="doubles">Doubles</option>
+          </select>
+          <button class="mx-4" @click="page--">Prev</button>
+          <div @click="jumpToPage(i)" class="px-2 border-2 rounded-md cursor-pointer" :class="i === page ? ['border-white'] : 'border-site-color-two'" v-for="i in numberOfPages" :key="i">{{ i }}</div>
+          <button class="mx-4" @click="page++">Next</button>
+        </div>
+      </td>
+    </tr>
   </table>
 </div>
 </template>
