@@ -65,7 +65,7 @@ await Promise.all([loadSinglesLeaderboard(), loadDoublesLeaderboard()]);
 <template>
 <div class="leaderboard flex flex-col items-center mx-4">
   <h1 class="text-4xl my-4">Leaderboard</h1>
-  <table class="shadow-lg shadow-gray-400 rounded-lg w-[700px]">
+  <table class="shadow-lg shadow-gray-400 rounded- w-[700px]">
     <LeaderboardHeader />
     <LeaderboardCard v-for="(team, index) in currentPageTeams" :key="team.id" :team="team" :ranking="index + 1 + (page - 1) * teamsPerPage" />
     <LeaderboardFooter  v-model:gameMode="gameMode" :page="page" :numberOfPages="numberOfPages" @paginate-next="page++" @paginate-previous="page--" @jump-to-page="jumpToPage"/>

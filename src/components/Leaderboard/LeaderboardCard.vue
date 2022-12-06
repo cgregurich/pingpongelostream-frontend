@@ -23,7 +23,9 @@ const trophyClass = computed(() => {
 });
 
 const winRate = computed(() => {
-  return Math.round(props.team.wins / props.team.totalGames * 100);
+  const winRate = Math.round(props.team.wins / props.team.totalGames * 100);
+  if (isNaN(winRate)) return 0;
+  else return winRate;
 });
 
 const playerNames = computed(() => {
