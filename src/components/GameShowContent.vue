@@ -1,4 +1,5 @@
 <template>
+  <div v-if="(game.completed_at != null)">
     <div class="flex p-10 text-2xl">
         {{firstTeamNames.toString()}} {{phrases[chosenPhrase]}} {{secondTeamNames.toString()}} {{winningScore}} to {{lossingScore}}
     </div>
@@ -6,6 +7,12 @@
         {{firstTeamNames.toString()}}'s elo rating {{eloPhrase1[chosenEloPhrase1]}} {{game.team1_elo_change}} points to {{game.team1_elo_then}} while 
         {{secondTeamNames.toString()}}'s elo rating {{eloPhrase2[chosenEloPhrase2]}} {{game.team2_elo_change}} points to {{game.team2_elo_then}}
     </div>
+  </div>
+  <div v-else>
+    <div class="flex p-10 text-2xl">
+      This game is yet to be completed. Details to come.
+    </div>
+  </div>
 </template>
   
 <script>
@@ -48,25 +55,24 @@
       }
     },
     mounted() {
-        this.team1.members.forEach(element => this.firstTeamNames.push(element.name));
-        this.firstTeamNames = this.firstTeamNames.join(" and ");
-        this.team2.members.forEach(element => this.secondTeamNames.push(element.name));
-        this.secondTeamNames = this.secondTeamNames.join(" and ");
-        if(this.team1Score > this.team2Score) {
-            this.chosenPhrase = 0;
-            this.chosenEloPhrase1 = 0;
-            this.chosenEloPhrase2 = 1;
-            this.winningScore = this.team1Score;
-            this.lossingScore = this.team2Score;
-        }
-        else {
-            this.team1.members.length == 1 ? this.chosenPhrase = 1 : this.chosenPhrase = 2;
-            this.chosenEloPhrase1 = 1;
-            this.chosenEloPhrase2 = 0;
-            this.lossingScore = this.team1Score;
-            this.winningScore = this.team2Score;
-        }
-
+      this.team1.members.forEach(element => this.firstTeamNames.push(element.name));
+      this.firstTeamNames = this.firstTeamNames.join(" and ");
+      this.team2.members.forEach(element => this.secondTeamNames.push(element.name));
+      this.secondTeamNames = this.secondTeamNames.join(" and ");
+      if(this.team1Score > this.team2Score) {
+          this.chosenPhrase = 0;
+          this.chosenEloPhrase1 = 0;
+          this.chosenEloPhrase2 = 1;
+          this.winningScore = this.team1Score;
+          this.lossingScore = this.team2Score;
+      }
+      else {
+          this.team1.members.length == 1 ? this.chosenPhrase = 1 : this.chosenPhrase = 2;
+          this.chosenEloPhrase1 = 1;
+          this.chosenEloPhrase2 = 0;
+          this.lossingScore = this.team1Score;
+          this.winningScore = this.team2Score;
+      }
     }
   }
   </script>
