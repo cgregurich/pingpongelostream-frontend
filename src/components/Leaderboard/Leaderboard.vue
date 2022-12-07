@@ -69,7 +69,7 @@ function gameModeChanged(newGameMode) {
 <template>
 <div class="leaderboard flex flex-col items-center mx-4">
   <h1 class="text-4xl my-4">Leaderboard</h1>
-  <table class="shadow-lg shadow-gray-400 rounded- w-[700px]">
+  <table class="shadow-lg shadow-gray-400 rounded-lg w-[700px]">
     <LeaderboardHeader />
     <LeaderboardCard v-for="(team, index) in currentPageTeams" :key="team.id" :team="team" :ranking="index + 1 + (page - 1) * teamsPerPage" />
 
@@ -78,7 +78,7 @@ function gameModeChanged(newGameMode) {
     <tr>
       <td class="bg-site-color-two text-white rounded-b-lg py-2" colspan="7">
         <div class="paginater flex justify-end text-xs">
-          <select class="text-black rounded-lg border-none" v-model="gameMode">
+          <select class="text-black rounded-lg border-none px-1" v-model="gameMode">
             <option value="singles">Singles</option>
             <option value="doubles">Doubles</option>
           </select>
