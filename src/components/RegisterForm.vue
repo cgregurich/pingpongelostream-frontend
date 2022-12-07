@@ -67,7 +67,7 @@ const canSubmit = computed(() => {
             </form>
 			<div class="line w-4/5 mt-4 bg-opacity-10 bg-black h-[1px] mb-4"></div>
 			<div class="footer">Already have an account?
-				<router-link :to="{ name: 'Login' }" class="font-bold hover:underline">Log in.</router-link>
+				<router-link :to="{ name: 'Login' }" class="font-bold hover:underline hover:text-site-color-two">Log in.</router-link>
 			</div>
 		</div>
 	</div>
