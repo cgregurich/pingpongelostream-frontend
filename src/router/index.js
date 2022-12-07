@@ -17,7 +17,7 @@ router.beforeEach((to, from, next) => {
       .then(() => next())
       .catch(() => {
         authStore.logout(); // if cant get user, token must be bad, logout.
-        // dont need to change pages tho
+        next(); // dont need to change pages tho
       });
   }
   else if (!tokenNotRequired) { // must do auth check

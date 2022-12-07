@@ -163,9 +163,6 @@
 				<!-- Responsive Navigation Menu -->
 				<div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
 					<div class="pt-2 pb-3 space-y-1">
-						<ResponsiveNavLink :to="{ name: 'Dashboard' }">
-							Dashboard
-						</ResponsiveNavLink>
 						<ResponsiveNavLink :to="{ name: 'Leaderboard' }">
 							Leaderboards
 						</ResponsiveNavLink>

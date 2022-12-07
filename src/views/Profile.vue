@@ -20,7 +20,7 @@ const player = reactive({});
 
 onMounted(async () => {
   if (await playerNotFound()) {
-    toasts.playerNotFound(() => router.push({ name: 'Dashboard' }));
+    toasts.playerNotFound(() => router.push({ name: 'Leaderboard' }));
     return;
   }
   await loadCurrentSeason();

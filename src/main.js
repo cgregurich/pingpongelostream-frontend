@@ -9,10 +9,10 @@ const pinia = createPinia();
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 
-import { faEnvelope, faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight, faTrophy, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-library.add(faEnvelope, faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight, faTrophy);
+library.add(faEnvelope, faUser, faLock, faTableTennisPaddleBall, faArrowRotateLeft, faTrashAlt, faArrowLeft, faArrowRight, faLongArrowAltLeft, faLongArrowAltRight, faTrophy, faXmark);
 
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';

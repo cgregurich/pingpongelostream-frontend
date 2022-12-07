@@ -27,7 +27,7 @@ const submit = () => {
         ).then(
             () => {
               toasts.loginSuccessful();
-              router.push({ name: 'Dashboard' });
+              router.push({ name: 'Leaderboard' });
             }
         ).catch((e) => {
           disableInput.value = false;
@@ -53,7 +53,7 @@ const reset = () => {
             </form>
             <div class="line w-4/5 mt-4 bg-opacity-10 bg-black h-[1px] mb-4"></div>
             <div class="footer">Don't have an account yet?
-                <router-link :to="{ name: 'Home' }" class="font-bold hover:underline">Create one.</router-link>
+                <router-link :to="{ name: 'Home' }" class="font-bold hover:underline hover:text-site-color-two">Create one.</router-link>
             </div>
         </div>
     </div>

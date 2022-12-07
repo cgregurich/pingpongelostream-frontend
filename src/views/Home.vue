@@ -9,7 +9,7 @@ import RegisterForm from '@/components/RegisterForm.vue';
         whole screen - nav bar size + border between nav bar and content
     -->
     <div
-        class="text-center relative overflow-hidden bg-no-repeat bg-cover h-[calc(100vh-calc(4rem+1px))] bg-fuchsia-900"
+        class="text-center relative overflow-hidden bg-no-repeat bg-cover h-[calc(100vh-calc(4rem+1px))] bg-site-color-two"
     >
         <div
         class="absolute top-0 right-0 bottom-0 left-0 w-full h-full overflow-hidden bg-fixed"

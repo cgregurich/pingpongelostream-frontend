@@ -97,16 +97,19 @@ await loadData();
     <div class="flex justify-between w-full">
       <div class="text-lg ml-2">Recent Games</div>
     </div>
-    <GameSummaryCard
-      v-for="game in singlesGames.slice(0, 3)"
-      :key="game.id" 
-      :teamOne="selfTeam"
-      :teamTwo="getOpponentTeam(game)"
-      :score="getScore(game)"
-      :elos="getElos(game)"
-    />
-    <div class="flex justify-end w-full">
-      <div class="text-sm hover:underline cursor-pointer mt-1 mr-2">View Complete Game History</div>
+    <div v-if="singlesGames.length === 0" class="text-3xl mt-10">
+      No recent games
     </div>
+      <GameSummaryCard
+        v-for="game in singlesGames.slice(0, 3)"
+        :key="game.id"
+        :teamOne="selfTeam"
+        :teamTwo="getOpponentTeam(game)"
+        :score="getScore(game)"
+        :elos="getElos(game)"
+      />
+    <!-- <div class="flex justify-end w-full">
+      <div class="text-sm hover:underline cursor-pointer mt-1 mr-2">View Complete Game History</div>
+    </div> -->
   </div>
 </template>

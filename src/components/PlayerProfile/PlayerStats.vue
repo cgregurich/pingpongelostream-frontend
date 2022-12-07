@@ -34,7 +34,9 @@ const gamesPlayed = computed(() => games.length);
 
 const winRate = computed(() => {
   const gamesWon = games.filter(game => game.given_team.set_score > game.opponent_team.set_score).length;
-  return Math.round((gamesWon / gamesPlayed.value) * 100);
+  const winRate = Math.round((gamesWon / gamesPlayed.value) * 100);
+  if (isNaN(winRate)) return 0;
+  else return winRate;
 });
 
 async function loadData() {
