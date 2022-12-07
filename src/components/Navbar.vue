@@ -70,10 +70,16 @@
 								<NavLink :to="{ name: 'Players' }">
 									Players
 								</NavLink>
-								<NavLink :to="{ name: 'Livestream' }">
+								<NavLink
+									v-if="user?.admin >= 2"
+									:to="{ name: 'Livestream' }"
+								>
 									Livestream
 								</NavLink>
-								<NavLink :to="{ name: 'CreateGame' }">
+								<NavLink
+									v-if="user?.admin >= 2"
+									:to="{ name: 'CreateGame' }"
+								>
 									Create a Game
 								</NavLink>
 							</div>
@@ -172,10 +178,16 @@
 						<ResponsiveNavLink :to="{ name: 'Players' }">
 							Players
 						</ResponsiveNavLink>
-						<ResponsiveNavLink :to="{ name: 'Livestream' }">
+						<ResponsiveNavLink
+							v-if="user?.admin >= 2"
+							:to="{ name: 'Livestream' }"
+						>
 							Livestream
 						</ResponsiveNavLink>
-						<ResponsiveNavLink :to="{ name: 'CreateGame' }">
+						<ResponsiveNavLink
+							v-if="user?.admin >= 2"
+							:to="{ name: 'CreateGame' }"
+						>
 							Create a Game
 						</ResponsiveNavLink>
 					</div>
