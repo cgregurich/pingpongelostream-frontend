@@ -4,6 +4,7 @@ import { ref, reactive, computed, onBeforeUpdate} from 'vue';
 import { API_URL, GAMES } from '@/stores/utils/backendRouteParts.js'
 import GameSummaryCard from '../components/GameSummaryCard.vue';
 import GameShowContent from "../components/GameShowContent.vue";
+import { useAuthStore } from '@/stores/modules/auth.js';
 
 
 export default {
@@ -13,9 +14,11 @@ export default {
             setNum: 1,
             team1Score: 0,
             team2Score: 0,
+            authStore: useAuthStore(),
         };
     },
-    props: {},
+    props: {
+    },
     async created() {
         try {
             const gameResponse = await axios.get(API_URL + GAMES + "/" + this.$route.params.id);
@@ -29,6 +32,7 @@ export default {
             console.error(err);
         }
         this.game.sets.forEach(element => element.team1_score > element.team2_score ? this.team1Score++ : this.team2Score++);
+        console.log(this.authStore);
     },
     methods: {
         formatDate(date) {
@@ -51,7 +55,9 @@ export default {
         border border-gray-300
         shadow-lg
         bg-white">
-    <div class="flex justify-center pb-5" v-if="(game.completed_at != null)">{{ formatDate(game.completed_at) }}</div>
+    <div class="flex justify-center pb-5" v-if="game.completed_at !== null">{{ formatDate(game.completed_at) }}</div>
+    <div class="flex justify-center pb-5" v-else-if="(game.updated_at !== null)">{{ formatDate(game.updated_at) }}</div>
+    <div class="flex justify-center pb-5" v-else-if="(game.started_at !== null)">{{ formatDate(game.started_at) }}</div>
     <div class="flex justify-center pb-5" v-else>TBD</div>
       <!-- Tennis style set scores in a box -->
     <div class="border border-gray-300 rounded-md shadow-md" v-if="game"> 
@@ -88,6 +94,17 @@ export default {
       :team1Score="team1Score"
       :team2Score="team2Score"
     />
+    <div class="flex justify-center border border-site-color-two bg-site-color-one shadow-md hover:bg-white rounded my-5 mx-20 p-" v-if="(authStore.user != null)">
+      <router-link 
+        class="flex1" 
+        :to="{ name: 'Play', params: { gameID: game.id }}"
+      >
+
+          <div v-if="(game.completed_at === null && authStore.user.admin > 1)">
+            START GAME
+          </div>
+      </router-link>
+    </div>
   </div>
 </div>
 </template>
