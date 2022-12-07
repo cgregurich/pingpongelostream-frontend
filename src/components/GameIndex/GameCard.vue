@@ -9,10 +9,10 @@ import router from '@/router/index';
 import GameIndexSkeleton from "./GameIndexSkeleton.vue";
 
 const games = ref([]);
-
+//TODO: clean this junk up
 const pageHeader = ref('Completed');
 const dropDownSelections = { Completed:'Completed Games', Scheduled:'Scheduled Games to be Played', Playing:'Currently Playing Games'}
-var gameOption = 'completed';
+const gameOption = ref('completed');
 var value = 'completed';
 
 const currentSeason = ref(1);
@@ -20,7 +20,7 @@ const selectedSeason = ref();
 const seasons = ref([]);
 
 // Variables for Pagination component
-const totalPages = ref(10);
+const totalPages = ref(1);
 const totalItems = ref(10);
 const perPage = 5;
 const currentPage = ref(1);
@@ -66,21 +66,33 @@ function updateSeason(seasonNum) {
   getRequest();
 }
 
+/*
+* TODO - Don't make the Winner always be on the left of the list, that's dumb.
+*/
+
 /**
  * Handles setting winningTeam
  * TODO - also needs to handle more than 2 teams
  */
 function getWinningTeam(game) {
-  let winner = game.teams[0].pivot.set_score > game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
-  return winner;
+  if(game.completed_at == null) {
+    return game.teams[0];
+  }
+  else {
+    return game.teams[0].pivot.set_score > game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
+  }
 }
 /**
  * Handles setting losingTeam
  * TODO - also needs to handle more than 2 teams
  */
 function getLosingTeam(game) {
-  let loser = game.teams[0].pivot.set_score < game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
-  return loser;
+  if(game.completed_at == null) {
+    return game.teams[1];
+  }
+  else {
+    return game.teams[0].pivot.set_score < game.teams[1].pivot.set_score ? game.teams[0] : game.teams[1];
+  }
 }
 
 
@@ -90,23 +102,23 @@ function getLosingTeam(game) {
  */
 function getGames(value) {
   if(value == 'completed') {
-    gameOption = value = 'completed';
+    gameOption.value = value = 'completed';
     pageHeader.value = 'Completed';
     getRequest();
   }
   else if(value == 'scheduled') {
-    gameOption = value = 'scheduled';
+    gameOption.value = value = 'scheduled';
     pageHeader.value = 'Scheduled';
     getRequest();
   }
   else if(value == 'playing'){
-    gameOption = value = 'playing';
+    gameOption.value = value = 'playing';
     pageHeader.value = 'Playing';
     getRequest();
   }
   else {
-    gameOption = value;
-    console.log("Something went wrong, gameOption is " + gameOption)
+    gameOption.value = value;
+    console.log("Something went wrong, gameOption is " + gameOption.value)
   }
 }
 
@@ -117,12 +129,12 @@ function getGames(value) {
 const getRequest = async () => {
   // Get Games
   try {
-    const response = await axios.get(API_URL + GAMES + "/season/" + selectedSeason.value + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption);
+    const response = await axios.get(API_URL + GAMES + "/season/" + selectedSeason.value + "?page=" + currentPage.value + "&size=" + perPage +"&type=" + gameOption.value);
     if(response.status === 200) {
         const fetchedGames = response.data.response;
         totalPages.value = fetchedGames.totalPages;
         games.value = fetchedGames.games;
-        // console.log(games.value);
+        console.log(games.value);
     }
   } catch (err) {
     console.error(err);
@@ -133,8 +145,8 @@ const getRequest = async () => {
  * Function that calls getGames if the currentPage needs changing
  */
 function getPage(value) {
-  console.log("value: " + value + " and gameOption: " + gameOption);
-  value != gameOption && getGames(value);
+  // console.log("value: " + value + " and gameOption: " + gameOption);
+  value != gameOption.value && getGames(value);
   // Object.assign(totalItems, games.value.length);
   // Object.assign(totalPages, Math.ceil(totalItems.value/perPage));
 }
@@ -196,11 +208,14 @@ function maxButtonsForPagination() {
         <!-- TODO Something when no games are displayed -->
         <div class="self-center pb-10" v-if="(games.length == 0)">No Games To Show</div>
         
-            <div class="flex flex-col w-full" v-for="game in games" :key="game.teams">
-              <div class="flex flex-row self-center pb-1" v-if="(game.completed_at != null)">{{ formatDate(game.completed_at) }}</div>
-              <div class="flex flex-row self-center pb-1" v-else>TBD</div>
-                  <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 py-2 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
-                    <router-link :to="{ name: 'GameDetail', params: {id: game.id}}">
+            <div class="flex flex-col w-full py-1" v-for="game in games" :key="game.teams">
+              <!-- <div class="flex flex-row self-center pb-1" v-if="(game.completed_at != null)">{{ formatDate(game.completed_at) }}</div>
+              <div class="flex flex-row self-center pb-1" v-else>TBD</div> -->
+              <div class="flex flex-row self-center pb-1" v-if="(gameOption == 'completed')">{{ formatDate(game.completed_at) }}</div>
+              <div class="flex flex-row self-center pb-1" v-if="(gameOption == 'scheduled')">{{ formatDate(game.updated_at) }}</div>
+              <div class="flex flex-row self-center pb-1" v-if="(gameOption == 'playing')">{{ formatDate(game.started_at) }}</div>
+                  <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
+                    <router-link :to="{ name: 'GameDetail', params: { id: game.id } }">
                       <template #default>
                         <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
                       </template>
