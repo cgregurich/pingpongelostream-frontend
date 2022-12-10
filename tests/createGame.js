@@ -1,7 +1,7 @@
 import {By,Key,Builder} from "selenium-webdriver";
 import chromedriver from "chromedriver";
 
-async function createGame(){
+async function createPlayGame(){
 
     /*
     *   PART 1
@@ -115,4 +115,4 @@ async function createGame(){
     await driver.quit(30);
 }
 
-createGame();
+createPlayGame();
