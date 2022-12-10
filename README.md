@@ -16,4 +16,4 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 
 ## How to run Selenium Automated test
 
-`node tests/createGame.js`
+`node tests/createPlayGame.js`
