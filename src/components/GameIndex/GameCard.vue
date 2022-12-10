@@ -215,7 +215,7 @@ function maxButtonsForPagination() {
               <div class="flex flex-row self-center pb-1" v-if="(gameOption == 'scheduled')">{{ formatDate(game.updated_at) }}</div>
               <div class="flex flex-row self-center pb-1" v-if="(gameOption == 'playing')">{{ formatDate(game.started_at) }}</div>
                   <div class="flex flex-col border shadow-md rounded-xl bg-neutral-100 md:px-2 lg:px-5 sm:py-1 hover:shadow-gray-400">
-                    <router-link :to="{ name: 'GameDetail', params: {id: game.id, gameType: gameOption} }">
+                    <router-link :to="{ name: 'GameDetail', params: { id: game.id } }">
                       <template #default>
                         <TeamCard :winningTeam=getWinningTeam(game) :losingTeam=getLosingTeam(game) />
                       </template>
